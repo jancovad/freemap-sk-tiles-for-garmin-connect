@@ -24,10 +24,10 @@ nepoužíva.
 ## Rozhodnutie pre MVP
 
 Malý skript v `MAIN` svete sa načíta pri `document_start` a synchrónne zachytí
-iba nastavenie `src` na elemente `img`, ktorého URL presne zodpovedá overenej
-doméne, ceste, štruktúre parametra `pb` a veľkosti 256 px. URL prevedie skôr,
-než prehliadač začne sieťovú požiadavku. Leaflet preto dostane Freemap obrázok
-v pôvodnom natívnom `load` cykle a zoom nemusí čakať na následnú DOM opravu.
+iba nastavenie `src` na viditeľnej kópii pod `.leaflet-tile`, ktorej URL presne
+zodpovedá overenej doméne, ceste, štruktúre parametra `pb` a veľkosti 256 px.
+Skrytý Google Mutant zdroj nechá nedotknutý, aby Garminov adaptér dokončil svoj
+natívny `load` a klonovací cyklus. Až URL viditeľnej kópie prevedie na Freemap.
 SVG, canvas, markery, trasa, routing a ostatné požiadavky Garminu nemení.
 
 Prepínač a atribúcia zostávajú v izolovanom svete rozšírenia. S hlavným skriptom
@@ -45,9 +45,11 @@ v pamäti aj v dočasnom atribúte príslušného `img`. Leafletový klon dlažd
 zdedí informáciu potrebnú na obnovu. Atribút sa pri návrate na Garmin odstráni;
 nič sa neukladá na disk ani neodosiela.
 
-Prvá verzia menila `src` až cez `MutationObserver`. Praktický test ukázal
-oneskorené dlaždice a menej plynulý zoom, preto ju nahradilo synchrónne zachytenie
-setterov `HTMLImageElement.src` a `setAttribute("src", ...)`. Nevykonáva polling.
+Prvá verzia menila `src` až cez `MutationObserver`. Ďalšia verzia menila aj
+skryté zdrojové Google obrázky, čím prerušila Garminov klonovací cyklus. Aktuálna
+verzia zachytáva setter iba na viditeľnej Leaflet dlaždici a používa úzky
+`MutationObserver` ako fallback, keď wrapper dostane triedu až po nastavení URL.
+Nevykonáva polling.
 
 Po prepnutí na Garmin prebehne ešte niekoľko krátkych obnovovacích kontrol počas
 1,5 sekundy. Zachytia dlaždice, ktoré Leaflet vytvorí až pri dobiehajúcej zoom

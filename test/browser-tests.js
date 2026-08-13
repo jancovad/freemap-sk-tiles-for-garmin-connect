@@ -133,13 +133,28 @@
   globalThis.GarminFreemapTestObserver.disconnect();
   freemapButton.click();
 
-  const lateTile = document.createElement("img");
+  const hiddenSourceWrapper = document.createElement("div");
+  hiddenSourceWrapper.style.visibility = "hidden";
+  const hiddenSourceTile = document.createElement("img");
   const lateTileOriginalSource = googleTileUrl(13, 4528, 2808);
-  lateTile.alt = "";
-  lateTile.src = lateTileOriginalSource;
-  fixture.append(lateTile);
+  hiddenSourceTile.alt = "";
+  hiddenSourceTile.src = lateTileOriginalSource;
+  hiddenSourceWrapper.append(hiddenSourceTile);
+  fixture.append(hiddenSourceWrapper);
 
-  test("synchrónny interceptor zachytí novú dlaždicu bez MutationObserver", () => {
+  test("skrytý Google Mutant zdroj zostane nezmenený", () => {
+    equal(hiddenSourceTile.getAttribute("src"), lateTileOriginalSource);
+  });
+
+  const lateTileWrapper = document.createElement("div");
+  lateTileWrapper.className = "leaflet-tile";
+  const lateTile = document.createElement("img");
+  lateTile.alt = "";
+  lateTileWrapper.append(lateTile);
+  fixture.append(lateTileWrapper);
+  lateTile.src = lateTileOriginalSource;
+
+  test("synchrónny interceptor prepne viditeľnú Mutant kópiu", () => {
     equal(
       lateTile.getAttribute("src"),
       "https://outdoor.tiles.freemap.sk/13/4528/2808"

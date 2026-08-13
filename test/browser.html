@@ -10,18 +10,24 @@
     <p id="summary">Testy sa spúšťajú…</p>
     <ol id="results"></ol>
     <div id="map-fixture" class="leaflet-container" hidden>
-      <img
-        alt=""
-        src="https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i12!2i2264!3i1404!4i256!2m3!1e0&amp;key=test-only"
-      >
-      <img
-        alt=""
-        src="https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i12!2i2265!3i1404!4i256!2m3!1e0&amp;key=test-only"
-      >
-      <img
-        alt=""
-        src="https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i12!2i2266!3i1404!4i256!2m3!1e0&amp;key=test-only"
-      >
+      <div class="leaflet-tile leaflet-tile-loaded">
+        <img
+          alt=""
+          src="https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i12!2i2264!3i1404!4i256!2m3!1e0&amp;key=test-only"
+        >
+      </div>
+      <div class="leaflet-tile leaflet-tile-loaded">
+        <img
+          alt=""
+          src="https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i12!2i2265!3i1404!4i256!2m3!1e0&amp;key=test-only"
+        >
+      </div>
+      <div class="leaflet-tile leaflet-tile-loaded">
+        <img
+          alt=""
+          src="https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i12!2i2266!3i1404!4i256!2m3!1e0&amp;key=test-only"
+        >
+      </div>
     </div>
     <script src="../src/tile-url.js"></script>
     <script src="observer-instrumentation.js"></script>

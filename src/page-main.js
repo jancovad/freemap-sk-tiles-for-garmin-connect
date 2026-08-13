@@ -38,6 +38,13 @@
     nativeRemoveAttribute.call(element, name);
   }
 
+  function isLeafletDisplayTile(image) {
+    return (
+      image.classList.contains("leaflet-tile") ||
+      image.closest(".leaflet-tile") !== null
+    );
+  }
+
   function rememberOriginalTile(image, originalSource) {
     const existing = originalTileAttributes.get(image);
     setAttribute(image, ORIGINAL_SOURCE_ATTRIBUTE, originalSource);
@@ -155,7 +162,7 @@
   }
 
   function interceptSource(image, rawSource) {
-    if (!freemapEnabled) {
+    if (!freemapEnabled || !isLeafletDisplayTile(image)) {
       return false;
     }
 
@@ -175,7 +182,7 @@
       return;
     }
 
-    for (const image of document.querySelectorAll("img[src]")) {
+    for (const image of document.querySelectorAll(".leaflet-tile img[src], img.leaflet-tile[src]")) {
       const source = getAttribute(image, "src") || "";
       const freemapSource = tileUrlApi.translateGarminGoogleTileUrl(source);
 
@@ -232,6 +239,33 @@
     return true;
   }
 
+  function replaceDisplayTilesInNode(node) {
+    if (!(node instanceof Element)) {
+      return;
+    }
+
+    const images = [];
+
+    if (node instanceof HTMLImageElement) {
+      images.push(node);
+    }
+
+    images.push(...node.querySelectorAll("img[src]"));
+
+    for (const image of images) {
+      if (!freemapEnabled || !isLeafletDisplayTile(image)) {
+        continue;
+      }
+
+      const source = getAttribute(image, "src") || "";
+      const freemapSource = tileUrlApi.translateGarminGoogleTileUrl(source);
+
+      if (freemapSource) {
+        applyFreemapSource(image, source, freemapSource);
+      }
+    }
+  }
+
   try {
     patchInstalled = installSynchronousSourcePatch();
   } catch {
@@ -248,4 +282,28 @@
   });
 
   document.addEventListener(DISABLE_EVENT, () => setFreemapEnabled(false));
+
+  const displayTileObserver = new MutationObserver((records) => {
+    if (!freemapEnabled) {
+      return;
+    }
+
+    for (const record of records) {
+      if (record.type === "attributes") {
+        replaceDisplayTilesInNode(record.target);
+        continue;
+      }
+
+      for (const addedNode of record.addedNodes) {
+        replaceDisplayTilesInNode(addedNode);
+      }
+    }
+  });
+
+  displayTileObserver.observe(document, {
+    attributeFilter: ["class", "src"],
+    attributes: true,
+    childList: true,
+    subtree: true
+  });
 })();
