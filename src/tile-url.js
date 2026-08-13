@@ -16,6 +16,8 @@
   "use strict";
 
   const FREEMAP_TILE_BASE_URL = "https://outdoor.tiles.freemap.sk";
+  const FREEMAP_MIN_ZOOM = 2;
+  const FREEMAP_MAX_ZOOM = 20;
   const GOOGLE_TILE_HOST = "maps.googleapis.com";
   const GOOGLE_TILE_PATH = "/maps/vt";
   const GOOGLE_PB_TILE_PATTERN = /!1m5!1m4!1i(\d+)!2i(\d+)!3i(\d+)!4i(\d+)(?=!|$)/;
@@ -96,15 +98,48 @@
     return `${FREEMAP_TILE_BASE_URL}/${tile.zoom}/${tile.x}/${tile.y}`;
   }
 
+  function parseFreemapTileUrl(rawUrl) {
+    let url;
+
+    try {
+      url = new URL(String(rawUrl));
+    } catch {
+      return null;
+    }
+
+    if (url.protocol !== "https:" || url.hostname !== "outdoor.tiles.freemap.sk") {
+      return null;
+    }
+
+    const match = url.pathname.match(/^\/(\d+)\/(\d+)\/(\d+)\/?$/);
+
+    if (!match) {
+      return null;
+    }
+
+    const zoom = Number.parseInt(match[1], 10);
+    const x = Number.parseInt(match[2], 10);
+    const y = Number.parseInt(match[3], 10);
+
+    if (!isValidTileCoordinate(zoom, x, y)) {
+      return null;
+    }
+
+    return Object.freeze({ zoom, x, y, tileSize: 256 });
+  }
+
   function translateGarminGoogleTileUrl(rawUrl) {
     const tile = parseGarminGoogleTileUrl(rawUrl);
     return tile ? buildFreemapTileUrl(tile) : null;
   }
 
   return Object.freeze({
+    FREEMAP_MAX_ZOOM,
+    FREEMAP_MIN_ZOOM,
     FREEMAP_TILE_BASE_URL,
     buildFreemapTileUrl,
     parseGarminGoogleTileUrl,
+    parseFreemapTileUrl,
     parseLegacyGarminTilePath,
     translateGarminGoogleTileUrl
   });

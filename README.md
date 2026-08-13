@@ -14,6 +14,8 @@ Freemap.sk Outdoor.
   priebeh zoomu bez periodického pollingu.
 - Automatický návrat celej mapy na Garmin už pri prvej chybnej Freemap
   dlaždici, aby sa podklady nezmiešali.
+- Overený rozsah Freemap je zoom 2 až 20. Na hranici rozšírenie zablokuje iba
+  ďalší pohyb smerom mimo rozsahu; opačný smer zostáva funkčný.
 - Žiadny externý server rozšírenia, API kľúč, telemetria ani analytika.
 
 Manifest nežiada žiadne položky v `permissions` ani `host_permissions`.
@@ -30,7 +32,7 @@ neobsahovala URL stránky Garmin Connect.
 ## Automatické testy
 
 Testy možno bez inštalácie otvoriť v prehliadači zo súboru
-`test/browser.html`. Výsledok musí byť `PASS: 14 testov, 0 chýb`.
+`test/browser.html`. Výsledok musí byť `PASS: 20 testov, 0 chýb`.
 
 Ak je dostupný Node.js, rovnakú produkčnú prevodovú logiku overí aj jeho
 vstavaný test runner; žiadne balíčky sa neinštalujú.
@@ -64,8 +66,10 @@ Na detaile aktivity aj v plánovači over:
 2. **Freemap** zmení iba podklad a zobrazí atribúciu.
 3. Trasa, body a prekrytia zostanú na rovnakom mieste.
 4. Zoom a posúvanie načítajú nové Freemap dlaždice.
-5. **Garmin** okamžite vráti pôvodný podklad.
-6. Zmena podkladu nemení výsledok routingu v plánovači.
+5. Na zoome 20 už Freemap nepovolí zoom in a na zoome 2 nepovolí zoom out;
+   mapa sa pritom sama neprepne na Garmin.
+6. **Garmin** okamžite vráti pôvodný podklad.
+7. Zmena podkladu nemení výsledok routingu v plánovači.
 
 Fallback možno otestovať v DevTools cez **Network request blocking** pre vzor
 `*://outdoor.tiles.freemap.sk/*`. Po prvej chybnej dlaždici sa má aktivovať

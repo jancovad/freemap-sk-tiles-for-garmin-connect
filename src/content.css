@@ -40,6 +40,11 @@
   color: #ffffff;
 }
 
+.garmin-freemap-zoom-limit {
+  cursor: not-allowed !important;
+  opacity: 0.45 !important;
+}
+
 .garmin-freemap-attribution {
   background: rgb(255 255 255 / 88%);
   border-radius: 2px;

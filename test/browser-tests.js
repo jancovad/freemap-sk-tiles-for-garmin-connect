@@ -76,6 +76,15 @@
     equal(api.buildFreemapTileUrl(tile), "https://outdoor.tiles.freemap.sk/11/484/783");
   });
 
+  test("Freemap deklaruje overený rozsah zoomu 2 až 20", () => {
+    equal(api.FREEMAP_MIN_ZOOM, 2);
+    equal(api.FREEMAP_MAX_ZOOM, 20);
+    equal(
+      api.parseFreemapTileUrl("https://outdoor.tiles.freemap.sk/20/579212/359684").zoom,
+      20
+    );
+  });
+
   const fixture = document.querySelector("#map-fixture");
   const fixtureImages = [...fixture.querySelectorAll("img")];
   const originalSources = fixtureImages.map((image) => image.getAttribute("src"));
@@ -115,6 +124,74 @@
     equal(attribution.textContent.includes("OpenStreetMap contributors"), true);
   });
 
+  const maxZoomFixture = document.querySelector("#max-zoom-map-fixture");
+  const maxZoomIn = maxZoomFixture.querySelector(".leaflet-control-zoom-in");
+  const maxZoomOut = maxZoomFixture.querySelector(".leaflet-control-zoom-out");
+  maxZoomFixture.querySelector('button[data-mode="freemap"]').click();
+
+  test("na Freemap zoome 20 označí iba priblíženie ako nedostupné", () => {
+    equal(maxZoomIn.getAttribute("aria-disabled"), "true");
+    equal(maxZoomIn.classList.contains("garmin-freemap-zoom-limit"), true);
+    equal(maxZoomOut.hasAttribute("aria-disabled"), false);
+  });
+
+  test("na Freemap zoome 20 zablokuje zoom in, ale povolí zoom out", () => {
+    const zoomIn = new WheelEvent("wheel", {
+      bubbles: true,
+      cancelable: true,
+      deltaY: -100
+    });
+    const zoomOut = new WheelEvent("wheel", {
+      bubbles: true,
+      cancelable: true,
+      deltaY: 100
+    });
+
+    maxZoomFixture.dispatchEvent(zoomIn);
+    maxZoomFixture.dispatchEvent(zoomOut);
+    equal(zoomIn.defaultPrevented, true);
+    equal(zoomOut.defaultPrevented, false);
+  });
+
+  const minZoomFixture = document.querySelector("#min-zoom-map-fixture");
+  const minZoomIn = minZoomFixture.querySelector(".leaflet-control-zoom-in");
+  const minZoomOut = minZoomFixture.querySelector(".leaflet-control-zoom-out");
+  minZoomFixture.querySelector('button[data-mode="freemap"]').click();
+
+  test("na Freemap zoome 2 označí iba oddialenie ako nedostupné", () => {
+    equal(minZoomIn.hasAttribute("aria-disabled"), false);
+    equal(minZoomOut.getAttribute("aria-disabled"), "true");
+    equal(minZoomOut.classList.contains("garmin-freemap-zoom-limit"), true);
+  });
+
+  test("na Freemap zoome 2 zablokuje zoom out, ale povolí zoom in", () => {
+    const zoomOut = new WheelEvent("wheel", {
+      bubbles: true,
+      cancelable: true,
+      deltaY: 100
+    });
+    const zoomIn = new WheelEvent("wheel", {
+      bubbles: true,
+      cancelable: true,
+      deltaY: -100
+    });
+
+    minZoomFixture.dispatchEvent(zoomOut);
+    minZoomFixture.dispatchEvent(zoomIn);
+    equal(zoomOut.defaultPrevented, true);
+    equal(zoomIn.defaultPrevented, false);
+  });
+
+  let nativeMaxZoomClicks = 0;
+  maxZoomIn.addEventListener("click", () => {
+    nativeMaxZoomClicks += 1;
+  });
+  maxZoomIn.click();
+
+  test("hraničné tlačidlo zoomu sa nedostane ku Garmin mape", () => {
+    equal(nativeMaxZoomClicks, 0);
+  });
+
   const clonedFreemapTile = fixtureImages[0].cloneNode(true);
   fixture.append(clonedFreemapTile);
   garminButton.click();
@@ -128,6 +205,10 @@
     equal(clonedFreemapTile.getAttribute("src"), originalSources[0]);
     equal(clonedFreemapTile.hasAttribute("data-garmin-freemap-original-src"), false);
     equal(attribution.hidden, true);
+    equal(maxZoomIn.hasAttribute("aria-disabled"), false);
+    equal(minZoomOut.hasAttribute("aria-disabled"), false);
+    equal(maxZoomIn.classList.contains("garmin-freemap-zoom-limit"), false);
+    equal(minZoomOut.classList.contains("garmin-freemap-zoom-limit"), false);
   });
 
   globalThis.GarminFreemapTestObserver.disconnect();

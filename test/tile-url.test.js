@@ -4,7 +4,10 @@ const test = require("node:test");
 const assert = require("node:assert/strict");
 const {
   buildFreemapTileUrl,
+  FREEMAP_MAX_ZOOM,
+  FREEMAP_MIN_ZOOM,
   parseGarminGoogleTileUrl,
+  parseFreemapTileUrl,
   parseLegacyGarminTilePath,
   translateGarminGoogleTileUrl
 } = require("../src/tile-url.js");
@@ -75,4 +78,19 @@ test("historický hexadecimálny Garmin formát prevádza iba samostatný parser
 test("historický parser odmietne neplatnú alebo neúplnú cestu", () => {
   assert.equal(parseLegacyGarminTilePath("L11/RXYZ/C000001E4.png"), null);
   assert.equal(parseLegacyGarminTilePath("L11/R0000030F.png"), null);
+});
+
+test("deklaruje serverom overený Freemap rozsah zoomu", () => {
+  assert.equal(FREEMAP_MIN_ZOOM, 2);
+  assert.equal(FREEMAP_MAX_ZOOM, 20);
+});
+
+test("prečíta Freemap URL bez prípony", () => {
+  assert.deepEqual(parseFreemapTileUrl("https://outdoor.tiles.freemap.sk/20/579212/359684"), {
+    zoom: 20,
+    x: 579212,
+    y: 359684,
+    tileSize: 256
+  });
+  assert.equal(parseFreemapTileUrl("https://example.invalid/20/579212/359684"), null);
 });

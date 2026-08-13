@@ -12,7 +12,11 @@
   const DISABLE_EVENT = "garmin-freemap-extension:disable";
   const FAILURE_EVENT = "garmin-freemap-extension:failure";
   const noticeTimers = new WeakMap();
+  const guardedMaps = new WeakSet();
+  const originalZoomControlAria = new WeakMap();
+  const touchDistances = new WeakMap();
   let freemapEnabled = false;
+  let zoomRefreshFrame = null;
 
   function getSourceAttribute(image) {
     return image.getAttribute("src") || "";
@@ -26,26 +30,247 @@
     );
   }
 
-  function setFreemapEnabled(nextEnabled, noticeMessage = "", notifyPage = true) {
+  function parseTileSource(source) {
+    return (
+      tileUrlApi.parseFreemapTileUrl(source) ||
+      tileUrlApi.parseGarminGoogleTileUrl(source)
+    );
+  }
+
+  function getMapZoom(mapContainer) {
+    const zoomCounts = new Map();
+
+    for (const image of mapContainer.querySelectorAll("img[src]")) {
+      if (!image.classList.contains("leaflet-tile") && !image.closest(".leaflet-tile")) {
+        continue;
+      }
+
+      const tile = parseTileSource(getSourceAttribute(image));
+
+      if (tile) {
+        zoomCounts.set(tile.zoom, (zoomCounts.get(tile.zoom) || 0) + 1);
+      }
+    }
+
+    let currentZoom = null;
+    let largestCount = 0;
+
+    for (const [zoom, count] of zoomCounts) {
+      if (count >= largestCount) {
+        currentZoom = zoom;
+        largestCount = count;
+      }
+    }
+
+    return currentZoom;
+  }
+
+  function getZoomLimitMessage(direction) {
+    return direction > 0
+      ? `Freemap: maximálny zoom je ${tileUrlApi.FREEMAP_MAX_ZOOM}.`
+      : `Freemap: minimálny zoom je ${tileUrlApi.FREEMAP_MIN_ZOOM}.`;
+  }
+
+  function isZoomBlocked(mapContainer, direction) {
+    if (!freemapEnabled || direction === 0) {
+      return false;
+    }
+
+    const zoom = getMapZoom(mapContainer);
+    return (
+      (direction > 0 && zoom !== null && zoom >= tileUrlApi.FREEMAP_MAX_ZOOM) ||
+      (direction < 0 && zoom !== null && zoom <= tileUrlApi.FREEMAP_MIN_ZOOM)
+    );
+  }
+
+  function blockZoomEvent(event, mapContainer, direction) {
+    if (!isZoomBlocked(mapContainer, direction)) {
+      return false;
+    }
+
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    showNotice(getZoomLimitMessage(direction));
+    updateMapZoomLimits(mapContainer);
+    return true;
+  }
+
+  function setZoomControlLimited(control, limited) {
+    if (!control) {
+      return;
+    }
+
+    if (limited) {
+      if (!originalZoomControlAria.has(control)) {
+        originalZoomControlAria.set(control, control.getAttribute("aria-disabled"));
+      }
+
+      control.classList.add("garmin-freemap-zoom-limit");
+      control.setAttribute("aria-disabled", "true");
+      return;
+    }
+
+    control.classList.remove("garmin-freemap-zoom-limit");
+
+    if (originalZoomControlAria.has(control)) {
+      const originalValue = originalZoomControlAria.get(control);
+
+      if (originalValue === null) {
+        control.removeAttribute("aria-disabled");
+      } else {
+        control.setAttribute("aria-disabled", originalValue);
+      }
+
+      originalZoomControlAria.delete(control);
+    }
+  }
+
+  function updateMapZoomLimits(mapContainer) {
+    const zoom = getMapZoom(mapContainer);
+    const atMaximum = (
+      freemapEnabled && zoom !== null && zoom >= tileUrlApi.FREEMAP_MAX_ZOOM
+    );
+    const atMinimum = (
+      freemapEnabled && zoom !== null && zoom <= tileUrlApi.FREEMAP_MIN_ZOOM
+    );
+
+    setZoomControlLimited(
+      mapContainer.querySelector(".leaflet-control-zoom-in"),
+      atMaximum
+    );
+    setZoomControlLimited(
+      mapContainer.querySelector(".leaflet-control-zoom-out"),
+      atMinimum
+    );
+  }
+
+  function scheduleZoomLimitRefresh() {
+    if (zoomRefreshFrame !== null) {
+      return;
+    }
+
+    zoomRefreshFrame = requestAnimationFrame(() => {
+      zoomRefreshFrame = null;
+
+      for (const mapContainer of document.querySelectorAll(".leaflet-container")) {
+        updateMapZoomLimits(mapContainer);
+      }
+    });
+  }
+
+  function getTouchDistance(event) {
+    if (event.touches.length !== 2) {
+      return null;
+    }
+
+    const [first, second] = event.touches;
+    return Math.hypot(first.clientX - second.clientX, first.clientY - second.clientY);
+  }
+
+  function attachZoomBoundaryGuards(mapContainer) {
+    if (guardedMaps.has(mapContainer)) {
+      return;
+    }
+
+    guardedMaps.add(mapContainer);
+
+    mapContainer.addEventListener("click", (event) => {
+      if (!(event.target instanceof Element)) {
+        return;
+      }
+
+      if (event.target.closest(".leaflet-control-zoom-in")) {
+        blockZoomEvent(event, mapContainer, 1);
+      } else if (event.target.closest(".leaflet-control-zoom-out")) {
+        blockZoomEvent(event, mapContainer, -1);
+      }
+    }, true);
+
+    mapContainer.addEventListener("wheel", (event) => {
+      blockZoomEvent(event, mapContainer, Math.sign(-event.deltaY));
+    }, { capture: true, passive: false });
+
+    mapContainer.addEventListener("dblclick", (event) => {
+      blockZoomEvent(event, mapContainer, event.shiftKey ? -1 : 1);
+    }, true);
+
+    mapContainer.addEventListener("keydown", (event) => {
+      if (["+", "="].includes(event.key)) {
+        blockZoomEvent(event, mapContainer, 1);
+      } else if (["-", "_"].includes(event.key)) {
+        blockZoomEvent(event, mapContainer, -1);
+      }
+    }, true);
+
+    mapContainer.addEventListener("touchstart", (event) => {
+      const distance = getTouchDistance(event);
+
+      if (distance !== null) {
+        touchDistances.set(mapContainer, distance);
+      }
+    }, { capture: true, passive: true });
+
+    mapContainer.addEventListener("touchmove", (event) => {
+      const distance = getTouchDistance(event);
+      const previousDistance = touchDistances.get(mapContainer);
+
+      if (distance === null || previousDistance === undefined) {
+        return;
+      }
+
+      touchDistances.set(mapContainer, distance);
+      blockZoomEvent(event, mapContainer, Math.sign(distance - previousDistance));
+    }, { capture: true, passive: false });
+
+    const clearTouchDistance = () => touchDistances.delete(mapContainer);
+    mapContainer.addEventListener("touchend", clearTouchDistance, true);
+    mapContainer.addEventListener("touchcancel", clearTouchDistance, true);
+  }
+
+  function setFreemapEnabled(
+    nextEnabled,
+    noticeMessage = "",
+    notifyPage = true,
+    requestedMap = null
+  ) {
+    if (nextEnabled && requestedMap) {
+      const zoom = getMapZoom(requestedMap);
+
+      if (
+        zoom !== null &&
+        (zoom < tileUrlApi.FREEMAP_MIN_ZOOM || zoom > tileUrlApi.FREEMAP_MAX_ZOOM)
+      ) {
+        showNotice(
+          `Freemap podporuje zoom ${tileUrlApi.FREEMAP_MIN_ZOOM} až ` +
+          `${tileUrlApi.FREEMAP_MAX_ZOOM}.`
+        );
+        updateControls();
+        return;
+      }
+    }
+
     freemapEnabled = Boolean(nextEnabled);
-    updateControls();
 
     if (notifyPage) {
       document.dispatchEvent(new Event(freemapEnabled ? ENABLE_EVENT : DISABLE_EVENT));
     }
+
+    updateControls();
 
     if (noticeMessage) {
       showNotice(noticeMessage);
     }
   }
 
-  function createButton(mode, label) {
+  function createButton(mode, label, mapContainer) {
     const button = document.createElement("button");
     button.type = "button";
     button.className = "garmin-freemap-control__button";
     button.dataset.mode = mode;
     button.textContent = label;
-    button.addEventListener("click", () => setFreemapEnabled(mode === "freemap"));
+    button.addEventListener("click", () => {
+      setFreemapEnabled(mode === "freemap", "", true, mapContainer);
+    });
     return button;
   }
 
@@ -97,7 +322,10 @@
     control.setAttribute(CONTROL_ATTRIBUTE, "");
     control.setAttribute("role", "group");
     control.setAttribute("aria-label", "Mapový podklad");
-    control.append(createButton("garmin", "Garmin"), createButton("freemap", "Freemap"));
+    control.append(
+      createButton("garmin", "Garmin", mapContainer),
+      createButton("freemap", "Freemap", mapContainer)
+    );
 
     const notice = document.createElement("div");
     notice.className = "garmin-freemap-notice";
@@ -106,6 +334,7 @@
 
     stopMapInteractionEvents(control);
     mapContainer.append(control, notice, createAttribution());
+    attachZoomBoundaryGuards(mapContainer);
     updateControls();
   }
 
@@ -132,6 +361,10 @@
 
     for (const attribution of document.querySelectorAll(".garmin-freemap-attribution")) {
       attribution.hidden = !freemapEnabled;
+    }
+
+    for (const mapContainer of document.querySelectorAll(".leaflet-container")) {
+      updateMapZoomLimits(mapContainer);
     }
   }
 
@@ -180,6 +413,8 @@
         inspectNode(addedNode);
       }
     }
+
+    scheduleZoomLimitRefresh();
   });
 
   document.addEventListener(FAILURE_EVENT, () => {

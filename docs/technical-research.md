@@ -16,6 +16,9 @@ stránkach Garmin Connect; nejde o predpokladané interné API.
   od podkladových dlaždíc.
 - `https://outdoor.tiles.freemap.sk/12/2264/1404` odpovedal stavom HTTP 200
   a typom `image/jpeg` aj bez prípony súboru.
+- Pri overení rovnakého bodu cez `HEAD` vrátil Freemap dlaždice pre zoom 2 až
+  20; zoomy 0–1 neboli dostupné a zoomy 21–22 vrátili HTTP 404. Produkčný
+  rozsah je preto explicitne 2–20.
 
 Historický formát `L11/R0000030F/C000001E4.png` nebol na aktuálnych stránkach
 pozorovaný. Jeho parser zostáva izolovaný a produkčný obsahový skript ho
@@ -54,3 +57,8 @@ Nevykonáva polling.
 Po prepnutí na Garmin prebehne ešte niekoľko krátkych obnovovacích kontrol počas
 1,5 sekundy. Zachytia dlaždice, ktoré Leaflet vytvorí až pri dobiehajúcej zoom
 animácii.
+
+Pri zapnutom Freemap izolovaný UI skript na zoomoch 2 a 20 zachytí vstupy smerom
+mimo podporovaného rozsahu ešte pred Leafletom. Platí to pre tlačidlá `+/-`,
+koliesko, dvojklik, klávesnicu a dotykové gesto. Garmin routing ani vrstva trasy
+sa nemenia. Po prepnutí na Garmin sa obmedzenie odstráni.
