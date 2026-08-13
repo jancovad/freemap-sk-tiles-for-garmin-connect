@@ -36,3 +36,9 @@ treba potvrdiť prvým testom cez Load unpacked.
 Tri chyby Freemap dlaždíc počas desiatich sekúnd aktivujú istič, vypnú Freemap
 a obnovia uložené pôvodné Garmin URL. Jednotlivá chybná dlaždica sa obnoví
 okamžite.
+
+Garmin pri zoome niektoré nové alebo recyklované obrázky podkladu sprístupní až
+po prvotnej DOM mutácii. Preto je popri `MutationObserver` aktívny aj úzky
+250 ms watchdog, ale iba počas zapnutého Freemap. Kontroluje výhradne `img[src]`
+vnútri `.leaflet-container`; nevykonáva sieťové volania a pri návrate na Garmin
+sa zastaví.

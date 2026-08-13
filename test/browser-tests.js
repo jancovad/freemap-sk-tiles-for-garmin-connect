@@ -125,22 +125,40 @@
     equal(attribution.hidden, true);
   });
 
+  globalThis.GarminFreemapTestObserver.disconnect();
   freemapButton.click();
-  fixtureImages.forEach((image) => image.dispatchEvent(new Event("error")));
 
-  test("tri chyby aktivujú istič a obnovia Garmin mapu", () => {
-    fixtureImages.forEach((image, index) => {
-      equal(image.getAttribute("src"), originalSources[index]);
+  const lateTile = document.createElement("img");
+  const lateTileOriginalSource = googleTileUrl(13, 4528, 2808);
+  lateTile.alt = "";
+  lateTile.src = lateTileOriginalSource;
+  fixture.append(lateTile);
+
+  setTimeout(() => {
+    test("watchdog zachytí novú dlaždicu aj bez MutationObserver", () => {
+      equal(
+        lateTile.getAttribute("src"),
+        "https://outdoor.tiles.freemap.sk/13/4528/2808"
+      );
     });
-    equal(garminButton.classList.contains("is-active"), true);
-    equal(attribution.hidden, true);
-    equal(notice.hidden, false);
-    equal(notice.textContent.includes("Obnovená bola Garmin mapa"), true);
-  });
 
-  summary.dataset.status = failed === 0 ? "passed" : "failed";
-  summary.textContent = failed === 0
-    ? `PASS: ${passed} testov, 0 chýb`
-    : `FAIL: ${passed} úspešných, ${failed} chybných`;
-  document.title = failed === 0 ? "PASS" : "FAIL";
+    fixtureImages.forEach((image) => globalThis.triggerGarminFreemapTestImageError(image));
+
+    test("tri chyby aktivujú istič a obnovia Garmin mapu", () => {
+      fixtureImages.forEach((image, index) => {
+        equal(image.getAttribute("src"), originalSources[index]);
+      });
+      equal(lateTile.getAttribute("src"), lateTileOriginalSource);
+      equal(garminButton.classList.contains("is-active"), true);
+      equal(attribution.hidden, true);
+      equal(notice.hidden, false);
+      equal(notice.textContent.includes("Obnovená bola Garmin mapa"), true);
+    });
+
+    summary.dataset.status = failed === 0 ? "passed" : "failed";
+    summary.textContent = failed === 0
+      ? `PASS: ${passed} testov, 0 chýb`
+      : `FAIL: ${passed} úspešných, ${failed} chybných`;
+    document.title = failed === 0 ? "PASS" : "FAIL";
+  }, 1_200);
 })();

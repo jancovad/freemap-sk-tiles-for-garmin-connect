@@ -11,12 +11,14 @@
   const TILE_ATTRIBUTE = "data-garmin-freemap-tile";
   const FAILURE_LIMIT = 3;
   const FAILURE_WINDOW_MS = 10_000;
+  const RECONCILE_INTERVAL_MS = 250;
   const originalTileAttributes = new WeakMap();
   const observedTileErrors = new WeakSet();
   const failedFreemapUrls = new Set();
   const noticeTimers = new WeakMap();
   let freemapEnabled = false;
   let recentFailures = [];
+  let reconcileTimer = null;
 
   function getSourceAttribute(image) {
     return image.getAttribute("src") || "";
@@ -246,6 +248,37 @@
     }
   }
 
+  function reconcileFreemapTiles() {
+    if (!freemapEnabled) {
+      return;
+    }
+
+    for (const image of document.querySelectorAll(".leaflet-container img[src]")) {
+      replaceTileIfNeeded(image);
+    }
+  }
+
+  function startReconciliation() {
+    if (reconcileTimer !== null) {
+      return;
+    }
+
+    reconcileTimer = window.setTimeout(() => {
+      reconcileTimer = null;
+      reconcileFreemapTiles();
+      startReconciliation();
+    }, RECONCILE_INTERVAL_MS);
+  }
+
+  function stopReconciliation() {
+    if (reconcileTimer === null) {
+      return;
+    }
+
+    clearTimeout(reconcileTimer);
+    reconcileTimer = null;
+  }
+
   function setFreemapEnabled(nextEnabled, noticeMessage = "") {
     freemapEnabled = Boolean(nextEnabled);
     recentFailures = [];
@@ -253,7 +286,9 @@
     if (freemapEnabled) {
       failedFreemapUrls.clear();
       inspectNode(document.documentElement);
+      startReconciliation();
     } else {
+      stopReconciliation();
       restoreAllTiles();
     }
 

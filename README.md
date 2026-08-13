@@ -28,7 +28,7 @@ neobsahovala URL stránky Garmin Connect.
 ## Automatické testy
 
 Testy možno bez inštalácie otvoriť v prehliadači zo súboru
-`test/browser.html`. Výsledok musí byť `PASS: 12 testov, 0 chýb`.
+`test/browser.html`. Výsledok musí byť `PASS: 13 testov, 0 chýb`.
 
 Ak je dostupný Node.js, rovnakú produkčnú prevodovú logiku overí aj jeho
 vstavaný test runner; žiadne balíčky sa neinštalujú.
