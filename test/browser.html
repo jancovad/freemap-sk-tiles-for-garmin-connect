@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="sk">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'none'">
+    <title>Garmin Freemap – testy prevodu dlaždíc</title>
+  </head>
+  <body>
+    <h1>Testy prevodu dlaždíc</h1>
+    <p id="summary">Testy sa spúšťajú…</p>
+    <ol id="results"></ol>
+    <div id="map-fixture" class="leaflet-container" hidden>
+      <img
+        alt=""
+        src="https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i12!2i2264!3i1404!4i256!2m3!1e0&amp;key=test-only"
+      >
+      <img
+        alt=""
+        src="https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i12!2i2265!3i1404!4i256!2m3!1e0&amp;key=test-only"
+      >
+      <img
+        alt=""
+        src="https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i12!2i2266!3i1404!4i256!2m3!1e0&amp;key=test-only"
+      >
+    </div>
+    <script src="../src/tile-url.js"></script>
+    <script src="../src/content.js"></script>
+    <script src="browser-tests.js"></script>
+  </body>
+</html>

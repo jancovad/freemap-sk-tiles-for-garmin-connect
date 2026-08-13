@@ -1,0 +1,86 @@
+.garmin-freemap-control {
+  align-items: stretch;
+  background: #ffffff;
+  border: 1px solid rgb(0 0 0 / 24%);
+  border-radius: 5px;
+  box-shadow: 0 1px 5px rgb(0 0 0 / 35%);
+  display: flex;
+  font: 600 12px/1.2 Arial, sans-serif;
+  left: 50%;
+  overflow: hidden;
+  position: absolute;
+  top: 10px;
+  transform: translateX(-50%);
+  z-index: 1000;
+}
+
+.garmin-freemap-control__button {
+  appearance: none;
+  background: #ffffff;
+  border: 0;
+  color: #222222;
+  cursor: pointer;
+  font: inherit;
+  min-height: 30px;
+  padding: 7px 10px;
+}
+
+.garmin-freemap-control__button + .garmin-freemap-control__button {
+  border-left: 1px solid #d5d5d5;
+}
+
+.garmin-freemap-control__button:hover,
+.garmin-freemap-control__button:focus-visible {
+  background: #f0f0f0;
+  outline: none;
+}
+
+.garmin-freemap-control__button.is-active {
+  background: #007cc3;
+  color: #ffffff;
+}
+
+.garmin-freemap-attribution {
+  background: rgb(255 255 255 / 88%);
+  border-radius: 2px;
+  bottom: 24px;
+  color: #222222;
+  font: 10px/1.35 Arial, sans-serif;
+  max-width: calc(100% - 12px);
+  padding: 2px 5px;
+  pointer-events: auto;
+  position: absolute;
+  right: 6px;
+  text-align: right;
+  z-index: 1000;
+}
+
+.garmin-freemap-attribution a {
+  color: #0645ad;
+  text-decoration: none;
+}
+
+.garmin-freemap-attribution a:hover,
+.garmin-freemap-attribution a:focus-visible {
+  text-decoration: underline;
+}
+
+.garmin-freemap-notice {
+  background: rgb(35 35 35 / 94%);
+  border-radius: 4px;
+  color: #ffffff;
+  font: 12px/1.35 Arial, sans-serif;
+  left: 50%;
+  max-width: min(360px, calc(100% - 24px));
+  padding: 8px 10px;
+  position: absolute;
+  text-align: center;
+  top: 50px;
+  transform: translateX(-50%);
+  z-index: 1001;
+}
+
+.garmin-freemap-attribution[hidden],
+.garmin-freemap-notice[hidden] {
+  display: none !important;
+}
