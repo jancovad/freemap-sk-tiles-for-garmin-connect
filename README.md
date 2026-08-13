@@ -32,7 +32,7 @@ neobsahovala URL stránky Garmin Connect.
 ## Automatické testy
 
 Testy možno bez inštalácie otvoriť v prehliadači zo súboru
-`test/browser.html`. Výsledok musí byť `PASS: 20 testov, 0 chýb`.
+`test/browser.html`. Výsledok musí byť `PASS: 22 testov, 0 chýb`.
 
 Ak je dostupný Node.js, rovnakú produkčnú prevodovú logiku overí aj jeho
 vstavaný test runner; žiadne balíčky sa neinštalujú.
@@ -68,8 +68,10 @@ Na detaile aktivity aj v plánovači over:
 4. Zoom a posúvanie načítajú nové Freemap dlaždice.
 5. Na zoome 20 už Freemap nepovolí zoom in a na zoome 2 nepovolí zoom out;
    mapa sa pritom sama neprepne na Garmin.
-6. **Garmin** okamžite vráti pôvodný podklad.
-7. Zmena podkladu nemení výsledok routingu v plánovači.
+6. Ak Freemap zapneš z Garmin zoomu mimo rozsahu 2–20, mapa sa najprv presunie
+   na najbližší podporovaný zoom a až potom zmení podklad.
+7. **Garmin** okamžite vráti pôvodný podklad.
+8. Zmena podkladu nemení výsledok routingu v plánovači.
 
 Fallback možno otestovať v DevTools cez **Network request blocking** pre vzor
 `*://outdoor.tiles.freemap.sk/*`. Po prvej chybnej dlaždici sa má aktivovať

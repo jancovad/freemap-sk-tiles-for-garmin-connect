@@ -85,6 +85,52 @@
     );
   });
 
+  const outsideZoomFixture = document.querySelector("#outside-zoom-map-fixture");
+  const outsideZoomImage = outsideZoomFixture.querySelector("img");
+  const outsideZoomIn = outsideZoomFixture.querySelector(".leaflet-control-zoom-in");
+  const outsideZoomOut = outsideZoomFixture.querySelector(".leaflet-control-zoom-out");
+  const outsideGarminButton = outsideZoomFixture.querySelector('button[data-mode="garmin"]');
+  const outsideFreemapButton = outsideZoomFixture.querySelector('button[data-mode="freemap"]');
+  let automaticZoomInClicks = 0;
+  let automaticZoomOutClicks = 0;
+
+  outsideZoomOut.addEventListener("click", (event) => {
+    event.preventDefault();
+    automaticZoomOutClicks += 1;
+    outsideZoomImage.src = googleTileUrl(20, 579212, 359684);
+  });
+  outsideZoomIn.addEventListener("click", (event) => {
+    event.preventDefault();
+    automaticZoomInClicks += 1;
+    outsideZoomImage.src = googleTileUrl(2, 2, 1);
+  });
+
+  outsideFreemapButton.click();
+
+  test("prepnutie z Garmin zoomu 21 najprv nastaví Freemap maximum 20", () => {
+    equal(automaticZoomOutClicks, 1);
+    equal(
+      outsideZoomImage.getAttribute("src"),
+      "https://outdoor.tiles.freemap.sk/20/579212/359684"
+    );
+    equal(outsideFreemapButton.classList.contains("is-active"), true);
+  });
+
+  outsideGarminButton.click();
+  outsideZoomImage.src = googleTileUrl(1, 1, 0);
+  outsideFreemapButton.click();
+
+  test("prepnutie z Garmin zoomu 1 najprv nastaví Freemap minimum 2", () => {
+    equal(automaticZoomInClicks, 1);
+    equal(
+      outsideZoomImage.getAttribute("src"),
+      "https://outdoor.tiles.freemap.sk/2/2/1"
+    );
+    equal(outsideFreemapButton.classList.contains("is-active"), true);
+  });
+
+  outsideGarminButton.click();
+
   const fixture = document.querySelector("#map-fixture");
   const fixtureImages = [...fixture.querySelectorAll("img")];
   const originalSources = fixtureImages.map((image) => image.getAttribute("src"));

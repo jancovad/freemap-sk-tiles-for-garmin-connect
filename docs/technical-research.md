@@ -62,3 +62,8 @@ Pri zapnutom Freemap izolovaný UI skript na zoomoch 2 a 20 zachytí vstupy smer
 mimo podporovaného rozsahu ešte pred Leafletom. Platí to pre tlačidlá `+/-`,
 koliesko, dvojklik, klávesnicu a dotykové gesto. Garmin routing ani vrstva trasy
 sa nemenia. Po prepnutí na Garmin sa obmedzenie odstráni.
+
+Ak používateľ zapne Freemap z Garmin zoomu mimo rozsahu 2–20, UI najprv cez
+existujúce Leaflet tlačidlo `+` alebo `−` nastaví najbližšiu hranicu. Freemap
+zapne až po rozpoznaní dlaždíc cieľového zoomu. Pri chýbajúcom ovládaní alebo
+časovom limite zostane bezpečne zapnutá Garmin mapa.

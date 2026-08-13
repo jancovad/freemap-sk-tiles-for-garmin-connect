@@ -16,6 +16,7 @@
   const originalZoomControlAria = new WeakMap();
   const touchDistances = new WeakMap();
   let freemapEnabled = false;
+  let pendingFreemapSwitch = null;
   let zoomRefreshFrame = null;
 
   function getSourceAttribute(image) {
@@ -227,12 +228,109 @@
     mapContainer.addEventListener("touchcancel", clearTouchDistance, true);
   }
 
+  function cancelPendingFreemapSwitch() {
+    if (!pendingFreemapSwitch) {
+      return;
+    }
+
+    clearTimeout(pendingFreemapSwitch.timeoutId);
+    pendingFreemapSwitch = null;
+  }
+
+  function failPendingFreemapSwitch() {
+    cancelPendingFreemapSwitch();
+    showNotice("Zoom sa nepodarilo nastaviť. Zostáva zapnutá Garmin mapa.");
+    updateControls();
+  }
+
+  function advancePendingFreemapSwitch() {
+    const pending = pendingFreemapSwitch;
+
+    if (!pending || !pending.mapContainer.isConnected) {
+      cancelPendingFreemapSwitch();
+      return;
+    }
+
+    const zoom = getMapZoom(pending.mapContainer);
+
+    if (zoom === null) {
+      return;
+    }
+
+    if (zoom >= tileUrlApi.FREEMAP_MIN_ZOOM && zoom <= tileUrlApi.FREEMAP_MAX_ZOOM) {
+      const targetZoom = pending.targetZoom;
+      cancelPendingFreemapSwitch();
+      setFreemapEnabled(
+        true,
+        `Freemap: zoom bol upravený na ${targetZoom}.`,
+        true,
+        pending.mapContainer
+      );
+      return;
+    }
+
+    if (pending.lastClickedZoom === zoom) {
+      return;
+    }
+
+    const direction = zoom < tileUrlApi.FREEMAP_MIN_ZOOM ? 1 : -1;
+    const selector = direction > 0
+      ? ".leaflet-control-zoom-in"
+      : ".leaflet-control-zoom-out";
+    const zoomControl = pending.mapContainer.querySelector(selector);
+
+    if (
+      !zoomControl ||
+      zoomControl.classList.contains("leaflet-disabled") ||
+      zoomControl.getAttribute("aria-disabled") === "true"
+    ) {
+      failPendingFreemapSwitch();
+      return;
+    }
+
+    pending.lastClickedZoom = zoom;
+    zoomControl.click();
+
+    // Niektoré Leaflet verzie zmenia dlaždice priamo počas click handlera.
+    // Asynchrónne verzie pokračujú cez MutationObserver nižšie.
+    advancePendingFreemapSwitch();
+  }
+
+  function beginFreemapSwitchAtSupportedZoom(mapContainer, currentZoom) {
+    cancelPendingFreemapSwitch();
+
+    const targetZoom = Math.min(
+      tileUrlApi.FREEMAP_MAX_ZOOM,
+      Math.max(tileUrlApi.FREEMAP_MIN_ZOOM, currentZoom)
+    );
+    const pending = {
+      lastClickedZoom: null,
+      mapContainer,
+      targetZoom,
+      timeoutId: null
+    };
+
+    pending.timeoutId = setTimeout(() => {
+      if (pendingFreemapSwitch === pending) {
+        failPendingFreemapSwitch();
+      }
+    }, 5_000);
+    pendingFreemapSwitch = pending;
+
+    showNotice(`Upravujem Garmin zoom na ${targetZoom} pre Freemap…`);
+    advancePendingFreemapSwitch();
+  }
+
   function setFreemapEnabled(
     nextEnabled,
     noticeMessage = "",
     notifyPage = true,
     requestedMap = null
   ) {
+    if (!nextEnabled) {
+      cancelPendingFreemapSwitch();
+    }
+
     if (nextEnabled && requestedMap) {
       const zoom = getMapZoom(requestedMap);
 
@@ -240,11 +338,7 @@
         zoom !== null &&
         (zoom < tileUrlApi.FREEMAP_MIN_ZOOM || zoom > tileUrlApi.FREEMAP_MAX_ZOOM)
       ) {
-        showNotice(
-          `Freemap podporuje zoom ${tileUrlApi.FREEMAP_MIN_ZOOM} až ` +
-          `${tileUrlApi.FREEMAP_MAX_ZOOM}.`
-        );
-        updateControls();
+        beginFreemapSwitchAtSupportedZoom(requestedMap, zoom);
         return;
       }
     }
@@ -415,6 +509,7 @@
     }
 
     scheduleZoomLimitRefresh();
+    advancePendingFreemapSwitch();
   });
 
   document.addEventListener(FAILURE_EVENT, () => {
