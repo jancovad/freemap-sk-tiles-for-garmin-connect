@@ -10,8 +10,10 @@ Freemap.sk Outdoor.
 - Detail aktivity a plánovač/editor trás.
 - Zachovanie Garmin trasy, bodov, prekrytí, ovládania mapy a routingu.
 - Viditeľná atribúcia Freemap Slovakia a OpenStreetMap pri zapnutom Freemap.
-- Automatický návrat jednotlivých dlaždíc; po troch rýchlych chybách návrat
-  celej mapy na Garmin.
+- Synchrónna výmena URL pred načítaním obrázka, aby Leaflet zachoval natívny
+  priebeh zoomu bez periodického pollingu.
+- Automatický návrat celej mapy na Garmin už pri prvej chybnej Freemap
+  dlaždici, aby sa podklady nezmiešali.
 - Žiadny externý server rozšírenia, API kľúč, telemetria ani analytika.
 
 Manifest nežiada žiadne položky v `permissions` ani `host_permissions`.
@@ -66,7 +68,7 @@ Na detaile aktivity aj v plánovači over:
 6. Zmena podkladu nemení výsledok routingu v plánovači.
 
 Fallback možno otestovať v DevTools cez **Network request blocking** pre vzor
-`*://outdoor.tiles.freemap.sk/*`. Po troch chybných dlaždiciach sa má aktivovať
+`*://outdoor.tiles.freemap.sk/*`. Po prvej chybnej dlaždici sa má aktivovať
 Garmin mapa a zobraziť krátke upozornenie. Po teste blokovanie vypni.
 
 Podrobnosti prieskumu sú v [docs/technical-research.md](docs/technical-research.md).

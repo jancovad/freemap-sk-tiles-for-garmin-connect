@@ -23,22 +23,32 @@ nepoužíva.
 
 ## Rozhodnutie pre MVP
 
-Obsahový skript pracuje v izolovanom svete rozšírenia a sleduje iba elementy
-`img`, ktorých URL presne zodpovedá overenej doméne, ceste, štruktúre parametra
-`pb` a veľkosti 256 px. Mení len ich `src`. SVG, canvas, markery, trasa, routing
-a ostatné požiadavky Garminu nemení.
+Malý skript v `MAIN` svete sa načíta pri `document_start` a synchrónne zachytí
+iba nastavenie `src` na elemente `img`, ktorého URL presne zodpovedá overenej
+doméne, ceste, štruktúre parametra `pb` a veľkosti 256 px. URL prevedie skôr,
+než prehliadač začne sieťovú požiadavku. Leaflet preto dostane Freemap obrázok
+v pôvodnom natívnom `load` cykle a zoom nemusí čakať na následnú DOM opravu.
+SVG, canvas, markery, trasa, routing a ostatné požiadavky Garminu nemení.
+
+Prepínač a atribúcia zostávajú v izolovanom svete rozšírenia. S hlavným skriptom
+komunikujú iba troma lokálnymi DOM udalosťami: zapnúť, vypnúť a chyba. Žiadny
+obsah ani používateľské dáta sa cez ne neprenášajú.
 
 Prepínač sa pripája iba k verejnému koreňovému elementu Leafletu
 `.leaflet-container`. Ak Garmin knižnicu alebo DOM zmení, prototyp zlyhá
 bezpečne: nepripojí ovládanie a pôvodnú mapu nezmení. Presnú podporu plánovača
 treba potvrdiť prvým testom cez Load unpacked.
 
-Tri chyby Freemap dlaždíc počas desiatich sekúnd aktivujú istič, vypnú Freemap
-a obnovia uložené pôvodné Garmin URL. Jednotlivá chybná dlaždica sa obnoví
-okamžite.
+Chyba Freemap dlaždice aktivuje istič, vypne Freemap a obnoví celú Garmin mapu,
+aby nevznikla zmiešaná mozaika. Pôvodná Garmin URL je počas prepnutia uložená
+v pamäti aj v dočasnom atribúte príslušného `img`. Leafletový klon dlaždice tak
+zdedí informáciu potrebnú na obnovu. Atribút sa pri návrate na Garmin odstráni;
+nič sa neukladá na disk ani neodosiela.
 
-Garmin pri zoome niektoré nové alebo recyklované obrázky podkladu sprístupní až
-po prvotnej DOM mutácii. Preto je popri `MutationObserver` aktívny aj úzky
-250 ms watchdog, ale iba počas zapnutého Freemap. Kontroluje výhradne `img[src]`
-vnútri `.leaflet-container`; nevykonáva sieťové volania a pri návrate na Garmin
-sa zastaví.
+Prvá verzia menila `src` až cez `MutationObserver`. Praktický test ukázal
+oneskorené dlaždice a menej plynulý zoom, preto ju nahradilo synchrónne zachytenie
+setterov `HTMLImageElement.src` a `setAttribute("src", ...)`. Nevykonáva polling.
+
+Po prepnutí na Garmin prebehne ešte niekoľko krátkych obnovovacích kontrol počas
+1,5 sekundy. Zachytia dlaždice, ktoré Leaflet vytvorí až pri dobiehajúcej zoom
+animácii.

@@ -115,13 +115,18 @@
     equal(attribution.textContent.includes("OpenStreetMap contributors"), true);
   });
 
+  const clonedFreemapTile = fixtureImages[0].cloneNode(true);
+  fixture.append(clonedFreemapTile);
   garminButton.click();
 
-  test("Garmin prepínač obnoví všetky pôvodné URL a atribúty", () => {
+  test("Garmin prepínač obnoví aj klonované dlaždice a odstráni atribúty", () => {
     fixtureImages.forEach((image, index) => {
       equal(image.getAttribute("src"), originalSources[index]);
       equal(image.hasAttribute("referrerpolicy"), false);
+      equal(image.hasAttribute("data-garmin-freemap-original-src"), false);
     });
+    equal(clonedFreemapTile.getAttribute("src"), originalSources[0]);
+    equal(clonedFreemapTile.hasAttribute("data-garmin-freemap-original-src"), false);
     equal(attribution.hidden, true);
   });
 
@@ -134,31 +139,29 @@
   lateTile.src = lateTileOriginalSource;
   fixture.append(lateTile);
 
-  setTimeout(() => {
-    test("watchdog zachytí novú dlaždicu aj bez MutationObserver", () => {
-      equal(
-        lateTile.getAttribute("src"),
-        "https://outdoor.tiles.freemap.sk/13/4528/2808"
-      );
+  test("synchrónny interceptor zachytí novú dlaždicu bez MutationObserver", () => {
+    equal(
+      lateTile.getAttribute("src"),
+      "https://outdoor.tiles.freemap.sk/13/4528/2808"
+    );
+  });
+
+  globalThis.triggerGarminFreemapTestImageError(fixtureImages[0]);
+
+  test("prvá chyba aktivuje istič a obnoví celú Garmin mapu", () => {
+    fixtureImages.forEach((image, index) => {
+      equal(image.getAttribute("src"), originalSources[index]);
     });
+    equal(lateTile.getAttribute("src"), lateTileOriginalSource);
+    equal(garminButton.classList.contains("is-active"), true);
+    equal(attribution.hidden, true);
+    equal(notice.hidden, false);
+    equal(notice.textContent.includes("Obnovená bola Garmin mapa"), true);
+  });
 
-    fixtureImages.forEach((image) => globalThis.triggerGarminFreemapTestImageError(image));
-
-    test("tri chyby aktivujú istič a obnovia Garmin mapu", () => {
-      fixtureImages.forEach((image, index) => {
-        equal(image.getAttribute("src"), originalSources[index]);
-      });
-      equal(lateTile.getAttribute("src"), lateTileOriginalSource);
-      equal(garminButton.classList.contains("is-active"), true);
-      equal(attribution.hidden, true);
-      equal(notice.hidden, false);
-      equal(notice.textContent.includes("Obnovená bola Garmin mapa"), true);
-    });
-
-    summary.dataset.status = failed === 0 ? "passed" : "failed";
-    summary.textContent = failed === 0
-      ? `PASS: ${passed} testov, 0 chýb`
-      : `FAIL: ${passed} úspešných, ${failed} chybných`;
-    document.title = failed === 0 ? "PASS" : "FAIL";
-  }, 1_200);
+  summary.dataset.status = failed === 0 ? "passed" : "failed";
+  summary.textContent = failed === 0
+    ? `PASS: ${passed} testov, 0 chýb`
+    : `FAIL: ${passed} úspešných, ${failed} chybných`;
+  document.title = failed === 0 ? "PASS" : "FAIL";
 })();
