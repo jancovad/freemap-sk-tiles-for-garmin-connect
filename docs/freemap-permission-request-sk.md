@@ -11,7 +11,7 @@ Stav: **návrh – neodoslané**
 Dobrý deň,
 
 volám sa Vladimír Jančovič a pripravujem bezplatné open-source rozšírenie pre
-Chrome s pracovným názvom **Garmin Freemap Outdoor**. Jeho jedinou funkciou je
+Chrome s názvom **Freemap.sk tiles for Garmin Connect**. Jeho jedinou funkciou je
 pridať do webového Garmin Connect prepínač pôvodného mapového podkladu a
 Freemap.sk Outdoor.
 
@@ -44,7 +44,7 @@ Pred prípadným zverejnením v Chrome Web Store Vás prosím o potvrdenie:
    overili bežnými jednotlivými požiadavkami?
 4. Požadujete ďalšie technické obmedzenia, identifikáciu klienta, cache pravidlá
    alebo maximálnu prevádzku?
-5. Je pomenovanie „Garmin Freemap Outdoor“ z Vášho pohľadu prijateľné, ak bude
+5. Je pomenovanie „Freemap.sk tiles for Garmin Connect“ z Vášho pohľadu prijateľné, ak bude
    všade jasne uvedené, že ide o neoficiálny komunitný projekt a ikona nepoužíva
    logo Freemap Slovakia?
 

@@ -13,15 +13,11 @@ Stav: **pracovný návrh – neodosielať na posúdenie**
 
 ## Identita
 
-Odporúčaný názov:
+Vybraný názov:
 
-`Freemap Outdoor for Garmin Connect`
+`Freemap.sk tiles for Garmin Connect`
 
-Alternatíva s jasným statusom:
-
-`Freemap Outdoor for Garmin Connect – Unofficial`
-
-Manifestový názov treba pred prvým Store buildom zjednotiť s vybraným názvom.
+Manifestový názov je zjednotený s vybraným názvom.
 Názov nesmie vyvolávať dojem, že ide o oficiálny produkt Garmin alebo Freemap
 Slovakia.
 
@@ -39,8 +35,8 @@ ovládanie mapy a routing.
 
 ## Dlhý popis
 
-Freemap Outdoor for Garmin Connect je neoficiálne open-source rozšírenie, ktoré
-pridáva do podporovaných máp Garmin Connect prepínač Garmin/Freemap.
+Freemap.sk tiles for Garmin Connect je neoficiálne open-source rozšírenie,
+ktoré pridáva do podporovaných máp Garmin Connect prepínač Garmin/Freemap.
 
 Hlavné funkcie:
 

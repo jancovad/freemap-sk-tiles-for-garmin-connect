@@ -1,6 +1,6 @@
 {
-  "name": "garmin-freemap",
-  "version": "0.4.0",
+  "name": "freemap-sk-tiles-for-garmin-connect",
+  "version": "0.4.1",
   "private": true,
   "description": "Chrome MV3 extension adding the Freemap.sk Outdoor base layer to Garmin Connect.",
   "scripts": {

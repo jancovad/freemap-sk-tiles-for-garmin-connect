@@ -1,4 +1,4 @@
-# Garmin Freemap Outdoor
+# Freemap.sk tiles for Garmin Connect
 
 Experimentálne Chrome rozšírenie pre webový Garmin Connect. Do Leaflet mapy
 pridáva prepínač **Garmin / Freemap** a mení výhradne podkladové dlaždice na

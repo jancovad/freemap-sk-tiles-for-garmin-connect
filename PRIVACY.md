@@ -2,9 +2,9 @@
 
 Posledná aktualizácia: 14. augusta 2026
 
-Tieto zásady sa vzťahujú na neoficiálne Chrome rozšírenie **Garmin Freemap
-Outdoor**. Rozšírenie má jediný účel: umožniť používateľovi zobraziť Freemap.sk
-Outdoor ako alternatívny mapový podklad vo webovom Garmin Connect.
+Tieto zásady sa vzťahujú na neoficiálne Chrome rozšírenie **Freemap.sk tiles for
+Garmin Connect**. Rozšírenie má jediný účel: umožniť používateľovi zobraziť
+Freemap.sk Outdoor ako alternatívny mapový podklad vo webovom Garmin Connect.
 
 ## Údaje ukladané rozšírením
 

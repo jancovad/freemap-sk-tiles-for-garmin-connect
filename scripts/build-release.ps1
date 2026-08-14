@@ -86,7 +86,7 @@ foreach ($relativePath in $releaseFiles) {
 
 $distPath = Join-Path $projectRootPath "dist"
 [IO.Directory]::CreateDirectory($distPath) | Out-Null
-$archiveName = "garmin-freemap-outdoor-v$($manifest.version).zip"
+$archiveName = "freemap-sk-tiles-for-garmin-connect-v$($manifest.version).zip"
 $archivePath = Join-Path $distPath $archiveName
 $checksumPath = "$archivePath.sha256"
 

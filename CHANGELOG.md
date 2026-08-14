@@ -5,6 +5,7 @@ verziovanie v tvare `MAJOR.MINOR.PATCH`.
 
 ## Unreleased
 
+- Premenovanie rozšírenia na `Freemap.sk tiles for Garmin Connect`.
 - Príprava verejnej open-source dokumentácie a podkladov pre budúce posúdenie
   v Chrome Web Store.
 - Publikovanie zostáva zablokované do potvrdenia použitia dlaždíc Freemap
