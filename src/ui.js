@@ -11,12 +11,16 @@
   const ENABLE_EVENT = "garmin-freemap-extension:enable";
   const DISABLE_EVENT = "garmin-freemap-extension:disable";
   const FAILURE_EVENT = "garmin-freemap-extension:failure";
+  const PREFERENCE_STORAGE_KEY = "preferredMapMode";
   const noticeTimers = new WeakMap();
   const guardedMaps = new WeakSet();
   const originalZoomControlAria = new WeakMap();
   const touchDistances = new WeakMap();
   let freemapEnabled = false;
   let pendingFreemapSwitch = null;
+  let preferredMapMode = "garmin";
+  let preferenceApplied = false;
+  let preferenceLoaded = false;
   let zoomRefreshFrame = null;
 
   function getSourceAttribute(image) {
@@ -29,6 +33,69 @@
       source.startsWith(`${tileUrlApi.FREEMAP_TILE_BASE_URL}/`) ||
       tileUrlApi.translateGarminGoogleTileUrl(source) !== null
     );
+  }
+
+  function getPreferenceStorage() {
+    return globalThis.chrome?.storage?.local || null;
+  }
+
+  function rememberPreference(mode) {
+    preferredMapMode = mode;
+    preferenceApplied = true;
+
+    const storage = getPreferenceStorage();
+
+    if (!storage?.set) {
+      return;
+    }
+
+    try {
+      storage.set({ [PREFERENCE_STORAGE_KEY]: mode }, () => {
+        void globalThis.chrome?.runtime?.lastError;
+      });
+    } catch {
+      // Neúspech uloženia nesmie ovplyvniť fungovanie mapy.
+    }
+  }
+
+  function applyStoredPreference(mapContainer) {
+    if (!preferenceLoaded || preferenceApplied) {
+      return;
+    }
+
+    preferenceApplied = true;
+
+    if (preferredMapMode === "freemap") {
+      setFreemapEnabled(true, "", true, mapContainer);
+    }
+  }
+
+  function loadStoredPreference() {
+    const storage = getPreferenceStorage();
+
+    if (!storage?.get) {
+      preferenceLoaded = true;
+      return;
+    }
+
+    try {
+      storage.get({ [PREFERENCE_STORAGE_KEY]: "garmin" }, (items) => {
+        void globalThis.chrome?.runtime?.lastError;
+        preferredMapMode = items?.[PREFERENCE_STORAGE_KEY] === "freemap"
+          ? "freemap"
+          : "garmin";
+        preferenceLoaded = true;
+
+        const control = document.querySelector(`[${CONTROL_ATTRIBUTE}]`);
+        const mapContainer = control?.closest(".leaflet-container");
+
+        if (mapContainer) {
+          applyStoredPreference(mapContainer);
+        }
+      });
+    } catch {
+      preferenceLoaded = true;
+    }
   }
 
   function parseTileSource(source) {
@@ -363,6 +430,7 @@
     button.dataset.mode = mode;
     button.textContent = label;
     button.addEventListener("click", () => {
+      rememberPreference(mode);
       setFreemapEnabled(mode === "freemap", "", true, mapContainer);
     });
     return button;
@@ -430,6 +498,7 @@
     mapContainer.append(control, notice, createAttribution());
     attachZoomBoundaryGuards(mapContainer);
     updateControls();
+    applyStoredPreference(mapContainer);
   }
 
   function attachControlsForTile(image) {
@@ -527,5 +596,6 @@
     subtree: true
   });
 
+  loadStoredPreference();
   inspectNode(document.documentElement);
 })();

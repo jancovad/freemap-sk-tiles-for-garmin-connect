@@ -143,6 +143,8 @@
     equal(Boolean(garminButton), true);
     equal(garminButton.classList.contains("is-active"), true);
     equal(attribution.hidden, true);
+    equal(globalThis.GarminFreemapStorageMock.getReadCount(), 1);
+    equal(globalThis.GarminFreemapStorageMock.getPreferredMapMode(), "garmin");
   });
 
   let mapClickCount = 0;
@@ -168,6 +170,11 @@
     equal(attribution.hidden, false);
     equal(attribution.textContent.includes("Freemap Slovakia"), true);
     equal(attribution.textContent.includes("OpenStreetMap contributors"), true);
+  });
+
+  test("výber Freemap sa uloží iba ako lokálna preferencia", () => {
+    equal(globalThis.GarminFreemapStorageMock.getPreferredMapMode(), "freemap");
+    equal(globalThis.GarminFreemapStorageMock.getWriteCount() > 0, true);
   });
 
   const maxZoomFixture = document.querySelector("#max-zoom-map-fixture");
@@ -255,6 +262,7 @@
     equal(minZoomOut.hasAttribute("aria-disabled"), false);
     equal(maxZoomIn.classList.contains("garmin-freemap-zoom-limit"), false);
     equal(minZoomOut.classList.contains("garmin-freemap-zoom-limit"), false);
+    equal(globalThis.GarminFreemapStorageMock.getPreferredMapMode(), "garmin");
   });
 
   globalThis.GarminFreemapTestObserver.disconnect();
@@ -299,6 +307,7 @@
     equal(attribution.hidden, true);
     equal(notice.hidden, false);
     equal(notice.textContent.includes("Obnovená bola Garmin mapa"), true);
+    equal(globalThis.GarminFreemapStorageMock.getPreferredMapMode(), "freemap");
   });
 
   summary.dataset.status = failed === 0 ? "passed" : "failed";

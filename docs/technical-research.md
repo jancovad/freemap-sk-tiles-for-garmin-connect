@@ -67,3 +67,8 @@ Ak používateľ zapne Freemap z Garmin zoomu mimo rozsahu 2–20, UI najprv cez
 existujúce Leaflet tlačidlo `+` alebo `−` nastaví najbližšiu hranicu. Freemap
 zapne až po rozpoznaní dlaždíc cieľového zoomu. Pri chýbajúcom ovládaní alebo
 časovom limite zostane bezpečne zapnutá Garmin mapa.
+
+Od verzie 0.4.0 izolovaný UI skript používa `chrome.storage.local` iba na
+zapamätanie hodnoty `garmin` alebo `freemap`. Nastavenie sa načíta pri otvorení
+stránky a aplikuje sa až po nájdení podporovanej Leaflet mapy. Chyba dlaždice
+preferenciu neprepíše. Manifest preto obsahuje jediné oprávnenie `storage`.

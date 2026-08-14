@@ -16,9 +16,11 @@ Freemap.sk Outdoor.
   dlaždici, aby sa podklady nezmiešali.
 - Overený rozsah Freemap je zoom 2 až 20. Na hranici rozšírenie zablokuje iba
   ďalší pohyb smerom mimo rozsahu; opačný smer zostáva funkčný.
+- Posledný ručne zvolený podklad sa lokálne zapamätá pre ďalšie otvorenie mapy.
 - Žiadny externý server rozšírenia, API kľúč, telemetria ani analytika.
 
-Manifest nežiada žiadne položky v `permissions` ani `host_permissions`.
+Manifest žiada iba oprávnenie `storage` na uloženie voľby `garmin` alebo
+`freemap`; nežiada žiadne `host_permissions`.
 Obsahový skript je obmedzený match vzorom na `https://connect.garmin.com/*`.
 
 ## Súkromie
@@ -29,10 +31,16 @@ zvolené mapové dlaždice (teda ich `z/x/y`) zo servera Freemap.sk. Pre tieto
 obrázky rozšírenie nastaví `referrerpolicy=no-referrer`, aby požiadavka
 neobsahovala URL stránky Garmin Connect.
 
+Lokálne úložisko rozšírenia obsahuje iba poslednú voľbu mapového podkladu ako
+reťazec `garmin` alebo `freemap`. Bezpečnostný návrat pri chybe túto používateľom
+zvolenú preferenciu nemení.
+
 ## Automatické testy
 
 Testy možno bez inštalácie otvoriť v prehliadači zo súboru
-`test/browser.html`. Výsledok musí byť `PASS: 22 testov, 0 chýb`.
+`test/browser.html`. Výsledok musí byť `PASS: 23 testov, 0 chýb`.
+Samostatný `test/preference-browser.html` overuje automatické obnovenie uloženej
+voľby Freemap bez ďalšieho zápisu do úložiska.
 
 Ak je dostupný Node.js, rovnakú produkčnú prevodovú logiku overí aj jeho
 vstavaný test runner; žiadne balíčky sa neinštalujú.

@@ -1,8 +1,17 @@
 {
   "manifest_version": 3,
   "name": "Garmin Freemap Outdoor",
-  "version": "0.3.1",
+  "version": "0.4.0",
   "description": "Pridáva prepínač podkladu Freemap.sk Outdoor do webového Garmin Connect.",
+  "permissions": [
+    "storage"
+  ],
+  "icons": {
+    "16": "assets/icon16.png",
+    "32": "assets/icon32.png",
+    "48": "assets/icon48.png",
+    "128": "assets/icon128.png"
+  },
   "content_scripts": [
     {
       "matches": [

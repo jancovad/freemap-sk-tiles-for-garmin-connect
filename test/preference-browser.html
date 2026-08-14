@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="sk" data-preferred-map-mode="freemap">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'none'">
+    <title>Test načítania preferencie</title>
+  </head>
+  <body>
+    <p id="summary">Test sa spúšťa…</p>
+    <div id="preference-map-fixture" class="leaflet-container" hidden>
+      <div class="leaflet-tile leaflet-tile-loaded">
+        <img
+          alt=""
+          src="https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i12!2i2264!3i1404!4i256!2m3!1e0&amp;key=test-only"
+        >
+      </div>
+    </div>
+    <script src="storage-mock.js"></script>
+    <script src="../src/tile-url.js"></script>
+    <script src="observer-instrumentation.js"></script>
+    <script src="../src/page-main.js"></script>
+    <script src="../src/ui.js"></script>
+    <script src="preference-browser-test.js"></script>
+  </body>
+</html>
