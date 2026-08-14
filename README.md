@@ -4,6 +4,13 @@ Experimentálne Chrome rozšírenie pre webový Garmin Connect. Do Leaflet mapy
 pridáva prepínač **Garmin / Freemap** a mení výhradne podkladové dlaždice na
 Freemap.sk Outdoor.
 
+> **Neoficiálny komunitný projekt.** Nie je vytvorený, podporovaný ani schválený
+> spoločnosťou Garmin, Freemap Slovakia alebo OpenStreetMap Foundation.
+
+Zdrojový kód je licencovaný pod [MIT licenciou](LICENSE). Verejné vydanie v Chrome
+Web Store je zatiaľ pozastavené, kým Freemap Slovakia nepotvrdí podmienky
+použitia svojho verejného tile servera a presnú požadovanú atribúciu.
+
 ## Rozsah MVP
 
 - Chrome Manifest V3.
@@ -105,3 +112,15 @@ Fallback možno otestovať v DevTools cez **Network request blocking** pre vzor
 Garmin mapa a zobraziť krátke upozornenie. Po teste blokovanie vypni.
 
 Podrobnosti prieskumu sú v [docs/technical-research.md](docs/technical-research.md).
+
+## Verejné vydanie
+
+Projekt sa pripravuje ako verejný open-source projekt, no do Chrome Web Store sa
+zatiaľ neposiela. Súvisiace dokumenty:
+
+- [zásady ochrany súkromia](PRIVACY.md);
+- [third-party notices](THIRD_PARTY_NOTICES.md);
+- [návrh žiadosti pre Freemap Slovakia](docs/freemap-permission-request-sk.md);
+- [návrh záznamu pre Chrome Web Store](docs/chrome-web-store-draft-sk.md);
+- [checklist verejného vydania](docs/public-release-checklist.md);
+- [história zmien](CHANGELOG.md).
