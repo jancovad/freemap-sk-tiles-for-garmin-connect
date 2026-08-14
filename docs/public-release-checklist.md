@@ -11,13 +11,13 @@
 - [x] Návrh zásad ochrany súkromia.
 - [x] Third-party notices a neoficiálny status.
 - [x] Návrh Store textov a permission justification.
+- [x] Verejný názov a URL repozitára.
+- [x] GitHub Issues ako verejný spôsob hlásenia problémov.
 
-## Blokujúce pred verejným repozitárom
+## Pred prvým verejným vydaním
 
 - [ ] Potvrdiť meno držiteľa copyrightu v `LICENSE`.
-- [ ] Vybrať verejný názov a URL repozitára.
-- [ ] Doplniť kontaktný e-mail a spôsob hlásenia problémov.
-- [ ] Odstrániť pracovné poznámky z verejne zobrazovaných dokumentov.
+- [ ] Doplniť kontaktný e-mail pre Chrome Web Store.
 
 ## Blokujúce pred Chrome Web Store
 

@@ -28,7 +28,9 @@ Technické správanie:
 - pri požiadavkách nastavuje `referrerpolicy=no-referrer`;
 - nemení Garmin routing, trasu, body ani ostatné mapové vrstvy;
 - pri chybe dlaždice automaticky obnoví pôvodnú Garmin mapu;
-- zdrojový kód bude verejný pod MIT licenciou a rozšírenie bude bezplatné.
+- zdrojový kód je verejný pod MIT licenciou a rozšírenie bude bezplatné.
+
+Zdrojový kód: <https://github.com/jancovad/freemap-sk-tiles-for-garmin-connect>
 
 Aktuálne rozšírenie zobrazuje nad mapou viditeľnú atribúciu:
 
@@ -51,9 +53,9 @@ Pred prípadným zverejnením v Chrome Web Store Vás prosím o potvrdenie:
 Predpokladaná počiatočná prevádzka je malá. Ak by používanie výraznejšie
 vzrástlo, radi vopred dohodneme vhodný spôsob ďalšej prevádzky.
 
-Na požiadanie pošlem zdrojový kód, lokálny balík alebo ďalšie technické
-podrobnosti. Rozšírenie do Chrome Web Store neodošlem, kým nebudú podmienky
-použitia a atribúcie potvrdené.
+Na požiadanie pošlem lokálny balík alebo ďalšie technické podrobnosti.
+Rozšírenie do Chrome Web Store neodošlem, kým nebudú podmienky použitia a
+atribúcie potvrdené.
 
 Ďakujem za Váš čas a za prevádzku Freemap.sk.
 
@@ -63,7 +65,6 @@ Vladimír Jančovič
 
 ## Pred odoslaním doplniť
 
-- verejnú URL repozitára, ak už bude vytvorený;
 - kontaktný e-mail odosielateľa;
 - prípadne odkaz na screenshot atribúcie.
 

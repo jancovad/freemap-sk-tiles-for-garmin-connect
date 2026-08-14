@@ -5,11 +5,15 @@ Stav: **pracovný návrh – neodosielať na posúdenie**
 ## Blokujúce podmienky
 
 - písomné potvrdenie Freemap Slovakia o použití tile servera a atribúcii;
-- verejná URL repozitára;
-- verejne dostupná URL zásad ochrany súkromia;
-- kontaktný e-mail a stránka podpory;
+- kontaktný e-mail vývojára;
 - finálne screenshoty z aktuálnej verzie;
 - kontrola, že Store ZIP vznikol z rovnakého commitu ako verejný zdrojový kód.
+
+## Verejné odkazy
+
+- Repozitár: <https://github.com/jancovad/freemap-sk-tiles-for-garmin-connect>
+- Zásady ochrany súkromia: <https://github.com/jancovad/freemap-sk-tiles-for-garmin-connect/blob/main/PRIVACY.md>
+- Podpora: <https://github.com/jancovad/freemap-sk-tiles-for-garmin-connect/issues>
 
 ## Identita
 

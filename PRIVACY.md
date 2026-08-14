@@ -59,7 +59,9 @@ Manifest nežiada `host_permissions` a rozšírenie nespúšťa vzdialený kód.
 
 ## Zmeny a kontakt
 
-Zmeny týchto zásad budú zaznamenané v repozitári projektu. Pred verejným
-zverejnením treba na toto miesto doplniť URL verejného repozitára a kontaktný
-e-mail vývojára. Kým tieto údaje nie sú doplnené, dokument je pracovným návrhom
-a rozšírenie nemá byť odoslané do Chrome Web Store.
+Zmeny týchto zásad budú zaznamenané vo
+[verejnom repozitári projektu](https://github.com/jancovad/freemap-sk-tiles-for-garmin-connect).
+Otázky a problémy možno nahlásiť cez
+[GitHub Issues](https://github.com/jancovad/freemap-sk-tiles-for-garmin-connect/issues).
+Kontaktný e-mail pre Chrome Web Store bude uvedený v zázname rozšírenia pred
+jeho odoslaním na posúdenie.

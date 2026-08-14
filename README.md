@@ -11,6 +11,8 @@ Zdrojový kód je licencovaný pod [MIT licenciou](LICENSE). Verejné vydanie v 
 Web Store je zatiaľ pozastavené, kým Freemap Slovakia nepotvrdí podmienky
 použitia svojho verejného tile servera a presnú požadovanú atribúciu.
 
+Verejný repozitár: <https://github.com/jancovad/freemap-sk-tiles-for-garmin-connect>
+
 ## Rozsah MVP
 
 - Chrome Manifest V3.
