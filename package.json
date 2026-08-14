@@ -5,6 +5,7 @@
   "description": "Chrome MV3 extension adding the Freemap.sk Outdoor base layer to Garmin Connect.",
   "scripts": {
     "check": "node --check src/tile-url.js && node --check src/page-main.js && node --check src/ui.js",
+    "release": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/build-release.ps1",
     "test": "node --test"
   }
 }

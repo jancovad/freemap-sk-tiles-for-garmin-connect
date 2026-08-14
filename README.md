@@ -66,6 +66,25 @@ nie je zapojený do produkčnej výmeny dlaždíc.
 Po úprave zdrojov treba na `chrome://extensions` kliknúť pri rozšírení na
 ikonu obnovenia a následne obnoviť stránku Garmin Connect.
 
+## Lokálny release balík
+
+Produkčný ZIP bez testov, dokumentácie a vývojových súborov vytvorí PowerShell
+skript bez externých závislostí:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts/build-release.ps1
+```
+
+Skript pred zabalením overí Manifest V3, verziu, jedinú povolenú položku
+`storage`, neprítomnosť `host_permissions`, Garmin Connect match vzory, lokálne
+manifestové súbory a presný whitelist obsahu. Do `dist/` uloží ZIP aj súbor
+`.sha256`. Rovnaký build možno spustiť aj cez `npm run release`, ak je dostupný
+Node.js.
+
+Na čistý test rozbaľ ZIP do nového priečinka a v `chrome://extensions` zvoľ
+**Load unpacked** nad týmto rozbaleným priečinkom. Release skript ani priečinok
+`dist/` sa do výsledného rozšírenia nepridávajú.
+
 ## Manuálny test
 
 Na detaile aktivity aj v plánovači over:
