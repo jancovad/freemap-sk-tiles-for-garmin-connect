@@ -8,19 +8,16 @@
   }
 
   const CONTROL_ATTRIBUTE = "data-garmin-freemap-control";
-  const DISCLOSURE_ATTRIBUTE = "data-garmin-freemap-disclosure";
   const ENABLE_EVENT = "garmin-freemap-extension:enable";
   const DISABLE_EVENT = "garmin-freemap-extension:disable";
   const FAILURE_EVENT = "garmin-freemap-extension:failure";
   const PREFERENCE_STORAGE_KEY = "preferredMapMode";
-  const DISCLOSURE_STORAGE_KEY = "freemapDisclosureAccepted";
+  const OBSOLETE_DISCLOSURE_STORAGE_KEY = "freemapDisclosureAccepted";
   const noticeTimers = new WeakMap();
   const guardedMaps = new WeakSet();
   const originalZoomControlAria = new WeakMap();
   const touchDistances = new WeakMap();
   let freemapEnabled = false;
-  let disclosureAccepted = false;
-  let disclosureIdSequence = 0;
   let pendingFreemapSwitch = null;
   let preferredMapMode = "garmin";
   let preferenceApplied = false;
@@ -65,14 +62,22 @@
     writeStoredValues({ [PREFERENCE_STORAGE_KEY]: mode });
   }
 
-  function rememberDisclosureAcceptance() {
-    disclosureAccepted = true;
-    preferredMapMode = "freemap";
-    preferenceApplied = true;
-    writeStoredValues({
-      [DISCLOSURE_STORAGE_KEY]: true,
-      [PREFERENCE_STORAGE_KEY]: "freemap"
-    });
+  function removeObsoleteDisclosureValue(storage, items) {
+    if (
+      items?.[OBSOLETE_DISCLOSURE_STORAGE_KEY] === null ||
+      items?.[OBSOLETE_DISCLOSURE_STORAGE_KEY] === undefined ||
+      !storage?.remove
+    ) {
+      return;
+    }
+
+    try {
+      storage.remove(OBSOLETE_DISCLOSURE_STORAGE_KEY, () => {
+        void globalThis.chrome?.runtime?.lastError;
+      });
+    } catch {
+      // Migrácia starej hodnoty nesmie ovplyvniť fungovanie mapy.
+    }
   }
 
   function applyStoredPreference(mapContainer) {
@@ -82,7 +87,7 @@
 
     preferenceApplied = true;
 
-    if (preferredMapMode === "freemap" && disclosureAccepted) {
+    if (preferredMapMode === "freemap") {
       setFreemapEnabled(true, "", true, mapContainer);
     }
   }
@@ -97,11 +102,11 @@
 
     try {
       storage.get({
-        [DISCLOSURE_STORAGE_KEY]: false,
+        [OBSOLETE_DISCLOSURE_STORAGE_KEY]: null,
         [PREFERENCE_STORAGE_KEY]: "garmin"
       }, (items) => {
         void globalThis.chrome?.runtime?.lastError;
-        disclosureAccepted = items?.[DISCLOSURE_STORAGE_KEY] === true;
+        removeObsoleteDisclosureValue(storage, items);
         preferredMapMode = items?.[PREFERENCE_STORAGE_KEY] === "freemap"
           ? "freemap"
           : "garmin";
@@ -451,12 +456,6 @@
     button.dataset.mode = mode;
     button.textContent = label;
     button.addEventListener("click", () => {
-      if (mode === "freemap" && !disclosureAccepted) {
-        showFreemapDisclosure(mapContainer, button);
-        return;
-      }
-
-      closeFreemapDisclosure(mapContainer);
       rememberPreference(mode);
       setFreemapEnabled(mode === "freemap", "", true, mapContainer);
     });
@@ -479,33 +478,6 @@
     }
   }
 
-  function closeFreemapDisclosure(mapContainer, returnFocusTo = null) {
-    const disclosure = mapContainer.querySelector(
-      `:scope > [${DISCLOSURE_ATTRIBUTE}]`
-    );
-
-    if (!disclosure || disclosure.hidden) {
-      return;
-    }
-
-    disclosure.hidden = true;
-    returnFocusTo?.focus();
-  }
-
-  function showFreemapDisclosure(mapContainer, returnFocusTo) {
-    const disclosure = mapContainer.querySelector(
-      `:scope > [${DISCLOSURE_ATTRIBUTE}]`
-    );
-
-    if (!disclosure) {
-      return;
-    }
-
-    disclosure.hidden = false;
-    disclosure.dataset.returnFocus = returnFocusTo?.dataset.mode || "freemap";
-    disclosure.querySelector('[data-action="accept"]')?.focus();
-  }
-
   function createExternalLink(href, text) {
     const link = document.createElement("a");
     link.href = href;
@@ -513,86 +485,6 @@
     link.rel = "noopener noreferrer";
     link.textContent = text;
     return link;
-  }
-
-  function createDisclosure(mapContainer) {
-    const disclosure = document.createElement("div");
-    disclosure.className = "garmin-freemap-disclosure";
-    disclosure.setAttribute(DISCLOSURE_ATTRIBUTE, "");
-    disclosure.hidden = true;
-
-    const dialog = document.createElement("div");
-    dialog.className = "garmin-freemap-disclosure__dialog";
-    dialog.setAttribute("role", "dialog");
-    dialog.setAttribute("aria-modal", "true");
-
-    disclosureIdSequence += 1;
-    const titleId = `garmin-freemap-disclosure-title-${disclosureIdSequence}`;
-    dialog.setAttribute("aria-labelledby", titleId);
-
-    const title = document.createElement("h2");
-    title.id = titleId;
-    title.textContent = "Pred zapnutím Freemap";
-
-    const dataNotice = document.createElement("p");
-    dataNotice.textContent = (
-      "Na zobrazenie podkladu prehliadač odošle serveru Freemap Slovakia " +
-      "súradnice viditeľných dlaždíc, statický identifikátor rozšírenia a " +
-      "bežné sieťové údaje, napríklad IP adresu."
-    );
-
-    const privacyNotice = document.createElement("p");
-    privacyNotice.textContent = (
-      "Rozšírenie neposiela Garmin účet, trasu ani URL stránky. Súhlas sa " +
-      "uloží iba lokálne v Chrome. "
-    );
-    privacyNotice.append(
-      createExternalLink(
-        "https://github.com/jancovad/freemap-sk-tiles-for-garmin-connect/blob/main/PRIVACY.md",
-        "Zásady ochrany súkromia"
-      )
-    );
-
-    const actions = document.createElement("div");
-    actions.className = "garmin-freemap-disclosure__actions";
-
-    const cancelButton = document.createElement("button");
-    cancelButton.type = "button";
-    cancelButton.className = "garmin-freemap-disclosure__button";
-    cancelButton.dataset.action = "cancel";
-    cancelButton.textContent = "Zrušiť";
-    cancelButton.addEventListener("click", () => {
-      const returnFocusTo = mapContainer.querySelector(
-        'button[data-mode="freemap"]'
-      );
-      closeFreemapDisclosure(mapContainer, returnFocusTo);
-    });
-
-    const acceptButton = document.createElement("button");
-    acceptButton.type = "button";
-    acceptButton.className = (
-      "garmin-freemap-disclosure__button " +
-      "garmin-freemap-disclosure__button--primary"
-    );
-    acceptButton.dataset.action = "accept";
-    acceptButton.textContent = "Súhlasím a zapnúť Freemap";
-    acceptButton.addEventListener("click", () => {
-      rememberDisclosureAcceptance();
-      closeFreemapDisclosure(mapContainer);
-      setFreemapEnabled(true, "", true, mapContainer);
-    });
-
-    actions.append(cancelButton, acceptButton);
-    dialog.append(title, dataNotice, privacyNotice, actions);
-    disclosure.append(dialog);
-    disclosure.addEventListener("keydown", (event) => {
-      if (event.key === "Escape") {
-        event.preventDefault();
-        cancelButton.click();
-      }
-    });
-    stopMapInteractionEvents(disclosure);
-    return disclosure;
   }
 
   function createAttribution() {
@@ -648,8 +540,7 @@
     mapContainer.append(
       control,
       notice,
-      createAttribution(),
-      createDisclosure(mapContainer)
+      createAttribution()
     );
     attachZoomBoundaryGuards(mapContainer);
     updateControls();

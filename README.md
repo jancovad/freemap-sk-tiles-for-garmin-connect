@@ -29,8 +29,7 @@ Verejný repozitár: <https://github.com/jancovad/freemap-sk-tiles-for-garmin-co
 - Dlaždice `@2x`, `@3x` alebo `@4x` podľa `devicePixelRatio` displeja.
 - Automatický návrat celej mapy na Garmin už pri prvej chybnej Freemap
   dlaždici, aby sa podklady nezmiešali.
-- Lokálne zapamätanie potvrdenia úvodného oznámenia a posledného ručne zvoleného
-  podkladu.
+- Lokálne zapamätanie posledného ručne zvoleného podkladu.
 - Žiadny externý server rozšírenia, API kľúč, telemetria, reklama ani analytika.
 - Žiadne hromadné, offline ani preventívne sťahovanie dlaždíc.
 
@@ -39,9 +38,8 @@ skripty sú obmedzené na `https://connect.garmin.com/*`.
 
 ## Dlaždice a súkromie
 
-Pred prvým zapnutím Freemap rozšírenie zobrazí oznámenie o sieťovej komunikácii.
-Až po potvrdení prehliadač požaduje viditeľné dlaždice priamo zo servera
-Freemap Slovakia v tvare:
+Po kliknutí na **Freemap** prehliadač požaduje viditeľné dlaždice priamo zo
+servera Freemap Slovakia v tvare:
 
 `https://outdoor.tiles.freemap.sk/{z}/{x}/{y}[@2x|@3x|@4x]?app=garmin-connect-ext`
 
@@ -55,8 +53,9 @@ ani URL stránky. Podrobnosti sú v [zásadách ochrany súkromia](PRIVACY.md).
 ## Automatické testy
 
 Bez inštalácie otvor v Chrome súbor `test/browser.html`. Očakávaný výsledok je
-`PASS: 27 testov, 0 chýb`. Súbor `test/preference-browser.html` samostatne
-overuje obnovenie už potvrdenej voľby Freemap bez ďalšieho zápisu.
+`PASS: 25 testov, 0 chýb`. Súbor `test/preference-browser.html` samostatne
+overuje obnovenie uloženej voľby Freemap a odstránenie zastaranej hodnoty
+z predchádzajúcej testovacej verzie.
 
 Ak je dostupný Node.js, prevodovú logiku overí jeho vstavaný test runner bez
 inštalovania balíkov:
@@ -67,7 +66,7 @@ npm run check
 ```
 
 Testy pokrývajú aktuálny Google `vt?pb=` formát, zoom 5–18, retina prípony,
-identifikátor aplikácie, úvodné potvrdenie, fallback a samostatný historický
+identifikátor aplikácie, priame prepnutie bez modalu, fallback a samostatný historický
 hexadecimálny parser. Historický parser sa v produkcii nepoužíva.
 
 ## Načítanie cez Load unpacked
@@ -101,16 +100,14 @@ unpacked** vyber tento rozbalený priečinok.
 Na detaile aktivity aj v plánovači over:
 
 1. Garmin mapa je predvolená.
-2. Prvý klik na **Freemap** zobrazí oznámenie; **Zrušiť** nič nenačíta a
-   potvrdenie zapne Freemap.
-3. Zmení sa iba podklad a zobrazia sa všetky tri atribučné odkazy.
-4. Trasa, body, prekrytia a routing zostanú nezmenené.
-5. Zoom a posúvanie plynulo načítajú nové dlaždice so správnou retina príponou.
-6. Na zoome 18 sa zablokuje zoom in a na zoome 5 zoom out bez prepnutia na
+2. **Freemap** okamžite zmení iba podklad a zobrazí všetky tri atribučné odkazy.
+3. Trasa, body, prekrytia a routing zostanú nezmenené.
+4. Zoom a posúvanie plynulo načítajú nové dlaždice so správnou retina príponou.
+5. Na zoome 18 sa zablokuje zoom in a na zoome 5 zoom out bez prepnutia na
    Garmin.
-7. Prepnutie z Garmin zoomu nad 18 alebo pod 5 najprv nastaví najbližšiu
+6. Prepnutie z Garmin zoomu nad 18 alebo pod 5 najprv nastaví najbližšiu
    podporovanú hranicu.
-8. **Garmin** okamžite vráti pôvodný podklad a voľba sa zachová po obnovení
+7. **Garmin** okamžite vráti pôvodný podklad a voľba sa zachová po obnovení
    stránky.
 
 V Network paneli filtruj `outdoor.tiles.freemap.sk`. URL má obsahovať
@@ -127,7 +124,9 @@ Technické pozadie je v [docs/technical-research.md](docs/technical-research.md)
 
 Freemap Slovakia súhlasila s použitím servera pre bezplatné nekomerčné
 rozšírenie. Pred odoslaním do Chrome Web Store ešte treba dokončiť živé testy,
-anonymizované screenshoty, kontaktné údaje a Store privacy deklaráciu.
+anonymizované screenshoty, kontaktné údaje a Store privacy deklaráciu. Store
+záznam musí ešte pred inštaláciou prominentne uviesť, že Freemap dostane
+súradnice viditeľných dlaždíc a štandardné sieťové údaje.
 
 - [zásady ochrany súkromia](PRIVACY.md)
 - [third-party notices](THIRD_PARTY_NOTICES.md)

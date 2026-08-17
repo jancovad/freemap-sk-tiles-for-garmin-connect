@@ -5,7 +5,7 @@ verziovanie v tvare `MAJOR.MINOR.PATCH`.
 
 ## Unreleased
 
-- Verzia manifestu pripravená ako 0.5.1.
+- Verzia manifestu pripravená ako 0.5.2.
 - Názov zmenený na `Outdoor tiles from Freemap.sk for Garmin Connect` podľa
   odporúčania Freemap Slovakia.
 - Outdoor endpoint nastavený na `https://outdoor.tiles.freemap.sk`; generický
@@ -17,8 +17,11 @@ verziovanie v tvare `MAJOR.MINOR.PATCH`.
 - Podpora `@2x`, `@3x` a `@4x` dlaždíc podľa `devicePixelRatio` bez
   Leaflet `detectRetina`.
 - Atribúcia rozšírená o ODbL a odkaz na aktuálne zdroje výškových dát.
-- Pred prvým zapnutím Freemap sa zobrazí informácia o sieťovej komunikácii;
-  potvrdenie sa ukladá iba lokálne.
+- Rušivé potvrdenie v mape odstránené po kontrole pravidiel Chrome Web Store;
+  povinné zverejnenie údajov je pripravené priamo v Store zázname a privacy
+  dokumentácii.
+- Pri aktualizácii sa jednorazovo odstráni zastaraná lokálna hodnota
+  `freemapDisclosureAccepted` z nevydanej testovacej verzie.
 - Privacy policy, third-party notices, Store návrh a testy aktualizované podľa
   písomného súhlasu Freemap Slovakia z 17. augusta 2026.
 

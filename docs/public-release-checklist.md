@@ -13,14 +13,15 @@
 - [x] Endpoint, zoom 5–18, retina prípony a app identifikátor zapracované.
 - [x] Atribúcia a odkazy upravené podľa odpovede.
 - [x] Názov upravený na variant odsúhlasený Freemap Slovakia.
-- [x] Úvodná informácia pred prvým pripojením k Freemap.
+- [x] Prominentné zverejnenie sieťových údajov pripravené v Store texte a
+  privacy policy.
 - [x] Privacy policy, third-party notices a návrh Store textov aktualizované.
 
 ## Pred prvým verejným vydaním
 
 - [ ] Potvrdiť meno držiteľa copyrightu v `LICENSE`.
 - [ ] Doplniť kontaktný e-mail pre Chrome Web Store.
-- [ ] Otestovať verziu 0.5.1 na detaile aktivity a v plánovači.
+- [ ] Otestovať verziu 0.5.2 na detaile aktivity a v plánovači.
 - [ ] Otestovať zoom, posúvanie, retina URL, atribúciu, zapamätanie a fallback.
 - [ ] Otestovať aktuálny ZIP cez skupinu dôveryhodných testerov.
 

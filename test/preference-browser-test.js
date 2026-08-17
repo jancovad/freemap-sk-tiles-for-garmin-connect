@@ -11,14 +11,15 @@
     image.getAttribute("src") === "https://outdoor.tiles.freemap.sk/12/2264/1404@2x?app=garmin-connect-ext" &&
     freemapButton?.classList.contains("is-active") === true &&
     attribution?.hidden === false &&
-    globalThis.GarminFreemapStorageMock.getDisclosureAccepted() === true &&
+    globalThis.GarminFreemapStorageMock.hasObsoleteDisclosureValue() === false &&
     globalThis.GarminFreemapStorageMock.getReadCount() === 1 &&
+    globalThis.GarminFreemapStorageMock.getRemoveCount() === 1 &&
     globalThis.GarminFreemapStorageMock.getWriteCount() === 0
   );
 
   summary.dataset.status = passed ? "passed" : "failed";
   summary.textContent = passed
-    ? "PASS: uložená preferencia Freemap sa automaticky obnovila"
+    ? "PASS: preferencia sa obnovila a zastaraná hodnota bola odstránená"
     : "FAIL: uložená preferencia Freemap sa neobnovila";
   document.title = passed ? "PASS" : "FAIL";
 })();

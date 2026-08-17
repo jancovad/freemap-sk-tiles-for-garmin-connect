@@ -16,8 +16,15 @@ pred pôvodnými odhadmi z jednotlivých HTTP požiadaviek:
 - statický parameter `?app=garmin-connect-ext` pri zachovaní no-referrer;
 - rozšírená atribúcia a odkaz na aktuálne zdroje výškových dát.
 
-Pred prvým zapnutím Freemap izolované UI zobrazí informáciu o požadovaných
-sieťových údajoch. Potvrdenie uloží lokálne spolu s preferenciou podkladu.
+Kontrola pravidiel Chrome Web Store z 17. augusta 2026 potvrdila, že zber
+údajov musí byť prominentne zverejnený, no oficiálne pokyny pripúšťajú
+zverejnenie v Store zázname pred inštaláciou. Samostatný modal v mape bol preto
+odstránený ako rušivý; Store draft a privacy policy obsahujú úplný opis.
+
+Použité oficiálne zdroje:
+
+- <https://developer.chrome.com/blog/cws-policy-updates-2026>;
+- <https://developer.chrome.com/docs/webstore/troubleshooting/#user-data-policy-prominent-disclosure>.
 
 ## Overené zistenia
 
@@ -84,8 +91,9 @@ existujúce Leaflet tlačidlo `+` alebo `−` nastaví najbližšiu hranicu. Fre
 zapne až po rozpoznaní dlaždíc cieľového zoomu. Pri chýbajúcom ovládaní alebo
 časovom limite zostane bezpečne zapnutá Garmin mapa.
 
-Od verzie 0.5.1 izolovaný UI skript používa `chrome.storage.local` na
-zapamätanie hodnoty `garmin` alebo `freemap` a potvrdenia úvodnej informácie.
-Nastavenie sa načíta až po nájdení podporovanej Leaflet mapy. Chyba dlaždice
+Od verzie 0.5.2 izolovaný UI skript používa `chrome.storage.local` iba na
+zapamätanie hodnoty `garmin` alebo `freemap`. Pri prvom načítaní odstráni
+zastaranú hodnotu `freemapDisclosureAccepted` z nevydanej testovacej verzie.
+Nastavenie sa aplikuje až po nájdení podporovanej Leaflet mapy. Chyba dlaždice
 preferenciu neprepíše. Manifest preto stále obsahuje jediné oprávnenie
 `storage`.

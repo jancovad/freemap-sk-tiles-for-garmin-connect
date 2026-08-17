@@ -6,22 +6,20 @@ Tieto zásady sa vzťahujú na neoficiálne Chrome rozšírenie **Outdoor tiles 
 Freemap.sk for Garmin Connect**. Jeho jediným účelom je zobraziť Freemap.sk
 Outdoor ako voliteľný mapový podklad vo webovom Garmin Connect.
 
-## Informácia pred prvým zapnutím
+## Transparentnosť pred inštaláciou
 
-Pred prvým zapnutím Freemap rozšírenie oznámi, aké údaje sú potrebné na
-načítanie dlaždíc. Ak používateľ oznámenie zruší, Freemap sa nezapne a jeho
-server nedostane požiadavku na dlaždice. Potvrdenie zostáva iba v lokálnom
-profile Chrome.
+Záznam v Chrome Web Store musí pred inštaláciou výrazne uviesť, že zapnutie
+Freemap odošle Freemap Slovakia súradnice viditeľných dlaždíc, statický
+identifikátor aplikácie a štandardné sieťové údaje. Rovnaké informácie sú
+uvedené v týchto zásadách a v Store Privacy deklarácii.
 
 ## Údaje ukladané rozšírením
 
-Rozšírenie ukladá do `chrome.storage.local` iba:
+Rozšírenie ukladá do `chrome.storage.local` iba `preferredMapMode` s hodnotou
+`garmin` alebo `freemap`. Verzia 0.5.2 pri prvom načítaní odstráni zastaranú
+hodnotu `freemapDisclosureAccepted`, ktorú používala nevydaná testovacia verzia.
 
-- `preferredMapMode`: hodnotu `garmin` alebo `freemap`;
-- `freemapDisclosureAccepted`: pravdivostnú hodnotu, či používateľ potvrdil
-  úvodnú informáciu pred zapnutím Freemap.
-
-Vývojár tieto hodnoty neprijíma a nemá k nim vzdialený prístup. Používateľ ich
+Vývojár túto hodnotu neprijíma a nemá k nej vzdialený prístup. Používateľ ju
 môže zmeniť prepínačom alebo odstrániť vymazaním údajov či odinštalovaním
 rozšírenia. Bezpečnostný návrat pri chybe nemení uloženú preferenciu.
 
@@ -62,7 +60,8 @@ Nevykonáva hromadné, offline ani preventívne sťahovanie mapových dlaždíc.
 
 ## Oprávnenia
 
-- `storage` – iba na dve vyššie uvedené lokálne hodnoty;
+- `storage` – iba na vyššie uvedenú lokálnu preferenciu a jednorazové
+  odstránenie zastaranej testovacej hodnoty;
 - obsahové skripty sú obmedzené na `https://connect.garmin.com/*` a slúžia na
   prepnutie podkladových obrázkov pri zachovaní Garmin vrstiev.
 

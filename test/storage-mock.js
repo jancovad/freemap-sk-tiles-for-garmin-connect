@@ -4,14 +4,16 @@
   const initialMode = document.documentElement.dataset.preferredMapMode === "freemap"
     ? "freemap"
     : "garmin";
-  const initialDisclosureAccepted = (
-    document.documentElement.dataset.freemapDisclosureAccepted === "true"
-  );
   const values = {
-    freemapDisclosureAccepted: initialDisclosureAccepted,
     preferredMapMode: initialMode
   };
+  if (document.documentElement.hasAttribute("data-freemap-disclosure-accepted")) {
+    values.freemapDisclosureAccepted = (
+      document.documentElement.dataset.freemapDisclosureAccepted === "true"
+    );
+  }
   let readCount = 0;
+  let removeCount = 0;
   let writeCount = 0;
 
   const chromeApi = globalThis.chrome || {};
@@ -26,14 +28,24 @@
         writeCount += 1;
         Object.assign(values, items);
         callback?.();
+      },
+      remove(keys, callback) {
+        removeCount += 1;
+        for (const key of Array.isArray(keys) ? keys : [keys]) {
+          delete values[key];
+        }
+        callback?.();
       }
     }
   };
   globalThis.chrome = chromeApi;
   globalThis.GarminFreemapStorageMock = Object.freeze({
-    getDisclosureAccepted: () => values.freemapDisclosureAccepted,
+    hasObsoleteDisclosureValue: () => (
+      Object.prototype.hasOwnProperty.call(values, "freemapDisclosureAccepted")
+    ),
     getPreferredMapMode: () => values.preferredMapMode,
     getReadCount: () => readCount,
+    getRemoveCount: () => removeCount,
     getWriteCount: () => writeCount
   });
 })();

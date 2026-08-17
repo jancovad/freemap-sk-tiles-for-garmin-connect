@@ -107,50 +107,27 @@
     );
   });
 
-  const consentFixture = document.querySelector("#consent-map-fixture");
-  const consentImage = consentFixture.querySelector("img");
-  const consentOriginalSource = consentImage.getAttribute("src");
-  const consentGarminButton = consentFixture.querySelector('button[data-mode="garmin"]');
-  const consentFreemapButton = consentFixture.querySelector('button[data-mode="freemap"]');
-  const disclosure = consentFixture.querySelector(".garmin-freemap-disclosure");
-
-  consentFreemapButton.click();
-
-  test("prvé zapnutie zobrazí disclosure bez požiadavky na Freemap", () => {
-    equal(disclosure.hidden, false);
-    equal(consentImage.getAttribute("src"), consentOriginalSource);
-    equal(consentOriginalSource.startsWith("https://maps.googleapis.com/maps/vt?"), true);
-    equal(globalThis.GarminFreemapStorageMock.getDisclosureAccepted(), false);
-    equal(globalThis.GarminFreemapStorageMock.getPreferredMapMode(), "freemap");
-    equal(consentGarminButton.classList.contains("is-active"), true);
-  });
-
-  disclosure.querySelector('[data-action="cancel"]').click();
-
-  test("zrušenie disclosure ponechá Garmin mapu", () => {
-    equal(disclosure.hidden, true);
-    equal(consentImage.getAttribute("src"), consentOriginalSource);
-    equal(globalThis.GarminFreemapStorageMock.getDisclosureAccepted(), false);
-  });
+  const retinaFixture = document.querySelector("#retina-map-fixture");
+  const retinaImage = retinaFixture.querySelector("img");
+  const retinaGarminButton = retinaFixture.querySelector('button[data-mode="garmin"]');
+  const retinaFreemapButton = retinaFixture.querySelector('button[data-mode="freemap"]');
 
   Object.defineProperty(globalThis, "devicePixelRatio", {
     configurable: true,
     value: 3
   });
-  consentFreemapButton.click();
-  disclosure.querySelector('[data-action="accept"]').click();
+  retinaFreemapButton.click();
 
-  test("potvrdenie uloží súhlas a zapne retina Freemap podľa displeja", () => {
-    equal(disclosure.hidden, true);
-    equal(globalThis.GarminFreemapStorageMock.getDisclosureAccepted(), true);
+  test("klik Freemap bez modalu zapne retina podklad podľa displeja", () => {
+    equal(retinaFixture.querySelector(".garmin-freemap-disclosure"), null);
     equal(globalThis.GarminFreemapStorageMock.getPreferredMapMode(), "freemap");
     equal(
-      consentImage.getAttribute("src"),
+      retinaImage.getAttribute("src"),
       "https://outdoor.tiles.freemap.sk/12/2264/1404@3x?app=garmin-connect-ext"
     );
   });
 
-  consentGarminButton.click();
+  retinaGarminButton.click();
   Object.defineProperty(globalThis, "devicePixelRatio", {
     configurable: true,
     value: 1
@@ -250,8 +227,8 @@
   });
 
   test("výber Freemap sa uloží iba ako lokálna preferencia", () => {
-    equal(globalThis.GarminFreemapStorageMock.getDisclosureAccepted(), true);
     equal(globalThis.GarminFreemapStorageMock.getPreferredMapMode(), "freemap");
+    equal(globalThis.GarminFreemapStorageMock.getRemoveCount(), 0);
     equal(globalThis.GarminFreemapStorageMock.getWriteCount() > 0, true);
   });
 

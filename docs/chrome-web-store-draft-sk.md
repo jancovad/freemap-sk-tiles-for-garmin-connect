@@ -39,6 +39,20 @@ komunitný projekt a nevyvoláva dojem produktu Garmin alebo Freemap Slovakia.
 Rozšírenie umožňuje prepínať pôvodný mapový podklad vo webovom Garmin Connect
 na Freemap.sk Outdoor, pričom zachová Garmin trasu, body, ovládanie a routing.
 
+## Povinné prominentné zverejnenie
+
+Nasledujúci text musí byť výrazne uvedený v Store zázname ešte pred inštaláciou:
+
+> Po zapnutí podkladu Freemap prehliadač odošle Freemap Slovakia súradnice
+> aktuálne viditeľných mapových dlaždíc, statický identifikátor rozšírenia
+> `garmin-connect-ext` a štandardné sieťové údaje, napríklad IP adresu. Je to
+> potrebné výhradne na načítanie zvoleného mapového podkladu. Rozšírenie
+> neposiela Garmin účet, cookies, trasu ani URL stránky a nepoužíva analytiku
+> ani reklamu.
+
+Tento text spolu s Privacy deklaráciou a inštaláciou zo Store nahrádza
+samostatné potvrdenie v mape podľa aktuálnych pokynov Chrome Web Store.
+
 ## Dlhý popis
 
 Outdoor tiles from Freemap.sk for Garmin Connect je neoficiálne open-source
@@ -52,8 +66,7 @@ Hlavné funkcie:
 - rozsah zoomu 5–18 a automatické prispôsobenie pri prepnutí;
 - ostré dlaždice `@2x`, `@3x` alebo `@4x` podľa displeja;
 - bezpečný návrat na pôvodnú mapu pri chybe dlaždice;
-- úvodná informácia pred prvým pripojením k serveru Freemap;
-- lokálne zapamätanie potvrdenia a posledného podkladu;
+- lokálne zapamätanie posledného podkladu;
 - viditeľná atribúcia Freemap, OpenStreetMap/ODbL a zdrojov výškových dát;
 - bez analytiky, reklám, API kľúčov a servera prevádzkovaného vývojárom.
 
@@ -66,9 +79,10 @@ produktom Freemap Slovakia.
 
 ### `storage`
 
-Ukladá iba `preferredMapMode` (`garmin` alebo `freemap`) a
-`freemapDisclosureAccepted` (či bola potvrdená úvodná informácia). Hodnoty
-zostávajú lokálne v Chrome. Neukladajú sa trasy, polohy, účty ani história.
+Ukladá iba `preferredMapMode` (`garmin` alebo `freemap`). Hodnota zostáva
+lokálne v Chrome. Verzia 0.5.2 jednorazovo odstráni zastaranú disclosure
+hodnotu z nevydanej testovacej verzie. Neukladajú sa trasy, polohy, účty ani
+história.
 
 ### Prístup k Garmin Connect
 
@@ -87,7 +101,7 @@ obrázky aktuálne viditeľných dlaždíc. URL obsahuje statický parameter
 
 Deklarácia v Dashboarde musí presne zodpovedať súboru `PRIVACY.md`:
 
-- lokálne uložená preferencia a potvrdenie úvodnej informácie;
+- lokálne uložená preferencia mapového podkladu;
 - Freemap Slovakia dostane súradnice viditeľných dlaždíc `z/x/y`, statický app
   parameter a štandardné sieťové údaje vrátane IP adresy;
 - súradnice môžu približne identifikovať zobrazovanú geografickú oblasť;
@@ -105,7 +119,7 @@ zariadenia. Pred odoslaním treba formulár porovnať s aktuálnymi pravidlami.
 - Store ikona: `assets/icon128.png`;
 - minimálne jeden screenshot 1280 × 800 px, najviac päť;
 - odporúčané screenshoty:
-  1. úvodná informácia pred prvým zapnutím;
+  1. detail aktivity s Garmin podkladom a prepínačom;
   2. detail aktivity s Freemap a viditeľnou atribúciou;
   3. plánovač trás s Freemap, bodmi a trasou;
   4. správanie na hranici zoomu;
@@ -118,7 +132,7 @@ domácu polohu a ostatné osobné údaje.
 
 1. Prihlásiť sa do Garmin Connect vlastným testovacím účtom.
 2. Otvoriť detail aktivity alebo plánovač trás.
-3. Kliknúť Freemap, prečítať úvodnú informáciu a potvrdiť ju.
+3. Kliknúť Freemap.
 4. Overiť, že sa zmení iba podklad a trasa aj routing zostanú zachované.
 5. Overiť viditeľnú atribúciu a návrat cez tlačidlo Garmin.
 
