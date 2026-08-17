@@ -21,8 +21,8 @@
 
 - [ ] Potvrdiť meno držiteľa copyrightu v `LICENSE`.
 - [ ] Doplniť kontaktný e-mail pre Chrome Web Store.
-- [ ] Otestovať verziu 0.5.5 na detaile aktivity a v plánovači.
-- [ ] Otestovať zoom, posúvanie, retina URL, atribúciu, zapamätanie a fallback.
+- [x] Otestovať verziu 0.5.5 na detaile aktivity a v plánovači.
+- [x] Otestovať zoom, posúvanie, retina URL, atribúciu, zapamätanie a fallback.
 - [ ] Otestovať aktuálny ZIP cez skupinu dôveryhodných testerov.
 
 ## Pred Chrome Web Store
