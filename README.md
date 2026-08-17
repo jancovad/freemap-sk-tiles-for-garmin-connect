@@ -43,7 +43,7 @@ Pred prvým zapnutím Freemap rozšírenie zobrazí oznámenie o sieťovej komun
 Až po potvrdení prehliadač požaduje viditeľné dlaždice priamo zo servera
 Freemap Slovakia v tvare:
 
-`https://tiles.freemap.sk/{z}/{x}/{y}[@2x|@3x|@4x]?app=garmin-connect-ext`
+`https://outdoor.tiles.freemap.sk/{z}/{x}/{y}[@2x|@3x|@4x]?app=garmin-connect-ext`
 
 Parameter `app` je rovnaký pre všetkých používateľov a umožňuje Freemap Slovakia
 rozpoznať prevádzku rozšírenia; nejde o identifikátor používateľa. Obrázky majú
@@ -113,12 +113,12 @@ Na detaile aktivity aj v plánovači over:
 8. **Garmin** okamžite vráti pôvodný podklad a voľba sa zachová po obnovení
    stránky.
 
-V Network paneli filtruj `tiles.freemap.sk`. URL má obsahovať
+V Network paneli filtruj `outdoor.tiles.freemap.sk`. URL má obsahovať
 `?app=garmin-connect-ext` a podľa `window.devicePixelRatio` žiadnu príponu,
 `@2x`, `@3x` alebo `@4x`.
 
 Fallback otestuje Network request blocking so vzorom
-`*://tiles.freemap.sk/*`. Po prvej chybnej dlaždici sa má obnoviť Garmin mapa a
+`*://outdoor.tiles.freemap.sk/*`. Po prvej chybnej dlaždici sa má obnoviť Garmin mapa a
 zobraziť upozornenie. Po teste blokovanie vypni.
 
 Technické pozadie je v [docs/technical-research.md](docs/technical-research.md).

@@ -31,7 +31,7 @@ Pri zapnutom Freemap rozšírenie lokálne prevedie súradnice viditeľných Gar
 dlaždíc na `z/x/y`. Neukladá ich do databázy, histórie ani analytiky. Prehliadač
 potom požaduje iba dlaždice potrebné pre aktuálne zobrazenie priamo zo servera:
 
-`https://tiles.freemap.sk/{z}/{x}/{y}[@2x|@3x|@4x]?app=garmin-connect-ext`
+`https://outdoor.tiles.freemap.sk/{z}/{x}/{y}[@2x|@3x|@4x]?app=garmin-connect-ext`
 
 Voliteľná prípona zodpovedá rozlíšeniu displeja. Parameter
 `app=garmin-connect-ext` je statický identifikátor rovnaký pre všetkých

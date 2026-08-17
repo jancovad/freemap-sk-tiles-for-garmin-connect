@@ -30,14 +30,14 @@ test("prevedie pozorovanú dlaždicu z detailu aktivity", () => {
   });
   assert.equal(
     translateGarminGoogleTileUrl(source),
-    "https://tiles.freemap.sk/12/2264/1404?app=garmin-connect-ext"
+    "https://outdoor.tiles.freemap.sk/12/2264/1404?app=garmin-connect-ext"
   );
 });
 
 test("prevedie pozorovanú dlaždicu z vyššieho zoomu", () => {
   assert.equal(
     translateGarminGoogleTileUrl(googleTileUrl(14, 9055, 5621)),
-    "https://tiles.freemap.sk/14/9055/5621?app=garmin-connect-ext"
+    "https://outdoor.tiles.freemap.sk/14/9055/5621?app=garmin-connect-ext"
   );
 });
 
@@ -48,7 +48,7 @@ test("spracuje URL zakódovanú cez URLSearchParams", () => {
 
   assert.equal(
     translateGarminGoogleTileUrl(url.href),
-    "https://tiles.freemap.sk/11/484/783?app=garmin-connect-ext"
+    "https://outdoor.tiles.freemap.sk/11/484/783?app=garmin-connect-ext"
   );
 });
 
@@ -76,7 +76,7 @@ test("historický hexadecimálny Garmin formát prevádza iba samostatný parser
   assert.deepEqual(tile, { zoom: 11, x: 484, y: 783, tileSize: 256 });
   assert.equal(
     buildFreemapTileUrl(tile),
-    "https://tiles.freemap.sk/11/484/783?app=garmin-connect-ext"
+    "https://outdoor.tiles.freemap.sk/11/484/783?app=garmin-connect-ext"
   );
 });
 
@@ -118,21 +118,21 @@ test("vytvorí retina URL a identifikátor rozšírenia", () => {
 
   assert.equal(
     translateGarminGoogleTileUrl(source, 1.5),
-    "https://tiles.freemap.sk/14/9055/5621@2x?app=garmin-connect-ext"
+    "https://outdoor.tiles.freemap.sk/14/9055/5621@2x?app=garmin-connect-ext"
   );
   assert.equal(
     translateGarminGoogleTileUrl(source, 2.5),
-    "https://tiles.freemap.sk/14/9055/5621@3x?app=garmin-connect-ext"
+    "https://outdoor.tiles.freemap.sk/14/9055/5621@3x?app=garmin-connect-ext"
   );
   assert.equal(
     translateGarminGoogleTileUrl(source, 5),
-    "https://tiles.freemap.sk/14/9055/5621@4x?app=garmin-connect-ext"
+    "https://outdoor.tiles.freemap.sk/14/9055/5621@4x?app=garmin-connect-ext"
   );
 });
 
 test("prečíta Freemap URL s retina príponou a query parametrom", () => {
   assert.deepEqual(parseFreemapTileUrl(
-    "https://tiles.freemap.sk/18/144803/89921@3x?app=garmin-connect-ext"
+    "https://outdoor.tiles.freemap.sk/18/144803/89921@3x?app=garmin-connect-ext"
   ), {
     pixelRatio: 3,
     zoom: 18,
@@ -140,7 +140,7 @@ test("prečíta Freemap URL s retina príponou a query parametrom", () => {
     y: 89921,
     tileSize: 256
   });
-  assert.equal(parseFreemapTileUrl("https://tiles.freemap.sk/18/144803/89921@5x"), null);
-  assert.equal(parseFreemapTileUrl("https://tiles.freemap.sk/19/289606/179842"), null);
-  assert.equal(parseFreemapTileUrl("https://outdoor.tiles.freemap.sk/18/144803/89921"), null);
+  assert.equal(parseFreemapTileUrl("https://outdoor.tiles.freemap.sk/18/144803/89921@5x"), null);
+  assert.equal(parseFreemapTileUrl("https://outdoor.tiles.freemap.sk/19/289606/179842"), null);
+  assert.equal(parseFreemapTileUrl("https://tiles.freemap.sk/18/144803/89921"), null);
 });

@@ -5,12 +5,14 @@ verziovanie v tvare `MAJOR.MINOR.PATCH`.
 
 ## Unreleased
 
-- Verzia manifestu pripravená ako 0.5.0.
+- Verzia manifestu pripravená ako 0.5.1.
 - Názov zmenený na `Outdoor tiles from Freemap.sk for Garmin Connect` podľa
   odporúčania Freemap Slovakia.
-- Endpoint zmenený na `https://tiles.freemap.sk` a každý request obsahuje
-  statický identifikátor `?app=garmin-connect-ext` pri zachovaní
-  `referrerpolicy=no-referrer`.
+- Outdoor endpoint nastavený na `https://outdoor.tiles.freemap.sk`; generický
+  `https://tiles.freemap.sk`, ktorý vracia zástupné „no map data“ dlaždice, je
+  výslovne odmietnutý testami aj release validáciou.
+- Každý request obsahuje statický identifikátor `?app=garmin-connect-ext` pri
+  zachovaní `referrerpolicy=no-referrer`.
 - Rozsah zoomu upravený z pôvodne odvodených 2–20 na potvrdených 5–18.
 - Podpora `@2x`, `@3x` a `@4x` dlaždíc podľa `devicePixelRatio` bez
   Leaflet `detectRetina`.

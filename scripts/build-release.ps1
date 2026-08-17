@@ -40,6 +40,14 @@ Assert-Condition (
   $package.name -eq "outdoor-tiles-from-freemap-sk-for-garmin-connect"
 ) "package name is invalid"
 
+$tileUrlSource = Get-Content -LiteralPath (Join-Path $projectRootPath "src/tile-url.js") -Raw -Encoding UTF8
+Assert-Condition (
+  $tileUrlSource.Contains('const FREEMAP_TILE_BASE_URL = "https://outdoor.tiles.freemap.sk";')
+) "the release must use the Outdoor tile host"
+Assert-Condition (
+  -not $tileUrlSource.Contains('const FREEMAP_TILE_BASE_URL = "https://tiles.freemap.sk";')
+) "the generic tile host must not be used as the Outdoor layer"
+
 $permissions = @($manifest.permissions)
 Assert-Condition (
   $permissions.Count -eq 1 -and $permissions[0] -eq "storage"

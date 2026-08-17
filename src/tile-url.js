@@ -15,7 +15,7 @@
 })(typeof globalThis !== "undefined" ? globalThis : this, function createTileUrlApi() {
   "use strict";
 
-  const FREEMAP_TILE_BASE_URL = "https://tiles.freemap.sk";
+  const FREEMAP_TILE_BASE_URL = "https://outdoor.tiles.freemap.sk";
   const FREEMAP_APP_ID = "garmin-connect-ext";
   const FREEMAP_MIN_ZOOM = 5;
   const FREEMAP_MAX_ZOOM = 18;
@@ -136,7 +136,7 @@
       return null;
     }
 
-    if (url.protocol !== "https:" || url.hostname !== "tiles.freemap.sk") {
+    if (url.protocol !== "https:" || url.hostname !== "outdoor.tiles.freemap.sk") {
       return null;
     }
 

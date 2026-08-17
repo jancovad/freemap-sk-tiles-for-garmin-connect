@@ -8,7 +8,9 @@ stránkach Garmin Connect; nejde o predpokladané interné API.
 Freemap Slovakia následne potvrdila produkčné podmienky, ktoré majú prednosť
 pred pôvodnými odhadmi z jednotlivých HTTP požiadaviek:
 
-- endpoint `https://tiles.freemap.sk/{z}/{x}/{y}`;
+- endpoint `https://outdoor.tiles.freemap.sk/{z}/{x}/{y}`;
+- generický host `https://tiles.freemap.sk` vracia pre rovnaké súradnice
+  zástupný podklad „no map data“ a nesmie sa používať ako Outdoor vrstva;
 - zoom 5–18; zoomy 19–20 sú vyhradené pre premium používateľov;
 - prípony `@2x`, `@3x`, `@4x` podľa `devicePixelRatio`, bez `detectRetina`;
 - statický parameter `?app=garmin-connect-ext` pri zachovaní no-referrer;
@@ -82,7 +84,7 @@ existujúce Leaflet tlačidlo `+` alebo `−` nastaví najbližšiu hranicu. Fre
 zapne až po rozpoznaní dlaždíc cieľového zoomu. Pri chýbajúcom ovládaní alebo
 časovom limite zostane bezpečne zapnutá Garmin mapa.
 
-Od verzie 0.5.0 izolovaný UI skript používa `chrome.storage.local` na
+Od verzie 0.5.1 izolovaný UI skript používa `chrome.storage.local` na
 zapamätanie hodnoty `garmin` alebo `freemap` a potvrdenia úvodnej informácie.
 Nastavenie sa načíta až po nájdení podporovanej Leaflet mapy. Chyba dlaždice
 preferenciu neprepíše. Manifest preto stále obsahuje jediné oprávnenie

@@ -21,8 +21,13 @@ forky, iné aplikácie ani komerčné použitie.
 
 ## Technické podmienky
 
-- Endpoint po následnej oprave v e-maile:
-  `https://tiles.freemap.sk/{z}/{x}/{y}`.
+- Pôvodná žiadosť aj funkčná Outdoor služba používajú
+  `https://outdoor.tiles.freemap.sk/{z}/{x}/{y}`.
+- Dodatočný opravný e-mail textovo uviedol `https://tiles.freemap.sk`, ale
+  živé overenie 17. augusta 2026 na tomto hoste zobrazilo iba zástupný podklad
+  „no map data“. Outdoor host pre rovnakú dlaždicu vrátil správny podklad a
+  retina rozmery 256, 512, 768 a 1024 px. Projekt preto používa explicitný
+  `outdoor.tiles.freemap.sk`; rozpor je vhodné potvrdiť s Freemap Slovakia.
 - Povolený rozsah Outdoor vrstvy pre rozšírenie je zoom **5 až 18**. Zoomy 19
   a 20 sú vyhradené pre premium používateľov.
 - Vyššie rozlíšenie používa prípony `@2x`, `@3x` a `@4x` podľa

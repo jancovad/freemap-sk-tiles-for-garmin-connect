@@ -78,7 +78,7 @@ vrstvy. Nečítajú prihlasovacie údaje a nemenia routing.
 
 ### Vzdialené zdroje
 
-Rozšírenie nespúšťa vzdialený kód. Z `https://tiles.freemap.sk` načítava iba
+Rozšírenie nespúšťa vzdialený kód. Z `https://outdoor.tiles.freemap.sk` načítava iba
 obrázky aktuálne viditeľných dlaždíc. URL obsahuje statický parameter
 `app=garmin-connect-ext` na identifikáciu prevádzky rozšírenia. Obrázky majú
 `referrerpolicy=no-referrer`.

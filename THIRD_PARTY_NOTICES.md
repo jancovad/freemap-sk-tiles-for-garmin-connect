@@ -7,7 +7,7 @@ Freemap načítava priamo od ich prevádzkovateľa.
 
 Outdoor mapové dlaždice poskytuje **Freemap Slovakia**:
 
-- služba: `https://tiles.freemap.sk/{z}/{x}/{y}[@2x|@3x|@4x]`;
+- služba: `https://outdoor.tiles.freemap.sk/{z}/{x}/{y}[@2x|@3x|@4x]`;
 - projekt a aktuálne zdroje výškových dát: <https://www.freemap.sk/>;
 - OZ Freemap Slovakia: <https://oz.freemap.sk/>.
 

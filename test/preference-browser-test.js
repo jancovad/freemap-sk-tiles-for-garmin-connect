@@ -8,7 +8,7 @@
   const summary = document.querySelector("#summary");
 
   const passed = (
-    image.getAttribute("src") === "https://tiles.freemap.sk/12/2264/1404@2x?app=garmin-connect-ext" &&
+    image.getAttribute("src") === "https://outdoor.tiles.freemap.sk/12/2264/1404@2x?app=garmin-connect-ext" &&
     freemapButton?.classList.contains("is-active") === true &&
     attribution?.hidden === false &&
     globalThis.GarminFreemapStorageMock.getDisclosureAccepted() === true &&
