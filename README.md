@@ -53,7 +53,7 @@ ani URL stránky. Podrobnosti sú v [zásadách ochrany súkromia](PRIVACY.md).
 ## Automatické testy
 
 Bez inštalácie otvor v Chrome súbor `test/browser.html`. Očakávaný výsledok je
-`PASS: 25 testov, 0 chýb`. Súbor `test/preference-browser.html` samostatne
+`PASS: 27 testov, 0 chýb`. Súbor `test/preference-browser.html` samostatne
 overuje obnovenie uloženej voľby Freemap a odstránenie zastaranej hodnoty
 z predchádzajúcej testovacej verzie.
 
@@ -105,9 +105,11 @@ Na detaile aktivity aj v plánovači over:
 4. Zoom a posúvanie plynulo načítajú nové dlaždice so správnou retina príponou.
 5. Na zoome 18 sa zablokuje zoom in a na zoome 5 zoom out bez prepnutia na
    Garmin.
-6. Prepnutie z Garmin zoomu nad 18 alebo pod 5 najprv nastaví najbližšiu
+6. Rýchla séria zoomovania z úrovne 17 alebo 6 skončí na hranici 18 alebo 5
+   a podklad zostane Freemap.
+7. Prepnutie z Garmin zoomu nad 18 alebo pod 5 najprv nastaví najbližšiu
    podporovanú hranicu.
-7. **Garmin** okamžite vráti pôvodný podklad a voľba sa zachová po obnovení
+8. **Garmin** okamžite vráti pôvodný podklad a voľba sa zachová po obnovení
    stránky.
 
 V Network paneli filtruj `outdoor.tiles.freemap.sk`. URL má obsahovať

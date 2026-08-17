@@ -13,10 +13,12 @@
   const FAILURE_EVENT = "garmin-freemap-extension:failure";
   const PREFERENCE_STORAGE_KEY = "preferredMapMode";
   const OBSOLETE_DISCLOSURE_STORAGE_KEY = "freemapDisclosureAccepted";
+  const EXPECTED_ZOOM_TIMEOUT_MS = 5_000;
   const noticeTimers = new WeakMap();
   const guardedMaps = new WeakSet();
   const originalZoomControlAria = new WeakMap();
   const touchDistances = new WeakMap();
+  const expectedZoomStates = new WeakMap();
   let freemapEnabled = false;
   let pendingFreemapSwitch = null;
   let preferredMapMode = "garmin";
@@ -165,12 +167,68 @@
       : `Freemap: minimálny zoom je ${tileUrlApi.FREEMAP_MIN_ZOOM}.`;
   }
 
+  function getExpectedZoomState(mapContainer) {
+    const observedZoom = getMapZoom(mapContainer);
+    const currentState = expectedZoomStates.get(mapContainer);
+    const currentTime = Date.now();
+
+    if (observedZoom === null) {
+      if (
+        currentState &&
+        currentTime - currentState.updatedAt <= EXPECTED_ZOOM_TIMEOUT_MS
+      ) {
+        return currentState;
+      }
+
+      expectedZoomStates.delete(mapContainer);
+      return null;
+    }
+
+    if (
+      !currentState ||
+      currentState.observedZoom !== observedZoom ||
+      currentTime - currentState.updatedAt > EXPECTED_ZOOM_TIMEOUT_MS
+    ) {
+      const nextState = {
+        expectedZoom: observedZoom,
+        observedZoom,
+        updatedAt: currentTime
+      };
+      expectedZoomStates.set(mapContainer, nextState);
+      return nextState;
+    }
+
+    return currentState;
+  }
+
+  function getEffectiveMapZoom(mapContainer) {
+    return getExpectedZoomState(mapContainer)?.expectedZoom ?? null;
+  }
+
+  function recordAllowedZoom(mapContainer, direction) {
+    const state = getExpectedZoomState(mapContainer);
+
+    if (!state) {
+      return;
+    }
+
+    state.expectedZoom += direction;
+    state.updatedAt = Date.now();
+    updateMapZoomLimits(mapContainer);
+  }
+
+  function resetExpectedZoomStates() {
+    for (const mapContainer of document.querySelectorAll(".leaflet-container")) {
+      expectedZoomStates.delete(mapContainer);
+    }
+  }
+
   function isZoomBlocked(mapContainer, direction) {
     if (!freemapEnabled || direction === 0) {
       return false;
     }
 
-    const zoom = getMapZoom(mapContainer);
+    const zoom = getEffectiveMapZoom(mapContainer);
     return (
       (direction > 0 && zoom !== null && zoom >= tileUrlApi.FREEMAP_MAX_ZOOM) ||
       (direction < 0 && zoom !== null && zoom <= tileUrlApi.FREEMAP_MIN_ZOOM)
@@ -179,6 +237,10 @@
 
   function blockZoomEvent(event, mapContainer, direction) {
     if (!isZoomBlocked(mapContainer, direction)) {
+      if (freemapEnabled && direction !== 0) {
+        recordAllowedZoom(mapContainer, direction);
+      }
+
       return false;
     }
 
@@ -220,7 +282,9 @@
   }
 
   function updateMapZoomLimits(mapContainer) {
-    const zoom = getMapZoom(mapContainer);
+    const zoom = freemapEnabled
+      ? getEffectiveMapZoom(mapContainer)
+      : getMapZoom(mapContainer);
     const atMaximum = (
       freemapEnabled && zoom !== null && zoom >= tileUrlApi.FREEMAP_MAX_ZOOM
     );
@@ -436,6 +500,7 @@
       }
     }
 
+    resetExpectedZoomStates();
     freemapEnabled = Boolean(nextEnabled);
 
     if (notifyPage) {

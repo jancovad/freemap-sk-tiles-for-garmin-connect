@@ -86,6 +86,11 @@ mimo podporovaného rozsahu ešte pred Leafletom. Platí to pre tlačidlá `+/-`
 koliesko, dvojklik, klávesnicu a dotykové gesto. Garmin routing ani vrstva trasy
 sa nemenia. Po prepnutí na Garmin sa obmedzenie odstráni.
 
+Od verzie 0.5.3 si UI pri každom povolenom vstupe synchronicky eviduje očakávaný
+zoom. Ďalší impulz preto zablokuje už pri očakávanej hranici 5 alebo 18, aj keď
+Leaflet ešte nestihol vytvoriť dlaždice novej úrovne. Stav sa zosúladí s novými
+dlaždicami a pri každom prepnutí podkladu sa zahodí.
+
 Ak používateľ zapne Freemap z Garmin zoomu mimo rozsahu 5–18, UI najprv cez
 existujúce Leaflet tlačidlo `+` alebo `−` nastaví najbližšiu hranicu. Freemap
 zapne až po rozpoznaní dlaždíc cieľového zoomu. Pri chýbajúcom ovládaní alebo

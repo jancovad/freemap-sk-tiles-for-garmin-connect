@@ -232,6 +232,52 @@
     equal(globalThis.GarminFreemapStorageMock.getWriteCount() > 0, true);
   });
 
+  const nearMaxZoomFixture = document.querySelector("#near-max-zoom-map-fixture");
+  const nearMaxZoomIn = nearMaxZoomFixture.querySelector(".leaflet-control-zoom-in");
+  nearMaxZoomFixture.querySelector('button[data-mode="freemap"]').click();
+
+  test("rýchly zoom in z úrovne 17 neprekročí Freemap maximum", () => {
+    const firstZoomIn = new WheelEvent("wheel", {
+      bubbles: true,
+      cancelable: true,
+      deltaY: -100
+    });
+    const secondZoomIn = new WheelEvent("wheel", {
+      bubbles: true,
+      cancelable: true,
+      deltaY: -100
+    });
+
+    nearMaxZoomFixture.dispatchEvent(firstZoomIn);
+    nearMaxZoomFixture.dispatchEvent(secondZoomIn);
+    equal(firstZoomIn.defaultPrevented, false);
+    equal(secondZoomIn.defaultPrevented, true);
+    equal(nearMaxZoomIn.getAttribute("aria-disabled"), "true");
+  });
+
+  const nearMinZoomFixture = document.querySelector("#near-min-zoom-map-fixture");
+  const nearMinZoomOut = nearMinZoomFixture.querySelector(".leaflet-control-zoom-out");
+  nearMinZoomFixture.querySelector('button[data-mode="freemap"]').click();
+
+  test("rýchly zoom out z úrovne 6 neprekročí Freemap minimum", () => {
+    const firstZoomOut = new WheelEvent("wheel", {
+      bubbles: true,
+      cancelable: true,
+      deltaY: 100
+    });
+    const secondZoomOut = new WheelEvent("wheel", {
+      bubbles: true,
+      cancelable: true,
+      deltaY: 100
+    });
+
+    nearMinZoomFixture.dispatchEvent(firstZoomOut);
+    nearMinZoomFixture.dispatchEvent(secondZoomOut);
+    equal(firstZoomOut.defaultPrevented, false);
+    equal(secondZoomOut.defaultPrevented, true);
+    equal(nearMinZoomOut.getAttribute("aria-disabled"), "true");
+  });
+
   const maxZoomFixture = document.querySelector("#max-zoom-map-fixture");
   const maxZoomIn = maxZoomFixture.querySelector(".leaflet-control-zoom-in");
   const maxZoomOut = maxZoomFixture.querySelector(".leaflet-control-zoom-out");

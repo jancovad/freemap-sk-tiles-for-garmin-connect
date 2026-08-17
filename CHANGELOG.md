@@ -5,7 +5,9 @@ verziovanie v tvare `MAJOR.MINOR.PATCH`.
 
 ## Unreleased
 
-- Verzia manifestu pripravená ako 0.5.2.
+- Verzia manifestu pripravená ako 0.5.3.
+- Rýchle série kolieska, tlačidiel, klávesov a dotykových gest už nemôžu
+  prekročiť Freemap zoom 5–18 počas čakania na nové dlaždice.
 - Názov zmenený na `Outdoor tiles from Freemap.sk for Garmin Connect` podľa
   odporúčania Freemap Slovakia.
 - Outdoor endpoint nastavený na `https://outdoor.tiles.freemap.sk`; generický
