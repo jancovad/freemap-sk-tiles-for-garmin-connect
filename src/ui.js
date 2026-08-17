@@ -14,6 +14,9 @@
   const PREFERENCE_STORAGE_KEY = "preferredMapMode";
   const OBSOLETE_DISCLOSURE_STORAGE_KEY = "freemapDisclosureAccepted";
   const EXPECTED_ZOOM_TIMEOUT_MS = 5_000;
+  const AUTOMATIC_ZOOM_POLL_MS = 100;
+  const AUTOMATIC_ZOOM_RETRY_MS = 750;
+  const AUTOMATIC_ZOOM_TIMEOUT_MS = 8_000;
   const noticeTimers = new WeakMap();
   const guardedMaps = new WeakSet();
   const originalZoomControlAria = new WeakMap();
@@ -391,6 +394,7 @@
     }
 
     clearTimeout(pendingFreemapSwitch.timeoutId);
+    clearInterval(pendingFreemapSwitch.pollIntervalId);
     pendingFreemapSwitch = null;
   }
 
@@ -414,7 +418,7 @@
       return;
     }
 
-    if (zoom >= tileUrlApi.FREEMAP_MIN_ZOOM && zoom <= tileUrlApi.FREEMAP_MAX_ZOOM) {
+    if (zoom === pending.targetZoom) {
       const targetZoom = pending.targetZoom;
       cancelPendingFreemapSwitch();
       setFreemapEnabled(
@@ -426,11 +430,16 @@
       return;
     }
 
-    if (pending.lastClickedZoom === zoom) {
+    const currentTime = Date.now();
+
+    if (
+      pending.lastClickedZoom === zoom &&
+      currentTime - pending.lastClickAt < AUTOMATIC_ZOOM_RETRY_MS
+    ) {
       return;
     }
 
-    const direction = zoom < tileUrlApi.FREEMAP_MIN_ZOOM ? 1 : -1;
+    const direction = zoom < pending.targetZoom ? 1 : -1;
     const selector = direction > 0
       ? ".leaflet-control-zoom-in"
       : ".leaflet-control-zoom-out";
@@ -446,6 +455,7 @@
     }
 
     pending.lastClickedZoom = zoom;
+    pending.lastClickAt = currentTime;
     zoomControl.click();
 
     // Niektoré Leaflet verzie zmenia dlaždice priamo počas click handlera.
@@ -456,13 +466,22 @@
   function beginFreemapSwitchAtSupportedZoom(mapContainer, currentZoom) {
     cancelPendingFreemapSwitch();
 
+    // Automatické Garmin +/- kliknutia nesmú prechádzať cez ochranu hraníc
+    // Freemap ani zdediť jej dočasne upravené aria atribúty.
+    resetExpectedZoomStates();
+    freemapEnabled = false;
+    document.dispatchEvent(new Event(DISABLE_EVENT));
+    updateControls();
+
     const targetZoom = Math.min(
       tileUrlApi.FREEMAP_MAX_ZOOM,
       Math.max(tileUrlApi.FREEMAP_MIN_ZOOM, currentZoom)
     );
     const pending = {
+      lastClickAt: 0,
       lastClickedZoom: null,
       mapContainer,
+      pollIntervalId: null,
       targetZoom,
       timeoutId: null
     };
@@ -471,7 +490,12 @@
       if (pendingFreemapSwitch === pending) {
         failPendingFreemapSwitch();
       }
-    }, 5_000);
+    }, AUTOMATIC_ZOOM_TIMEOUT_MS);
+    pending.pollIntervalId = setInterval(() => {
+      if (pendingFreemapSwitch === pending) {
+        advancePendingFreemapSwitch();
+      }
+    }, AUTOMATIC_ZOOM_POLL_MS);
     pendingFreemapSwitch = pending;
 
     showNotice(`Upravujem Garmin zoom na ${targetZoom} pre Freemap…`);

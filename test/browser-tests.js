@@ -232,6 +232,32 @@
     equal(globalThis.GarminFreemapStorageMock.getWriteCount() > 0, true);
   });
 
+  const activeOutsideFixture = document.querySelector("#active-outside-zoom-map-fixture");
+  const activeOutsideImage = activeOutsideFixture.querySelector("img");
+  const activeOutsideZoomOut = activeOutsideFixture.querySelector(
+    ".leaflet-control-zoom-out"
+  );
+  const activeOutsideFreemapButton = activeOutsideFixture.querySelector(
+    'button[data-mode="freemap"]'
+  );
+  let activeOutsideZoomOutClicks = 0;
+
+  activeOutsideZoomOut.addEventListener("click", (event) => {
+    event.preventDefault();
+    activeOutsideZoomOutClicks += 1;
+    activeOutsideImage.src = googleTileUrl(18, 144803, 89921);
+  });
+  activeOutsideFreemapButton.click();
+
+  test("automatický návrat na zoom 18 obíde aktívnu Freemap ochranu", () => {
+    equal(activeOutsideZoomOutClicks, 1);
+    equal(
+      activeOutsideImage.getAttribute("src"),
+      "https://outdoor.tiles.freemap.sk/18/144803/89921?app=garmin-connect-ext"
+    );
+    equal(activeOutsideFreemapButton.classList.contains("is-active"), true);
+  });
+
   const nearMaxZoomFixture = document.querySelector("#near-max-zoom-map-fixture");
   const nearMaxZoomIn = nearMaxZoomFixture.querySelector(".leaflet-control-zoom-in");
   nearMaxZoomFixture.querySelector('button[data-mode="freemap"]').click();

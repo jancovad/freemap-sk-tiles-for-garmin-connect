@@ -5,7 +5,9 @@ verziovanie v tvare `MAJOR.MINOR.PATCH`.
 
 ## Unreleased
 
-- Verzia manifestu pripravená ako 0.5.3.
+- Verzia manifestu pripravená ako 0.5.4.
+- Automatické nastavenie Garmin zoomu mimo rozsahu teraz používa samostatný
+  kontrolovaný režim, presnú cieľovú úroveň 5/18 a časovo obmedzené opakovanie.
 - Rýchle série kolieska, tlačidiel, klávesov a dotykových gest už nemôžu
   prekročiť Freemap zoom 5–18 počas čakania na nové dlaždice.
 - Názov zmenený na `Outdoor tiles from Freemap.sk for Garmin Connect` podľa

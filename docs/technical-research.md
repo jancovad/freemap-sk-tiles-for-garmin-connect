@@ -96,6 +96,11 @@ existujúce Leaflet tlačidlo `+` alebo `−` nastaví najbližšiu hranicu. Fre
 zapne až po rozpoznaní dlaždíc cieľového zoomu. Pri chýbajúcom ovládaní alebo
 časovom limite zostane bezpečne zapnutá Garmin mapa.
 
+Od verzie 0.5.4 prebiehajú tieto interné kliknutia vo vlastnom režime s vypnutou
+Freemap ochranou hraníc. UI cieli presne na zoom 5 alebo 18, stav priebežne
+kontroluje a pri oneskorenej Garmin animácii môže kliknutie v krátkom časovom
+limite zopakovať. Freemap sa zapne až po rozpoznaní presnej cieľovej úrovne.
+
 Od verzie 0.5.2 izolovaný UI skript používa `chrome.storage.local` iba na
 zapamätanie hodnoty `garmin` alebo `freemap`. Pri prvom načítaní odstráni
 zastaranú hodnotu `freemapDisclosureAccepted` z nevydanej testovacej verzie.
