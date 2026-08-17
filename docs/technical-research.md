@@ -3,6 +3,20 @@
 Stav k 13. augustu 2026. Zistenia pochádzajú z Chrome DevTools na prihlásených
 stránkach Garmin Connect; nejde o predpokladané interné API.
 
+## Aktualizácia 17. augusta 2026
+
+Freemap Slovakia následne potvrdila produkčné podmienky, ktoré majú prednosť
+pred pôvodnými odhadmi z jednotlivých HTTP požiadaviek:
+
+- endpoint `https://tiles.freemap.sk/{z}/{x}/{y}`;
+- zoom 5–18; zoomy 19–20 sú vyhradené pre premium používateľov;
+- prípony `@2x`, `@3x`, `@4x` podľa `devicePixelRatio`, bez `detectRetina`;
+- statický parameter `?app=garmin-connect-ext` pri zachovaní no-referrer;
+- rozšírená atribúcia a odkaz na aktuálne zdroje výškových dát.
+
+Pred prvým zapnutím Freemap izolované UI zobrazí informáciu o požadovaných
+sieťových údajoch. Potvrdenie uloží lokálne spolu s preferenciou podkladu.
+
 ## Overené zistenia
 
 - Detail aktivity zobrazuje mapu cez Leaflet.
@@ -16,9 +30,9 @@ stránkach Garmin Connect; nejde o predpokladané interné API.
   od podkladových dlaždíc.
 - `https://outdoor.tiles.freemap.sk/12/2264/1404` odpovedal stavom HTTP 200
   a typom `image/jpeg` aj bez prípony súboru.
-- Pri overení rovnakého bodu cez `HEAD` vrátil Freemap dlaždice pre zoom 2 až
-  20; zoomy 0–1 neboli dostupné a zoomy 21–22 vrátili HTTP 404. Produkčný
-  rozsah je preto explicitne 2–20.
+- Pri pôvodnom overení rovnakého bodu cez `HEAD` server odpovedal pre zoom 2 až
+  20. Z toho odvodený rozsah 2–20 však nevyjadroval licenčné a produktové
+  obmedzenia a bol nahradený prevádzkovateľom potvrdeným rozsahom 5–18.
 
 Historický formát `L11/R0000030F/C000001E4.png` nebol na aktuálnych stránkach
 pozorovaný. Jeho parser zostáva izolovaný a produkčný obsahový skript ho
@@ -58,17 +72,18 @@ Po prepnutí na Garmin prebehne ešte niekoľko krátkych obnovovacích kontrol 
 1,5 sekundy. Zachytia dlaždice, ktoré Leaflet vytvorí až pri dobiehajúcej zoom
 animácii.
 
-Pri zapnutom Freemap izolovaný UI skript na zoomoch 2 a 20 zachytí vstupy smerom
+Pri zapnutom Freemap izolovaný UI skript na zoomoch 5 a 18 zachytí vstupy smerom
 mimo podporovaného rozsahu ešte pred Leafletom. Platí to pre tlačidlá `+/-`,
 koliesko, dvojklik, klávesnicu a dotykové gesto. Garmin routing ani vrstva trasy
 sa nemenia. Po prepnutí na Garmin sa obmedzenie odstráni.
 
-Ak používateľ zapne Freemap z Garmin zoomu mimo rozsahu 2–20, UI najprv cez
+Ak používateľ zapne Freemap z Garmin zoomu mimo rozsahu 5–18, UI najprv cez
 existujúce Leaflet tlačidlo `+` alebo `−` nastaví najbližšiu hranicu. Freemap
 zapne až po rozpoznaní dlaždíc cieľového zoomu. Pri chýbajúcom ovládaní alebo
 časovom limite zostane bezpečne zapnutá Garmin mapa.
 
-Od verzie 0.4.0 izolovaný UI skript používa `chrome.storage.local` iba na
-zapamätanie hodnoty `garmin` alebo `freemap`. Nastavenie sa načíta pri otvorení
-stránky a aplikuje sa až po nájdení podporovanej Leaflet mapy. Chyba dlaždice
-preferenciu neprepíše. Manifest preto obsahuje jediné oprávnenie `storage`.
+Od verzie 0.5.0 izolovaný UI skript používa `chrome.storage.local` na
+zapamätanie hodnoty `garmin` alebo `freemap` a potvrdenia úvodnej informácie.
+Nastavenie sa načíta až po nájdení podporovanej Leaflet mapy. Chyba dlaždice
+preferenciu neprepíše. Manifest preto stále obsahuje jediné oprávnenie
+`storage`.

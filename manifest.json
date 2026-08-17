@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "Freemap.sk tiles for Garmin Connect",
-  "version": "0.4.1",
-  "description": "Pridáva prepínač podkladu Freemap.sk Outdoor do webového Garmin Connect.",
+  "name": "Outdoor tiles from Freemap.sk for Garmin Connect",
+  "version": "0.5.0",
+  "description": "Pridáva neoficiálny prepínač podkladu Freemap.sk Outdoor do webového Garmin Connect.",
   "permissions": [
     "storage"
   ],

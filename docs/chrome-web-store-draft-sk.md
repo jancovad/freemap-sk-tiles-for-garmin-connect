@@ -2,12 +2,18 @@
 
 Stav: **pracovný návrh – neodosielať na posúdenie**
 
-## Blokujúce podmienky
+## Zostávajúce podmienky
 
-- písomné potvrdenie Freemap Slovakia o použití tile servera a atribúcii;
 - kontaktný e-mail vývojára;
-- finálne screenshoty z aktuálnej verzie;
-- kontrola, že Store ZIP vznikol z rovnakého commitu ako verejný zdrojový kód.
+- finálne anonymizované screenshoty;
+- úspešný test aktuálneho ZIP balíka na oboch cieľových stránkach;
+- Privacy deklarácia v Store Dashboarde zhodná so skutočným správaním;
+- kontrola, že Store ZIP vznikol z rovnakého označeného commitu ako verejný
+  zdrojový kód.
+
+Písomný súhlas Freemap Slovakia bol prijatý 17. augusta 2026 a jeho podmienky
+sú zapracované v kóde aj v
+[zhrnutí súhlasu](freemap-permission-summary.md).
 
 ## Verejné odkazy
 
@@ -17,112 +23,109 @@ Stav: **pracovný návrh – neodosielať na posúdenie**
 
 ## Identita
 
-Vybraný názov:
+Názov odsúhlasený Freemap Slovakia:
 
-`Freemap.sk tiles for Garmin Connect`
+`Outdoor tiles from Freemap.sk for Garmin Connect`
 
-Manifestový názov je zjednotený s vybraným názvom.
-Názov nesmie vyvolávať dojem, že ide o oficiálny produkt Garmin alebo Freemap
-Slovakia.
+Rozšírenie nepoužíva logo Freemap. V popise je jasne označené ako neoficiálny
+komunitný projekt a nevyvoláva dojem produktu Garmin alebo Freemap Slovakia.
 
 ## Krátky popis
 
-`Pridá prepínač Freemap.sk Outdoor do máp Garmin Connect bez zmeny trás a routingu.`
-
-Krátky popis má menej ako 132 znakov a neobsahuje marketingové superlatívy.
+`Pridá neoficiálny prepínač Freemap.sk Outdoor do máp Garmin Connect bez zmeny trás a routingu.`
 
 ## Jediný účel
 
-Rozšírenie umožňuje používateľovi prepínať pôvodný mapový podklad vo webovom
-Garmin Connect na Freemap.sk Outdoor, pričom zachová Garmin trasu, body,
-ovládanie mapy a routing.
+Rozšírenie umožňuje prepínať pôvodný mapový podklad vo webovom Garmin Connect
+na Freemap.sk Outdoor, pričom zachová Garmin trasu, body, ovládanie a routing.
 
 ## Dlhý popis
 
-Freemap.sk tiles for Garmin Connect je neoficiálne open-source rozšírenie,
-ktoré pridáva do podporovaných máp Garmin Connect prepínač Garmin/Freemap.
+Outdoor tiles from Freemap.sk for Garmin Connect je neoficiálne open-source
+rozšírenie, ktoré pridáva do podporovaných máp Garmin Connect prepínač
+Garmin/Freemap.
 
 Hlavné funkcie:
 
-- podklad Freemap.sk Outdoor na detaile aktivity a v plánovači trás;
+- Freemap.sk Outdoor na detaile aktivity a v plánovači trás;
 - zachovanie Garmin trás, bodov, prekrytí, ovládania a routingu;
-- automatické prispôsobenie zoomu na podporovaný rozsah Freemap 2–20;
+- rozsah zoomu 5–18 a automatické prispôsobenie pri prepnutí;
+- ostré dlaždice `@2x`, `@3x` alebo `@4x` podľa displeja;
 - bezpečný návrat na pôvodnú mapu pri chybe dlaždice;
-- lokálne zapamätanie posledného zvoleného podkladu;
-- povinná viditeľná atribúcia mapových zdrojov;
+- úvodná informácia pred prvým pripojením k serveru Freemap;
+- lokálne zapamätanie potvrdenia a posledného podkladu;
+- viditeľná atribúcia Freemap, OpenStreetMap/ODbL a zdrojov výškových dát;
 - bez analytiky, reklám, API kľúčov a servera prevádzkovaného vývojárom.
 
-Pri zapnutom Freemap prehliadač požaduje viditeľné mapové dlaždice priamo zo
-servera Freemap Slovakia. Rozšírenie nie je vytvorené, podporované ani schválené
-spoločnosťou Garmin, Freemap Slovakia alebo OpenStreetMap Foundation.
+Pri zapnutom Freemap prehliadač požaduje iba viditeľné mapové dlaždice priamo
+zo servera Freemap Slovakia. Rozšírenie nie je vytvorené, podporované ani
+schválené spoločnosťou Garmin ani OpenStreetMap Foundation a nie je oficiálnym
+produktom Freemap Slovakia.
 
 ## Zdôvodnenie oprávnení
 
 ### `storage`
 
-Ukladá iba jednu hodnotu `preferredMapMode` s obsahom `garmin` alebo `freemap`,
-aby sa pri ďalšom otvorení mapy obnovila používateľova voľba. Neukladajú sa
-trasy, polohy, účty ani história.
+Ukladá iba `preferredMapMode` (`garmin` alebo `freemap`) a
+`freemapDisclosureAccepted` (či bola potvrdená úvodná informácia). Hodnoty
+zostávajú lokálne v Chrome. Neukladajú sa trasy, polohy, účty ani história.
 
 ### Prístup k Garmin Connect
 
-Obsahové skripty sú obmedzené na `https://connect.garmin.com/*`. Prístup je
-potrebný na rozpoznanie podkladových mapových obrázkov, pridanie prepínača a
-zachovanie existujúcich Garmin vrstiev. Rozšírenie nečíta prihlasovacie údaje a
-nemení routing.
+Obsahové skripty sú obmedzené na `https://connect.garmin.com/*`. Rozpoznajú
+podkladové mapové obrázky, pridajú prepínač a zachovajú existujúce Garmin
+vrstvy. Nečítajú prihlasovacie údaje a nemenia routing.
 
 ### Vzdialené zdroje
 
-Rozšírenie nespúšťa vzdialený kód. Zo servera
-`https://outdoor.tiles.freemap.sk` načítava iba mapové obrázky potrebné pre
-aktuálne zobrazenie.
+Rozšírenie nespúšťa vzdialený kód. Z `https://tiles.freemap.sk` načítava iba
+obrázky aktuálne viditeľných dlaždíc. URL obsahuje statický parameter
+`app=garmin-connect-ext` na identifikáciu prevádzky rozšírenia. Obrázky majú
+`referrerpolicy=no-referrer`.
 
 ## Návrh Privacy deklarácie
 
 Deklarácia v Dashboarde musí presne zodpovedať súboru `PRIVACY.md`:
 
-- lokálne uložená preferencia mapového podkladu;
-- pri Freemap sa tretej strane odošlú súradnice viditeľných dlaždíc `z/x/y` a
-  bežné sieťové metadáta HTTPS požiadavky;
-- súradnice dlaždíc môžu približne identifikovať zobrazovanú geografickú oblasť;
+- lokálne uložená preferencia a potvrdenie úvodnej informácie;
+- Freemap Slovakia dostane súradnice viditeľných dlaždíc `z/x/y`, statický app
+  parameter a štandardné sieťové údaje vrátane IP adresy;
+- súradnice môžu približne identifikovať zobrazovanú geografickú oblasť;
 - nepoužíva sa geolokačné API zariadenia;
 - žiadna analytika, reklama, predaj údajov ani prístup vývojára k údajom;
-- žiadne Garmin prihlasovacie údaje, trasy alebo profilové dáta sa neposielajú
-  vývojárovi ani na jeho server.
+- neposielajú sa Garmin prihlasovacie údaje, cookies, trasy, profil ani URL
+  stránky.
 
-Ak Dashboard klasifikuje mapové dlaždice ako údaje o polohe, treba túto
-kategóriu radšej transparentne označiť a vysvetliť, že ide o zobrazovanú oblasť,
-nie polohu získanú zo zariadenia. Pred odoslaním treba porovnať všetky zaškrtnuté
-kategórie s aktuálnym formulárom Chrome Web Store.
+Ak Dashboard klasifikuje zobrazenú oblasť mapy ako údaje o polohe, treba túto
+kategóriu transparentne označiť a vysvetliť, že nejde o polohu získanú zo
+zariadenia. Pred odoslaním treba formulár porovnať s aktuálnymi pravidlami.
 
 ## Grafické podklady
 
 - Store ikona: `assets/icon128.png`;
 - minimálne jeden screenshot 1280 × 800 px, najviac päť;
 - odporúčané screenshoty:
-  1. detail aktivity s Garmin podkladom a prepínačom;
-  2. rovnaký detail s Freemap a viditeľnou atribúciou;
+  1. úvodná informácia pred prvým zapnutím;
+  2. detail aktivity s Freemap a viditeľnou atribúciou;
   3. plánovač trás s Freemap, bodmi a trasou;
   4. správanie na hranici zoomu;
-  5. automatický návrat na Garmin pri chybe;
-- voliteľný malý promo obrázok 440 × 280 px;
-- voliteľný marquee obrázok 1400 × 560 px.
+  5. automatický návrat na Garmin pri chybe.
 
-Na screenshotoch treba skryť meno, profilovú fotografiu, názvy súkromných trás,
-presnú domácu polohu a ostatné osobné údaje.
+Na screenshotoch treba skryť meno, profilovú fotografiu, súkromné názvy trás,
+domácu polohu a ostatné osobné údaje.
 
 ## Testovacie pokyny pre posudzovateľa
 
 1. Prihlásiť sa do Garmin Connect vlastným testovacím účtom.
 2. Otvoriť detail aktivity alebo plánovač trás.
-3. Použiť prepínač Garmin/Freemap nad mapou.
+3. Kliknúť Freemap, prečítať úvodnú informáciu a potvrdiť ju.
 4. Overiť, že sa zmení iba podklad a trasa aj routing zostanú zachované.
+5. Overiť viditeľnú atribúciu a návrat cez tlačidlo Garmin.
 
 Rozšírenie neposkytuje ani nevyžaduje testovacie Garmin prihlasovacie údaje.
 
 ## Distribúcia
 
-Prvé vydanie má byť bezplatné. Odporúčaný postup je najprv obmedzený test s
-dôveryhodnými testermi a až po výsledku kontroly a súhlase Freemap Slovakia
-verejná distribúcia. Samotné odoslanie na posúdenie ani publikovanie nie je
+Prvé vydanie bude bezplatné a nekomerčné. Najprv prebehne obmedzený test s
+dôveryhodnými testermi. Samotné odoslanie na posúdenie ani publikovanie nie je
 súčasťou tejto prípravy.

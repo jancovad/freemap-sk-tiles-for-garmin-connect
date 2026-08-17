@@ -8,15 +8,19 @@
   }
 
   const CONTROL_ATTRIBUTE = "data-garmin-freemap-control";
+  const DISCLOSURE_ATTRIBUTE = "data-garmin-freemap-disclosure";
   const ENABLE_EVENT = "garmin-freemap-extension:enable";
   const DISABLE_EVENT = "garmin-freemap-extension:disable";
   const FAILURE_EVENT = "garmin-freemap-extension:failure";
   const PREFERENCE_STORAGE_KEY = "preferredMapMode";
+  const DISCLOSURE_STORAGE_KEY = "freemapDisclosureAccepted";
   const noticeTimers = new WeakMap();
   const guardedMaps = new WeakSet();
   const originalZoomControlAria = new WeakMap();
   const touchDistances = new WeakMap();
   let freemapEnabled = false;
+  let disclosureAccepted = false;
+  let disclosureIdSequence = 0;
   let pendingFreemapSwitch = null;
   let preferredMapMode = "garmin";
   let preferenceApplied = false;
@@ -30,8 +34,8 @@
   function isRecognizedBaseTile(image) {
     const source = getSourceAttribute(image);
     return (
-      source.startsWith(`${tileUrlApi.FREEMAP_TILE_BASE_URL}/`) ||
-      tileUrlApi.translateGarminGoogleTileUrl(source) !== null
+      tileUrlApi.parseFreemapTileUrl(source) !== null ||
+      tileUrlApi.parseGarminGoogleTileUrl(source) !== null
     );
   }
 
@@ -39,10 +43,7 @@
     return globalThis.chrome?.storage?.local || null;
   }
 
-  function rememberPreference(mode) {
-    preferredMapMode = mode;
-    preferenceApplied = true;
-
+  function writeStoredValues(values) {
     const storage = getPreferenceStorage();
 
     if (!storage?.set) {
@@ -50,12 +51,28 @@
     }
 
     try {
-      storage.set({ [PREFERENCE_STORAGE_KEY]: mode }, () => {
+      storage.set(values, () => {
         void globalThis.chrome?.runtime?.lastError;
       });
     } catch {
       // Neúspech uloženia nesmie ovplyvniť fungovanie mapy.
     }
+  }
+
+  function rememberPreference(mode) {
+    preferredMapMode = mode;
+    preferenceApplied = true;
+    writeStoredValues({ [PREFERENCE_STORAGE_KEY]: mode });
+  }
+
+  function rememberDisclosureAcceptance() {
+    disclosureAccepted = true;
+    preferredMapMode = "freemap";
+    preferenceApplied = true;
+    writeStoredValues({
+      [DISCLOSURE_STORAGE_KEY]: true,
+      [PREFERENCE_STORAGE_KEY]: "freemap"
+    });
   }
 
   function applyStoredPreference(mapContainer) {
@@ -65,7 +82,7 @@
 
     preferenceApplied = true;
 
-    if (preferredMapMode === "freemap") {
+    if (preferredMapMode === "freemap" && disclosureAccepted) {
       setFreemapEnabled(true, "", true, mapContainer);
     }
   }
@@ -79,8 +96,12 @@
     }
 
     try {
-      storage.get({ [PREFERENCE_STORAGE_KEY]: "garmin" }, (items) => {
+      storage.get({
+        [DISCLOSURE_STORAGE_KEY]: false,
+        [PREFERENCE_STORAGE_KEY]: "garmin"
+      }, (items) => {
         void globalThis.chrome?.runtime?.lastError;
+        disclosureAccepted = items?.[DISCLOSURE_STORAGE_KEY] === true;
         preferredMapMode = items?.[PREFERENCE_STORAGE_KEY] === "freemap"
           ? "freemap"
           : "garmin";
@@ -430,6 +451,12 @@
     button.dataset.mode = mode;
     button.textContent = label;
     button.addEventListener("click", () => {
+      if (mode === "freemap" && !disclosureAccepted) {
+        showFreemapDisclosure(mapContainer, button);
+        return;
+      }
+
+      closeFreemapDisclosure(mapContainer);
       rememberPreference(mode);
       setFreemapEnabled(mode === "freemap", "", true, mapContainer);
     });
@@ -452,24 +479,147 @@
     }
   }
 
+  function closeFreemapDisclosure(mapContainer, returnFocusTo = null) {
+    const disclosure = mapContainer.querySelector(
+      `:scope > [${DISCLOSURE_ATTRIBUTE}]`
+    );
+
+    if (!disclosure || disclosure.hidden) {
+      return;
+    }
+
+    disclosure.hidden = true;
+    returnFocusTo?.focus();
+  }
+
+  function showFreemapDisclosure(mapContainer, returnFocusTo) {
+    const disclosure = mapContainer.querySelector(
+      `:scope > [${DISCLOSURE_ATTRIBUTE}]`
+    );
+
+    if (!disclosure) {
+      return;
+    }
+
+    disclosure.hidden = false;
+    disclosure.dataset.returnFocus = returnFocusTo?.dataset.mode || "freemap";
+    disclosure.querySelector('[data-action="accept"]')?.focus();
+  }
+
+  function createExternalLink(href, text) {
+    const link = document.createElement("a");
+    link.href = href;
+    link.target = "_blank";
+    link.rel = "noopener noreferrer";
+    link.textContent = text;
+    return link;
+  }
+
+  function createDisclosure(mapContainer) {
+    const disclosure = document.createElement("div");
+    disclosure.className = "garmin-freemap-disclosure";
+    disclosure.setAttribute(DISCLOSURE_ATTRIBUTE, "");
+    disclosure.hidden = true;
+
+    const dialog = document.createElement("div");
+    dialog.className = "garmin-freemap-disclosure__dialog";
+    dialog.setAttribute("role", "dialog");
+    dialog.setAttribute("aria-modal", "true");
+
+    disclosureIdSequence += 1;
+    const titleId = `garmin-freemap-disclosure-title-${disclosureIdSequence}`;
+    dialog.setAttribute("aria-labelledby", titleId);
+
+    const title = document.createElement("h2");
+    title.id = titleId;
+    title.textContent = "Pred zapnutím Freemap";
+
+    const dataNotice = document.createElement("p");
+    dataNotice.textContent = (
+      "Na zobrazenie podkladu prehliadač odošle serveru Freemap Slovakia " +
+      "súradnice viditeľných dlaždíc, statický identifikátor rozšírenia a " +
+      "bežné sieťové údaje, napríklad IP adresu."
+    );
+
+    const privacyNotice = document.createElement("p");
+    privacyNotice.textContent = (
+      "Rozšírenie neposiela Garmin účet, trasu ani URL stránky. Súhlas sa " +
+      "uloží iba lokálne v Chrome. "
+    );
+    privacyNotice.append(
+      createExternalLink(
+        "https://github.com/jancovad/freemap-sk-tiles-for-garmin-connect/blob/main/PRIVACY.md",
+        "Zásady ochrany súkromia"
+      )
+    );
+
+    const actions = document.createElement("div");
+    actions.className = "garmin-freemap-disclosure__actions";
+
+    const cancelButton = document.createElement("button");
+    cancelButton.type = "button";
+    cancelButton.className = "garmin-freemap-disclosure__button";
+    cancelButton.dataset.action = "cancel";
+    cancelButton.textContent = "Zrušiť";
+    cancelButton.addEventListener("click", () => {
+      const returnFocusTo = mapContainer.querySelector(
+        'button[data-mode="freemap"]'
+      );
+      closeFreemapDisclosure(mapContainer, returnFocusTo);
+    });
+
+    const acceptButton = document.createElement("button");
+    acceptButton.type = "button";
+    acceptButton.className = (
+      "garmin-freemap-disclosure__button " +
+      "garmin-freemap-disclosure__button--primary"
+    );
+    acceptButton.dataset.action = "accept";
+    acceptButton.textContent = "Súhlasím a zapnúť Freemap";
+    acceptButton.addEventListener("click", () => {
+      rememberDisclosureAcceptance();
+      closeFreemapDisclosure(mapContainer);
+      setFreemapEnabled(true, "", true, mapContainer);
+    });
+
+    actions.append(cancelButton, acceptButton);
+    dialog.append(title, dataNotice, privacyNotice, actions);
+    disclosure.append(dialog);
+    disclosure.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        cancelButton.click();
+      }
+    });
+    stopMapInteractionEvents(disclosure);
+    return disclosure;
+  }
+
   function createAttribution() {
     const attribution = document.createElement("div");
     attribution.className = "garmin-freemap-attribution";
     attribution.hidden = true;
 
-    const freemapLink = document.createElement("a");
-    freemapLink.href = "https://www.freemap.sk/";
-    freemapLink.target = "_blank";
-    freemapLink.rel = "noopener noreferrer";
-    freemapLink.textContent = "© Freemap Slovakia";
+    const freemapLink = createExternalLink(
+      "https://www.freemap.sk/",
+      "© Freemap Slovakia"
+    );
+    const osmLink = createExternalLink(
+      "https://www.openstreetmap.org/copyright",
+      "© prispievatelia OpenStreetMap, dáta ODbL"
+    );
+    const elevationLink = createExternalLink(
+      "https://www.freemap.sk/",
+      "Zdroje výškových dát"
+    );
 
-    const osmLink = document.createElement("a");
-    osmLink.href = "https://www.openstreetmap.org/copyright";
-    osmLink.target = "_blank";
-    osmLink.rel = "noopener noreferrer";
-    osmLink.textContent = "© OpenStreetMap contributors";
-
-    attribution.append(freemapLink, document.createTextNode(" · "), osmLink);
+    attribution.append(
+      freemapLink,
+      document.createTextNode(" · "),
+      osmLink,
+      document.createTextNode(" · "),
+      elevationLink
+    );
     stopMapInteractionEvents(attribution);
     return attribution;
   }
@@ -495,7 +645,12 @@
     notice.hidden = true;
 
     stopMapInteractionEvents(control);
-    mapContainer.append(control, notice, createAttribution());
+    mapContainer.append(
+      control,
+      notice,
+      createAttribution(),
+      createDisclosure(mapContainer)
+    );
     attachZoomBoundaryGuards(mapContainer);
     updateControls();
     applyStoredPreference(mapContainer);

@@ -1,6 +1,11 @@
 # Žiadosť Freemap Slovakia o potvrdenie použitia dlaždíc
 
-Stav: **návrh – neodoslané**
+Stav: **odoslané; odpoveď prijatá 17. augusta 2026**
+
+Tento súbor zachováva pôvodné znenie odoslanej žiadosti. Odpoveď a následná
+oprava endpointu sú vecne zaznamenané v
+[zhrnutí súhlasu](freemap-permission-summary.md). Text správy nižšie sa spätne
+neupravuje podľa odpovede.
 
 - Komu: `freemap@freemap.sk`
 - Predmet: `Žiadosť o súhlas s použitím Freemap Outdoor dlaždíc v Chrome rozšírení`
@@ -63,10 +68,10 @@ S pozdravom
 
 Vladimír Jančovič
 
-## Pred odoslaním doplniť
+## Pôvodný checklist pred odoslaním
 
 - kontaktný e-mail odosielateľa;
 - prípadne odkaz na screenshot atribúcie.
 
-Odpoveď Freemap Slovakia treba uložiť alebo presne zhrnúť v projektovej
-dokumentácii pred prípravou verejného Store balíka.
+Odpoveď Freemap Slovakia je uložená súkromne u vlastníka projektu a verejne
+zhrnutá v [freemap-permission-summary.md](freemap-permission-summary.md).

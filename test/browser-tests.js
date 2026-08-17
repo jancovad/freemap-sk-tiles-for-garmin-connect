@@ -38,14 +38,14 @@
   test("detail aktivity z12/x2264/y1404", () => {
     equal(
       api.translateGarminGoogleTileUrl(googleTileUrl(12, 2264, 1404)),
-      "https://outdoor.tiles.freemap.sk/12/2264/1404"
+      "https://tiles.freemap.sk/12/2264/1404?app=garmin-connect-ext"
     );
   });
 
   test("vyšší zoom z14/x9055/y5621", () => {
     equal(
       api.translateGarminGoogleTileUrl(googleTileUrl(14, 9055, 5621)),
-      "https://outdoor.tiles.freemap.sk/14/9055/5621"
+      "https://tiles.freemap.sk/14/9055/5621?app=garmin-connect-ext"
     );
   });
 
@@ -54,7 +54,7 @@
     url.searchParams.set("pb", "!1m5!1m4!1i11!2i484!3i783!4i256!2m3!1e0");
     equal(
       api.translateGarminGoogleTileUrl(url.href),
-      "https://outdoor.tiles.freemap.sk/11/484/783"
+      "https://tiles.freemap.sk/11/484/783?app=garmin-connect-ext"
     );
   });
 
@@ -73,16 +73,87 @@
 
   test("historický hex formát sa prevádza samostatne", () => {
     const tile = api.parseLegacyGarminTilePath("L11/R0000030F/C000001E4.png");
-    equal(api.buildFreemapTileUrl(tile), "https://outdoor.tiles.freemap.sk/11/484/783");
+    equal(
+      api.buildFreemapTileUrl(tile),
+      "https://tiles.freemap.sk/11/484/783?app=garmin-connect-ext"
+    );
   });
 
-  test("Freemap deklaruje overený rozsah zoomu 2 až 20", () => {
-    equal(api.FREEMAP_MIN_ZOOM, 2);
-    equal(api.FREEMAP_MAX_ZOOM, 20);
+  test("Freemap deklaruje potvrdený rozsah zoomu 5 až 18", () => {
+    equal(api.FREEMAP_MIN_ZOOM, 5);
+    equal(api.FREEMAP_MAX_ZOOM, 18);
     equal(
-      api.parseFreemapTileUrl("https://outdoor.tiles.freemap.sk/20/579212/359684").zoom,
-      20
+      api.parseFreemapTileUrl(
+        "https://tiles.freemap.sk/18/144803/89921@4x?app=garmin-connect-ext"
+      ).zoom,
+      18
     );
+    equal(api.translateGarminGoogleTileUrl(googleTileUrl(4, 8, 4)), null);
+    equal(api.translateGarminGoogleTileUrl(googleTileUrl(19, 289606, 179842)), null);
+  });
+
+  test("retina prípona používa strop 4× a zachováva app identifikátor", () => {
+    equal(
+      api.translateGarminGoogleTileUrl(googleTileUrl(14, 9055, 5621), 1.25),
+      "https://tiles.freemap.sk/14/9055/5621@2x?app=garmin-connect-ext"
+    );
+    equal(
+      api.translateGarminGoogleTileUrl(googleTileUrl(14, 9055, 5621), 2.5),
+      "https://tiles.freemap.sk/14/9055/5621@3x?app=garmin-connect-ext"
+    );
+    equal(
+      api.translateGarminGoogleTileUrl(googleTileUrl(14, 9055, 5621), 8),
+      "https://tiles.freemap.sk/14/9055/5621@4x?app=garmin-connect-ext"
+    );
+  });
+
+  const consentFixture = document.querySelector("#consent-map-fixture");
+  const consentImage = consentFixture.querySelector("img");
+  const consentOriginalSource = consentImage.getAttribute("src");
+  const consentGarminButton = consentFixture.querySelector('button[data-mode="garmin"]');
+  const consentFreemapButton = consentFixture.querySelector('button[data-mode="freemap"]');
+  const disclosure = consentFixture.querySelector(".garmin-freemap-disclosure");
+
+  consentFreemapButton.click();
+
+  test("prvé zapnutie zobrazí disclosure bez požiadavky na Freemap", () => {
+    equal(disclosure.hidden, false);
+    equal(consentImage.getAttribute("src"), consentOriginalSource);
+    equal(consentOriginalSource.startsWith("https://maps.googleapis.com/maps/vt?"), true);
+    equal(globalThis.GarminFreemapStorageMock.getDisclosureAccepted(), false);
+    equal(globalThis.GarminFreemapStorageMock.getPreferredMapMode(), "freemap");
+    equal(consentGarminButton.classList.contains("is-active"), true);
+  });
+
+  disclosure.querySelector('[data-action="cancel"]').click();
+
+  test("zrušenie disclosure ponechá Garmin mapu", () => {
+    equal(disclosure.hidden, true);
+    equal(consentImage.getAttribute("src"), consentOriginalSource);
+    equal(globalThis.GarminFreemapStorageMock.getDisclosureAccepted(), false);
+  });
+
+  Object.defineProperty(globalThis, "devicePixelRatio", {
+    configurable: true,
+    value: 3
+  });
+  consentFreemapButton.click();
+  disclosure.querySelector('[data-action="accept"]').click();
+
+  test("potvrdenie uloží súhlas a zapne retina Freemap podľa displeja", () => {
+    equal(disclosure.hidden, true);
+    equal(globalThis.GarminFreemapStorageMock.getDisclosureAccepted(), true);
+    equal(globalThis.GarminFreemapStorageMock.getPreferredMapMode(), "freemap");
+    equal(
+      consentImage.getAttribute("src"),
+      "https://tiles.freemap.sk/12/2264/1404@3x?app=garmin-connect-ext"
+    );
+  });
+
+  consentGarminButton.click();
+  Object.defineProperty(globalThis, "devicePixelRatio", {
+    configurable: true,
+    value: 1
   });
 
   const outsideZoomFixture = document.querySelector("#outside-zoom-map-fixture");
@@ -97,34 +168,34 @@
   outsideZoomOut.addEventListener("click", (event) => {
     event.preventDefault();
     automaticZoomOutClicks += 1;
-    outsideZoomImage.src = googleTileUrl(20, 579212, 359684);
+    outsideZoomImage.src = googleTileUrl(18, 144803, 89921);
   });
   outsideZoomIn.addEventListener("click", (event) => {
     event.preventDefault();
     automaticZoomInClicks += 1;
-    outsideZoomImage.src = googleTileUrl(2, 2, 1);
+    outsideZoomImage.src = googleTileUrl(5, 16, 8);
   });
 
   outsideFreemapButton.click();
 
-  test("prepnutie z Garmin zoomu 21 najprv nastaví Freemap maximum 20", () => {
+  test("prepnutie z Garmin zoomu 19 najprv nastaví Freemap maximum 18", () => {
     equal(automaticZoomOutClicks, 1);
     equal(
       outsideZoomImage.getAttribute("src"),
-      "https://outdoor.tiles.freemap.sk/20/579212/359684"
+      "https://tiles.freemap.sk/18/144803/89921?app=garmin-connect-ext"
     );
     equal(outsideFreemapButton.classList.contains("is-active"), true);
   });
 
   outsideGarminButton.click();
-  outsideZoomImage.src = googleTileUrl(1, 1, 0);
+  outsideZoomImage.src = googleTileUrl(4, 8, 4);
   outsideFreemapButton.click();
 
-  test("prepnutie z Garmin zoomu 1 najprv nastaví Freemap minimum 2", () => {
+  test("prepnutie z Garmin zoomu 4 najprv nastaví Freemap minimum 5", () => {
     equal(automaticZoomInClicks, 1);
     equal(
       outsideZoomImage.getAttribute("src"),
-      "https://outdoor.tiles.freemap.sk/2/2/1"
+      "https://tiles.freemap.sk/5/16/8?app=garmin-connect-ext"
     );
     equal(outsideFreemapButton.classList.contains("is-active"), true);
   });
@@ -160,19 +231,26 @@
   test("Freemap prepne iba zdroje dlaždíc a nastaví no-referrer", () => {
     equal(
       fixtureImages[0].getAttribute("src"),
-      "https://outdoor.tiles.freemap.sk/12/2264/1404"
+      "https://tiles.freemap.sk/12/2264/1404?app=garmin-connect-ext"
     );
     equal(fixtureImages[0].getAttribute("referrerpolicy"), "no-referrer");
     equal(freemapButton.classList.contains("is-active"), true);
   });
 
   test("Freemap zobrazí povinnú atribúciu", () => {
+    const links = [...attribution.querySelectorAll("a")];
     equal(attribution.hidden, false);
     equal(attribution.textContent.includes("Freemap Slovakia"), true);
-    equal(attribution.textContent.includes("OpenStreetMap contributors"), true);
+    equal(attribution.textContent.includes("prispievatelia OpenStreetMap"), true);
+    equal(attribution.textContent.includes("dáta ODbL"), true);
+    equal(attribution.textContent.includes("Zdroje výškových dát"), true);
+    equal(links[0].href, "https://www.freemap.sk/");
+    equal(links[1].href, "https://www.openstreetmap.org/copyright");
+    equal(links[2].href, "https://www.freemap.sk/");
   });
 
   test("výber Freemap sa uloží iba ako lokálna preferencia", () => {
+    equal(globalThis.GarminFreemapStorageMock.getDisclosureAccepted(), true);
     equal(globalThis.GarminFreemapStorageMock.getPreferredMapMode(), "freemap");
     equal(globalThis.GarminFreemapStorageMock.getWriteCount() > 0, true);
   });
@@ -182,13 +260,13 @@
   const maxZoomOut = maxZoomFixture.querySelector(".leaflet-control-zoom-out");
   maxZoomFixture.querySelector('button[data-mode="freemap"]').click();
 
-  test("na Freemap zoome 20 označí iba priblíženie ako nedostupné", () => {
+  test("na Freemap zoome 18 označí iba priblíženie ako nedostupné", () => {
     equal(maxZoomIn.getAttribute("aria-disabled"), "true");
     equal(maxZoomIn.classList.contains("garmin-freemap-zoom-limit"), true);
     equal(maxZoomOut.hasAttribute("aria-disabled"), false);
   });
 
-  test("na Freemap zoome 20 zablokuje zoom in, ale povolí zoom out", () => {
+  test("na Freemap zoome 18 zablokuje zoom in, ale povolí zoom out", () => {
     const zoomIn = new WheelEvent("wheel", {
       bubbles: true,
       cancelable: true,
@@ -211,13 +289,13 @@
   const minZoomOut = minZoomFixture.querySelector(".leaflet-control-zoom-out");
   minZoomFixture.querySelector('button[data-mode="freemap"]').click();
 
-  test("na Freemap zoome 2 označí iba oddialenie ako nedostupné", () => {
+  test("na Freemap zoome 5 označí iba oddialenie ako nedostupné", () => {
     equal(minZoomIn.hasAttribute("aria-disabled"), false);
     equal(minZoomOut.getAttribute("aria-disabled"), "true");
     equal(minZoomOut.classList.contains("garmin-freemap-zoom-limit"), true);
   });
 
-  test("na Freemap zoome 2 zablokuje zoom out, ale povolí zoom in", () => {
+  test("na Freemap zoome 5 zablokuje zoom out, ale povolí zoom in", () => {
     const zoomOut = new WheelEvent("wheel", {
       bubbles: true,
       cancelable: true,
@@ -292,7 +370,7 @@
   test("synchrónny interceptor prepne viditeľnú Mutant kópiu", () => {
     equal(
       lateTile.getAttribute("src"),
-      "https://outdoor.tiles.freemap.sk/13/4528/2808"
+      "https://tiles.freemap.sk/13/4528/2808?app=garmin-connect-ext"
     );
   });
 

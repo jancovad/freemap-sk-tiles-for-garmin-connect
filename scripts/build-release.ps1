@@ -24,11 +24,21 @@ function Assert-Condition {
 
 $projectRootPath = [IO.Path]::GetFullPath($ProjectRoot)
 $manifestPath = Join-Path $projectRootPath "manifest.json"
+$packagePath = Join-Path $projectRootPath "package.json"
 Assert-Condition (Test-Path -LiteralPath $manifestPath -PathType Leaf) "manifest.json is missing"
+Assert-Condition (Test-Path -LiteralPath $packagePath -PathType Leaf) "package.json is missing"
 
 $manifest = Get-Content -LiteralPath $manifestPath -Raw -Encoding UTF8 | ConvertFrom-Json
+$package = Get-Content -LiteralPath $packagePath -Raw -Encoding UTF8 | ConvertFrom-Json
 Assert-Condition ($manifest.manifest_version -eq 3) "manifest_version must be 3"
 Assert-Condition ($manifest.version -match '^\d+\.\d+\.\d+$') "manifest version is invalid"
+Assert-Condition (
+  $manifest.name -eq "Outdoor tiles from Freemap.sk for Garmin Connect"
+) "manifest name differs from the Freemap-approved name"
+Assert-Condition ($package.version -eq $manifest.version) "package and manifest versions differ"
+Assert-Condition (
+  $package.name -eq "outdoor-tiles-from-freemap-sk-for-garmin-connect"
+) "package name is invalid"
 
 $permissions = @($manifest.permissions)
 Assert-Condition (
@@ -86,7 +96,7 @@ foreach ($relativePath in $releaseFiles) {
 
 $distPath = Join-Path $projectRootPath "dist"
 [IO.Directory]::CreateDirectory($distPath) | Out-Null
-$archiveName = "freemap-sk-tiles-for-garmin-connect-v$($manifest.version).zip"
+$archiveName = "outdoor-tiles-from-freemap-sk-for-garmin-connect-v$($manifest.version).zip"
 $archivePath = Join-Path $distPath $archiveName
 $checksumPath = "$archivePath.sha256"
 

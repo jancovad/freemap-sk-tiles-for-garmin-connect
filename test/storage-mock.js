@@ -4,7 +4,13 @@
   const initialMode = document.documentElement.dataset.preferredMapMode === "freemap"
     ? "freemap"
     : "garmin";
-  const values = { preferredMapMode: initialMode };
+  const initialDisclosureAccepted = (
+    document.documentElement.dataset.freemapDisclosureAccepted === "true"
+  );
+  const values = {
+    freemapDisclosureAccepted: initialDisclosureAccepted,
+    preferredMapMode: initialMode
+  };
   let readCount = 0;
   let writeCount = 0;
 
@@ -25,6 +31,7 @@
   };
   globalThis.chrome = chromeApi;
   globalThis.GarminFreemapStorageMock = Object.freeze({
+    getDisclosureAccepted: () => values.freemapDisclosureAccepted,
     getPreferredMapMode: () => values.preferredMapMode,
     getReadCount: () => readCount,
     getWriteCount: () => writeCount

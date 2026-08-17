@@ -4,33 +4,36 @@
 
 - [x] Chrome Manifest V3.
 - [x] Jediné oprávnenie `storage`; žiadne `host_permissions`.
-- [x] Automatické a živé testy detailu aktivity a plánovača.
 - [x] Bezpečný fallback na Garmin a hranice zoomu.
 - [x] Reprodukovateľný lokálny ZIP build a SHA-256.
-- [x] MIT licencia.
-- [x] Návrh zásad ochrany súkromia.
-- [x] Third-party notices a neoficiálny status.
-- [x] Návrh Store textov a permission justification.
-- [x] Verejný názov a URL repozitára.
-- [x] GitHub Issues ako verejný spôsob hlásenia problémov.
+- [x] MIT licencia pre zdrojový kód.
+- [x] Verejný repozitár a GitHub Issues.
+- [x] Žiadosť odoslaná Freemap Slovakia.
+- [x] Písomný súhlas a prevádzkové podmienky zaznamenané.
+- [x] Endpoint, zoom 5–18, retina prípony a app identifikátor zapracované.
+- [x] Atribúcia a odkazy upravené podľa odpovede.
+- [x] Názov upravený na variant odsúhlasený Freemap Slovakia.
+- [x] Úvodná informácia pred prvým pripojením k Freemap.
+- [x] Privacy policy, third-party notices a návrh Store textov aktualizované.
 
 ## Pred prvým verejným vydaním
 
 - [ ] Potvrdiť meno držiteľa copyrightu v `LICENSE`.
 - [ ] Doplniť kontaktný e-mail pre Chrome Web Store.
+- [ ] Otestovať verziu 0.5.0 na detaile aktivity a v plánovači.
+- [ ] Otestovať zoom, posúvanie, retina URL, atribúciu, zapamätanie a fallback.
+- [ ] Otestovať aktuálny ZIP cez skupinu dôveryhodných testerov.
 
-## Blokujúce pred Chrome Web Store
+## Pred Chrome Web Store
 
-- [ ] Odoslať žiadosť na `freemap@freemap.sk`.
-- [ ] Zaznamenať súhlas Freemap Slovakia a podmienky prevádzky.
-- [ ] Upraviť atribúciu, licenčné odkazy a zoom podľa odpovede.
-- [ ] Zverejniť finálnu privacy policy na stabilnej HTTPS URL.
-- [ ] Zjednotiť manifestový a Store názov s jasným neoficiálnym statusom.
+- [ ] Zverejniť aktualizovanú privacy policy na stabilnej HTTPS URL.
 - [ ] Vytvoriť anonymizované screenshoty 1280 × 800 px.
 - [ ] Vyplniť Privacy deklaráciu podľa skutočného správania rozšírenia.
-- [ ] Vytvoriť nový Store ZIP z označeného commitu a overiť SHA-256.
-- [ ] Otestovať balík cez skupinu dôveryhodných testerov.
-- [ ] Pred kliknutím na Submit for Review vykonať poslednú kontrolu pravidiel.
+- [ ] Skontrolovať aktuálne pravidlá Chrome Web Store.
+- [ ] Vytvoriť Store ZIP z označeného commitu a overiť SHA-256.
+- [ ] Overiť, že verejný zdrojový kód a ZIP patria rovnakému commitu.
+- [ ] Pred Submit for Review vykonať poslednú kontrolu názvu, popisov, odkazov
+  a podmienok Freemap Slovakia.
 
 Publikovanie je samostatný krok a vyžaduje výslovné rozhodnutie vlastníka
 projektu. Splnenie checklistu samo osebe neudeľuje súhlas na publikovanie.

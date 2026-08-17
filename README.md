@@ -1,79 +1,86 @@
-# Freemap.sk tiles for Garmin Connect
+# Outdoor tiles from Freemap.sk for Garmin Connect
 
-Experimentálne Chrome rozšírenie pre webový Garmin Connect. Do Leaflet mapy
-pridáva prepínač **Garmin / Freemap** a mení výhradne podkladové dlaždice na
-Freemap.sk Outdoor.
+Neoficiálne komunitné Chrome rozšírenie pre webový Garmin Connect. Do
+podporovaných Leaflet máp pridáva prepínač **Garmin / Freemap** a mení výhradne
+podkladové dlaždice na Freemap.sk Outdoor.
 
-> **Neoficiálny komunitný projekt.** Nie je vytvorený, podporovaný ani schválený
-> spoločnosťou Garmin, Freemap Slovakia alebo OpenStreetMap Foundation.
+Nie je vytvorené, podporované ani schválené spoločnosťou Garmin ani
+OpenStreetMap Foundation. Freemap Slovakia písomne povolila použitie svojho
+verejného tile servera pre toto bezplatné nekomerčné rozšírenie za podmienok
+zhrnutých v [dokumentácii súhlasu](docs/freemap-permission-summary.md). Súhlas
+neznamená, že ide o oficiálny produkt Freemap Slovakia.
 
-Zdrojový kód je licencovaný pod [MIT licenciou](LICENSE). Verejné vydanie v Chrome
-Web Store je zatiaľ pozastavené, kým Freemap Slovakia nepotvrdí podmienky
-použitia svojho verejného tile servera a presnú požadovanú atribúciu.
+Zdrojový kód je licencovaný pod [MIT licenciou](LICENSE). Táto licencia sa
+nevzťahuje na mapové dáta ani na právo používať tile server v inom alebo
+komerčnom projekte.
 
 Verejný repozitár: <https://github.com/jancovad/freemap-sk-tiles-for-garmin-connect>
 
-## Rozsah MVP
+## Funkcie
 
 - Chrome Manifest V3.
 - Detail aktivity a plánovač/editor trás.
 - Zachovanie Garmin trasy, bodov, prekrytí, ovládania mapy a routingu.
-- Viditeľná atribúcia Freemap Slovakia a OpenStreetMap pri zapnutom Freemap.
-- Synchrónna výmena URL pred načítaním obrázka, aby Leaflet zachoval natívny
-  priebeh zoomu bez periodického pollingu.
+- Viditeľná atribúcia Freemap Slovakia, OpenStreetMap/ODbL a odkaz na aktuálne
+  zdroje výškových dát.
+- Freemap zoom 5 až 18. Na hranici sa zablokuje iba pohyb mimo rozsahu.
+- Ak sa Freemap zapína z Garmin zoomu mimo rozsahu, mapa sa najprv presunie na
+  najbližší podporovaný zoom.
+- Dlaždice `@2x`, `@3x` alebo `@4x` podľa `devicePixelRatio` displeja.
 - Automatický návrat celej mapy na Garmin už pri prvej chybnej Freemap
   dlaždici, aby sa podklady nezmiešali.
-- Overený rozsah Freemap je zoom 2 až 20. Na hranici rozšírenie zablokuje iba
-  ďalší pohyb smerom mimo rozsahu; opačný smer zostáva funkčný.
-- Posledný ručne zvolený podklad sa lokálne zapamätá pre ďalšie otvorenie mapy.
-- Žiadny externý server rozšírenia, API kľúč, telemetria ani analytika.
+- Lokálne zapamätanie potvrdenia úvodného oznámenia a posledného ručne zvoleného
+  podkladu.
+- Žiadny externý server rozšírenia, API kľúč, telemetria, reklama ani analytika.
+- Žiadne hromadné, offline ani preventívne sťahovanie dlaždíc.
 
-Manifest žiada iba oprávnenie `storage` na uloženie voľby `garmin` alebo
-`freemap`; nežiada žiadne `host_permissions`.
-Obsahový skript je obmedzený match vzorom na `https://connect.garmin.com/*`.
+Manifest žiada iba oprávnenie `storage` a nežiada `host_permissions`. Obsahové
+skripty sú obmedzené na `https://connect.garmin.com/*`.
 
-## Súkromie
+## Dlaždice a súkromie
 
-Rozšírenie nič neukladá a nikam neposiela Garmin prihlasovacie údaje, trasu ani
-iné používateľské dáta. Pri zapnutí Freemap prehliadač nevyhnutne požaduje
-zvolené mapové dlaždice (teda ich `z/x/y`) zo servera Freemap.sk. Pre tieto
-obrázky rozšírenie nastaví `referrerpolicy=no-referrer`, aby požiadavka
-neobsahovala URL stránky Garmin Connect.
+Pred prvým zapnutím Freemap rozšírenie zobrazí oznámenie o sieťovej komunikácii.
+Až po potvrdení prehliadač požaduje viditeľné dlaždice priamo zo servera
+Freemap Slovakia v tvare:
 
-Lokálne úložisko rozšírenia obsahuje iba poslednú voľbu mapového podkladu ako
-reťazec `garmin` alebo `freemap`. Bezpečnostný návrat pri chybe túto používateľom
-zvolenú preferenciu nemení.
+`https://tiles.freemap.sk/{z}/{x}/{y}[@2x|@3x|@4x]?app=garmin-connect-ext`
+
+Parameter `app` je rovnaký pre všetkých používateľov a umožňuje Freemap Slovakia
+rozpoznať prevádzku rozšírenia; nejde o identifikátor používateľa. Obrázky majú
+`referrerpolicy=no-referrer`, takže požiadavka neobsahuje URL Garmin Connect.
+Server pri bežnej HTTPS komunikácii môže spracovať súradnice dlaždíc, IP adresu
+a štandardné sieťové hlavičky. Rozšírenie neposiela Garmin účet, cookies, trasu
+ani URL stránky. Podrobnosti sú v [zásadách ochrany súkromia](PRIVACY.md).
 
 ## Automatické testy
 
-Testy možno bez inštalácie otvoriť v prehliadači zo súboru
-`test/browser.html`. Výsledok musí byť `PASS: 23 testov, 0 chýb`.
-Samostatný `test/preference-browser.html` overuje automatické obnovenie uloženej
-voľby Freemap bez ďalšieho zápisu do úložiska.
+Bez inštalácie otvor v Chrome súbor `test/browser.html`. Očakávaný výsledok je
+`PASS: 27 testov, 0 chýb`. Súbor `test/preference-browser.html` samostatne
+overuje obnovenie už potvrdenej voľby Freemap bez ďalšieho zápisu.
 
-Ak je dostupný Node.js, rovnakú produkčnú prevodovú logiku overí aj jeho
-vstavaný test runner; žiadne balíčky sa neinštalujú.
+Ak je dostupný Node.js, prevodovú logiku overí jeho vstavaný test runner bez
+inštalovania balíkov:
 
 ```powershell
 npm test
 npm run check
 ```
 
-Testy pokrývajú aktuálny Google `vt?pb=` formát, odmietnutie neznámych alebo
-neplatných URL a samostatný historický hexadecimálny parser. Historický parser
-nie je zapojený do produkčnej výmeny dlaždíc.
+Testy pokrývajú aktuálny Google `vt?pb=` formát, zoom 5–18, retina prípony,
+identifikátor aplikácie, úvodné potvrdenie, fallback a samostatný historický
+hexadecimálny parser. Historický parser sa v produkcii nepoužíva.
 
 ## Načítanie cez Load unpacked
 
 1. V Chrome otvor `chrome://extensions`.
-2. Vpravo hore zapni **Developer mode**.
+2. Zapni **Developer mode**.
 3. Klikni **Load unpacked**.
 4. Vyber celý priečinok `D:\dev\GarminFreemap`.
-5. Otvor alebo obnov Garmin Connect. Na podporovanej Leaflet mape sa hore
-   uprostred zobrazí prepínač **Garmin / Freemap**.
+5. Otvor alebo obnov Garmin Connect. Nad podporovanou mapou sa zobrazí prepínač
+   **Garmin / Freemap**.
 
-Po úprave zdrojov treba na `chrome://extensions` kliknúť pri rozšírení na
-ikonu obnovenia a následne obnoviť stránku Garmin Connect.
+Po zmene zdrojov klikni pri rozšírení na ikonu obnovenia a obnov aj stránku
+Garmin Connect.
 
 ## Lokálny release balík
 
@@ -84,45 +91,48 @@ skript bez externých závislostí:
 powershell -NoProfile -ExecutionPolicy Bypass -File scripts/build-release.ps1
 ```
 
-Skript pred zabalením overí Manifest V3, verziu, jedinú povolenú položku
-`storage`, neprítomnosť `host_permissions`, Garmin Connect match vzory, lokálne
-manifestové súbory a presný whitelist obsahu. Do `dist/` uloží ZIP aj súbor
-`.sha256`. Rovnaký build možno spustiť aj cez `npm run release`, ak je dostupný
-Node.js.
-
-Na čistý test rozbaľ ZIP do nového priečinka a v `chrome://extensions` zvoľ
-**Load unpacked** nad týmto rozbaleným priečinkom. Release skript ani priečinok
-`dist/` sa do výsledného rozšírenia nepridávajú.
+Skript overí Manifest V3, minimálne oprávnenia, Garmin Connect match vzory,
+lokálne manifestové súbory a presný whitelist obsahu. Do `dist/` uloží ZIP a
+jeho `.sha256`. Na čistý test rozbaľ ZIP do nového priečinka a cez **Load
+unpacked** vyber tento rozbalený priečinok.
 
 ## Manuálny test
 
 Na detaile aktivity aj v plánovači over:
 
 1. Garmin mapa je predvolená.
-2. **Freemap** zmení iba podklad a zobrazí atribúciu.
-3. Trasa, body a prekrytia zostanú na rovnakom mieste.
-4. Zoom a posúvanie načítajú nové Freemap dlaždice.
-5. Na zoome 20 už Freemap nepovolí zoom in a na zoome 2 nepovolí zoom out;
-   mapa sa pritom sama neprepne na Garmin.
-6. Ak Freemap zapneš z Garmin zoomu mimo rozsahu 2–20, mapa sa najprv presunie
-   na najbližší podporovaný zoom a až potom zmení podklad.
-7. **Garmin** okamžite vráti pôvodný podklad.
-8. Zmena podkladu nemení výsledok routingu v plánovači.
+2. Prvý klik na **Freemap** zobrazí oznámenie; **Zrušiť** nič nenačíta a
+   potvrdenie zapne Freemap.
+3. Zmení sa iba podklad a zobrazia sa všetky tri atribučné odkazy.
+4. Trasa, body, prekrytia a routing zostanú nezmenené.
+5. Zoom a posúvanie plynulo načítajú nové dlaždice so správnou retina príponou.
+6. Na zoome 18 sa zablokuje zoom in a na zoome 5 zoom out bez prepnutia na
+   Garmin.
+7. Prepnutie z Garmin zoomu nad 18 alebo pod 5 najprv nastaví najbližšiu
+   podporovanú hranicu.
+8. **Garmin** okamžite vráti pôvodný podklad a voľba sa zachová po obnovení
+   stránky.
 
-Fallback možno otestovať v DevTools cez **Network request blocking** pre vzor
-`*://outdoor.tiles.freemap.sk/*`. Po prvej chybnej dlaždici sa má aktivovať
-Garmin mapa a zobraziť krátke upozornenie. Po teste blokovanie vypni.
+V Network paneli filtruj `tiles.freemap.sk`. URL má obsahovať
+`?app=garmin-connect-ext` a podľa `window.devicePixelRatio` žiadnu príponu,
+`@2x`, `@3x` alebo `@4x`.
 
-Podrobnosti prieskumu sú v [docs/technical-research.md](docs/technical-research.md).
+Fallback otestuje Network request blocking so vzorom
+`*://tiles.freemap.sk/*`. Po prvej chybnej dlaždici sa má obnoviť Garmin mapa a
+zobraziť upozornenie. Po teste blokovanie vypni.
+
+Technické pozadie je v [docs/technical-research.md](docs/technical-research.md).
 
 ## Verejné vydanie
 
-Projekt sa pripravuje ako verejný open-source projekt, no do Chrome Web Store sa
-zatiaľ neposiela. Súvisiace dokumenty:
+Freemap Slovakia súhlasila s použitím servera pre bezplatné nekomerčné
+rozšírenie. Pred odoslaním do Chrome Web Store ešte treba dokončiť živé testy,
+anonymizované screenshoty, kontaktné údaje a Store privacy deklaráciu.
 
-- [zásady ochrany súkromia](PRIVACY.md);
-- [third-party notices](THIRD_PARTY_NOTICES.md);
-- [návrh žiadosti pre Freemap Slovakia](docs/freemap-permission-request-sk.md);
-- [návrh záznamu pre Chrome Web Store](docs/chrome-web-store-draft-sk.md);
-- [checklist verejného vydania](docs/public-release-checklist.md);
-- [história zmien](CHANGELOG.md).
+- [zásady ochrany súkromia](PRIVACY.md)
+- [third-party notices](THIRD_PARTY_NOTICES.md)
+- [zhrnutie súhlasu Freemap Slovakia](docs/freemap-permission-summary.md)
+- [pôvodná žiadosť](docs/freemap-permission-request-sk.md)
+- [návrh záznamu Chrome Web Store](docs/chrome-web-store-draft-sk.md)
+- [checklist verejného vydania](docs/public-release-checklist.md)
+- [história zmien](CHANGELOG.md)

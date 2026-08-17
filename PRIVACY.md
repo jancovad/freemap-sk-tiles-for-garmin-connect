@@ -1,40 +1,51 @@
 # Zásady ochrany súkromia
 
-Posledná aktualizácia: 14. augusta 2026
+Posledná aktualizácia: 17. augusta 2026
 
-Tieto zásady sa vzťahujú na neoficiálne Chrome rozšírenie **Freemap.sk tiles for
-Garmin Connect**. Rozšírenie má jediný účel: umožniť používateľovi zobraziť
-Freemap.sk Outdoor ako alternatívny mapový podklad vo webovom Garmin Connect.
+Tieto zásady sa vzťahujú na neoficiálne Chrome rozšírenie **Outdoor tiles from
+Freemap.sk for Garmin Connect**. Jeho jediným účelom je zobraziť Freemap.sk
+Outdoor ako voliteľný mapový podklad vo webovom Garmin Connect.
+
+## Informácia pred prvým zapnutím
+
+Pred prvým zapnutím Freemap rozšírenie oznámi, aké údaje sú potrebné na
+načítanie dlaždíc. Ak používateľ oznámenie zruší, Freemap sa nezapne a jeho
+server nedostane požiadavku na dlaždice. Potvrdenie zostáva iba v lokálnom
+profile Chrome.
 
 ## Údaje ukladané rozšírením
 
-Rozšírenie ukladá do `chrome.storage.local` iba jednu používateľskú preferenciu:
+Rozšírenie ukladá do `chrome.storage.local` iba:
 
-- `preferredMapMode`: hodnota `garmin` alebo `freemap`.
+- `preferredMapMode`: hodnotu `garmin` alebo `freemap`;
+- `freemapDisclosureAccepted`: pravdivostnú hodnotu, či používateľ potvrdil
+  úvodnú informáciu pred zapnutím Freemap.
 
-Táto hodnota zostáva lokálne v profile Chrome. Vývojár ju neprijíma a nemá k
-nej vzdialený prístup. Používateľ ju môže zmeniť prepínačom podkladu alebo
-odstrániť vymazaním údajov či odinštalovaním rozšírenia.
+Vývojár tieto hodnoty neprijíma a nemá k nim vzdialený prístup. Používateľ ich
+môže zmeniť prepínačom alebo odstrániť vymazaním údajov či odinštalovaním
+rozšírenia. Bezpečnostný návrat pri chybe nemení uloženú preferenciu.
 
 ## Spracovanie mapových údajov
 
-Pri zapnutom podklade Freemap rozšírenie lokálne prečíta súradnice Garmin
-podkladových dlaždíc a prevedie ich na formát `z/x/y`. Neukladá ich do histórie,
-databázy ani analytiky.
+Pri zapnutom Freemap rozšírenie lokálne prevedie súradnice viditeľných Garmin
+dlaždíc na `z/x/y`. Neukladá ich do databázy, histórie ani analytiky. Prehliadač
+potom požaduje iba dlaždice potrebné pre aktuálne zobrazenie priamo zo servera:
 
-Prehliadač následne požaduje iba dlaždice potrebné pre aktuálne zobrazenú časť
-mapy priamo zo servera:
+`https://tiles.freemap.sk/{z}/{x}/{y}[@2x|@3x|@4x]?app=garmin-connect-ext`
 
-`https://outdoor.tiles.freemap.sk/{z}/{x}/{y}`
+Voliteľná prípona zodpovedá rozlíšeniu displeja. Parameter
+`app=garmin-connect-ext` je statický identifikátor rovnaký pre všetkých
+používateľov; Freemap Slovakia ním vie priradiť prevádzku tomuto rozšíreniu.
+Nie je to používateľský ani reklamný identifikátor.
 
 Súradnice dlaždíc môžu približne vyjadrovať geografickú oblasť, ktorú si
-používateľ pozerá. Server Freemap Slovakia pri bežnej HTTPS požiadavke môže
-spracovať aj štandardné sieťové údaje, napríklad IP adresu, čas požiadavky a
-hlavičky prehliadača. Rozšírenie nastavuje `referrerpolicy=no-referrer`,
-nepridáva Garmin prihlasovacie údaje a neposiela URL stránky Garmin Connect.
+používateľ pozerá. Server Freemap Slovakia môže pri bežnej HTTPS požiadavke
+spracovať štandardné sieťové údaje, napríklad IP adresu, čas a hlavičky
+prehliadača. Rozšírenie nastavuje `referrerpolicy=no-referrer`, nepridáva Garmin
+cookies ani prihlasovacie údaje a neposiela URL stránky Garmin Connect.
 
 Spracovanie na serveroch Garmin Connect, Freemap Slovakia a OpenStreetMap sa
-riadi vlastnými podmienkami týchto prevádzkovateľov a nie týmito zásadami.
+riadi vlastnými podmienkami týchto prevádzkovateľov.
 
 ## Údaje, ktoré rozšírenie nezhromažďuje
 
@@ -42,26 +53,26 @@ Vývojár prostredníctvom rozšírenia nezhromažďuje ani neprijíma:
 
 - Garmin prihlasovacie údaje alebo cookies;
 - obsah aktivít, trás, bodov či profilu;
-- presnú polohu zariadenia;
+- polohu získanú z geolokačného API zariadenia;
 - históriu prehliadania;
 - analytiku, telemetriu alebo reklamné identifikátory.
 
-Rozšírenie nemá vlastný server a údaje nepredáva ani neposkytuje na reklamné
-účely. Nevykonáva hromadné ani offline sťahovanie mapových dlaždíc.
+Rozšírenie nemá vlastný server, údaje nepredáva a nepoužíva ich na reklamu.
+Nevykonáva hromadné, offline ani preventívne sťahovanie mapových dlaždíc.
 
 ## Oprávnenia
 
-- `storage` – výhradne na uloženie hodnoty `garmin` alebo `freemap`.
-- obsahový skript je obmedzený na `https://connect.garmin.com/*` a slúži iba na
-  prepnutie mapového podkladu.
+- `storage` – iba na dve vyššie uvedené lokálne hodnoty;
+- obsahové skripty sú obmedzené na `https://connect.garmin.com/*` a slúžia na
+  prepnutie podkladových obrázkov pri zachovaní Garmin vrstiev.
 
 Manifest nežiada `host_permissions` a rozšírenie nespúšťa vzdialený kód.
 
 ## Zmeny a kontakt
 
-Zmeny týchto zásad budú zaznamenané vo
+Zmeny budú zaznamenané vo
 [verejnom repozitári projektu](https://github.com/jancovad/freemap-sk-tiles-for-garmin-connect).
 Otázky a problémy možno nahlásiť cez
 [GitHub Issues](https://github.com/jancovad/freemap-sk-tiles-for-garmin-connect/issues).
-Kontaktný e-mail pre Chrome Web Store bude uvedený v zázname rozšírenia pred
-jeho odoslaním na posúdenie.
+Kontaktný e-mail vývojára bude uvedený v zázname Chrome Web Store pred
+odoslaním na posúdenie.

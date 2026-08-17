@@ -5,12 +5,20 @@ verziovanie v tvare `MAJOR.MINOR.PATCH`.
 
 ## Unreleased
 
-- Premenovanie rozšírenia na `Freemap.sk tiles for Garmin Connect`.
-- Doplnenie verejného GitHub repozitára a stránky na hlásenie problémov.
-- Príprava verejnej open-source dokumentácie a podkladov pre budúce posúdenie
-  v Chrome Web Store.
-- Publikovanie zostáva zablokované do potvrdenia použitia dlaždíc Freemap
-  Slovakia a požadovanej atribúcie.
+- Verzia manifestu pripravená ako 0.5.0.
+- Názov zmenený na `Outdoor tiles from Freemap.sk for Garmin Connect` podľa
+  odporúčania Freemap Slovakia.
+- Endpoint zmenený na `https://tiles.freemap.sk` a každý request obsahuje
+  statický identifikátor `?app=garmin-connect-ext` pri zachovaní
+  `referrerpolicy=no-referrer`.
+- Rozsah zoomu upravený z pôvodne odvodených 2–20 na potvrdených 5–18.
+- Podpora `@2x`, `@3x` a `@4x` dlaždíc podľa `devicePixelRatio` bez
+  Leaflet `detectRetina`.
+- Atribúcia rozšírená o ODbL a odkaz na aktuálne zdroje výškových dát.
+- Pred prvým zapnutím Freemap sa zobrazí informácia o sieťovej komunikácii;
+  potvrdenie sa ukladá iba lokálne.
+- Privacy policy, third-party notices, Store návrh a testy aktualizované podľa
+  písomného súhlasu Freemap Slovakia z 17. augusta 2026.
 
 ## 0.4.0 – 2026-08-14
 

@@ -45,6 +45,13 @@
     );
   }
 
+  function translateTileSource(rawSource) {
+    return tileUrlApi.translateGarminGoogleTileUrl(
+      rawSource,
+      window.devicePixelRatio
+    );
+  }
+
   function rememberOriginalTile(image, originalSource) {
     const existing = originalTileAttributes.get(image);
     setAttribute(image, ORIGINAL_SOURCE_ATTRIBUTE, originalSource);
@@ -167,7 +174,7 @@
     }
 
     const originalSource = String(rawSource);
-    const freemapSource = tileUrlApi.translateGarminGoogleTileUrl(originalSource);
+    const freemapSource = translateTileSource(originalSource);
 
     if (!freemapSource) {
       return false;
@@ -184,7 +191,7 @@
 
     for (const image of document.querySelectorAll(".leaflet-tile img[src], img.leaflet-tile[src]")) {
       const source = getAttribute(image, "src") || "";
-      const freemapSource = tileUrlApi.translateGarminGoogleTileUrl(source);
+      const freemapSource = translateTileSource(source);
 
       if (freemapSource) {
         applyFreemapSource(image, source, freemapSource);
@@ -258,7 +265,7 @@
       }
 
       const source = getAttribute(image, "src") || "";
-      const freemapSource = tileUrlApi.translateGarminGoogleTileUrl(source);
+      const freemapSource = translateTileSource(source);
 
       if (freemapSource) {
         applyFreemapSource(image, source, freemapSource);
