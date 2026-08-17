@@ -5,7 +5,9 @@ verziovanie v tvare `MAJOR.MINOR.PATCH`.
 
 ## Unreleased
 
-- Verzia manifestu pripravená ako 0.5.4.
+- Verzia manifestu pripravená ako 0.5.5.
+- Detail aktivity bez dostupných Leaflet `+`/`−` prvkov používa na automatické
+  nastavenie hranice overenú syntetickú udalosť kolieska na mape.
 - Automatické nastavenie Garmin zoomu mimo rozsahu teraz používa samostatný
   kontrolovaný režim, presnú cieľovú úroveň 5/18 a časovo obmedzené opakovanie.
 - Rýchle série kolieska, tlačidiel, klávesov a dotykových gest už nemôžu

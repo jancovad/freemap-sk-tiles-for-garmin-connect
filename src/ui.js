@@ -404,6 +404,24 @@
     updateControls();
   }
 
+  function dispatchAutomaticWheelZoom(mapContainer, direction) {
+    const bounds = mapContainer.getBoundingClientRect();
+
+    try {
+      mapContainer.dispatchEvent(new WheelEvent("wheel", {
+        bubbles: true,
+        cancelable: true,
+        clientX: bounds.left + bounds.width / 2,
+        clientY: bounds.top + bounds.height / 2,
+        deltaMode: WheelEvent.DOM_DELTA_PIXEL,
+        deltaY: direction > 0 ? -60 : 60
+      }));
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
   function advancePendingFreemapSwitch() {
     const pending = pendingFreemapSwitch;
 
@@ -446,9 +464,11 @@
     const zoomControl = pending.mapContainer.querySelector(selector);
 
     if (
-      !zoomControl ||
-      zoomControl.classList.contains("leaflet-disabled") ||
-      zoomControl.getAttribute("aria-disabled") === "true"
+      zoomControl &&
+      (
+        zoomControl.classList.contains("leaflet-disabled") ||
+        zoomControl.getAttribute("aria-disabled") === "true"
+      )
     ) {
       failPendingFreemapSwitch();
       return;
@@ -456,10 +476,16 @@
 
     pending.lastClickedZoom = zoom;
     pending.lastClickAt = currentTime;
-    zoomControl.click();
 
-    // Niektoré Leaflet verzie zmenia dlaždice priamo počas click handlera.
-    // Asynchrónne verzie pokračujú cez MutationObserver nižšie.
+    if (zoomControl) {
+      zoomControl.click();
+    } else if (!dispatchAutomaticWheelZoom(pending.mapContainer, direction)) {
+      failPendingFreemapSwitch();
+      return;
+    }
+
+    // Niektoré Leaflet verzie zmenia dlaždice priamo počas udalosti.
+    // Asynchrónne verzie pokračujú cez MutationObserver alebo poll nižšie.
     advancePendingFreemapSwitch();
   }
 

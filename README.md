@@ -53,7 +53,7 @@ ani URL stránky. Podrobnosti sú v [zásadách ochrany súkromia](PRIVACY.md).
 ## Automatické testy
 
 Bez inštalácie otvor v Chrome súbor `test/browser.html`. Očakávaný výsledok je
-`PASS: 28 testov, 0 chýb`. Súbor `test/preference-browser.html` samostatne
+`PASS: 30 testov, 0 chýb`. Súbor `test/preference-browser.html` samostatne
 overuje obnovenie uloženej voľby Freemap a odstránenie zastaranej hodnoty
 z predchádzajúcej testovacej verzie.
 

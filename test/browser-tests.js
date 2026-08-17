@@ -179,6 +179,52 @@
 
   outsideGarminButton.click();
 
+  const activityOutsideFixture = document.querySelector(
+    "#activity-outside-zoom-map-fixture"
+  );
+  const activityOutsideImage = activityOutsideFixture.querySelector("img");
+  const activityOutsideGarminButton = activityOutsideFixture.querySelector(
+    'button[data-mode="garmin"]'
+  );
+  const activityOutsideFreemapButton = activityOutsideFixture.querySelector(
+    'button[data-mode="freemap"]'
+  );
+  let automaticZoomInWheels = 0;
+  let automaticZoomOutWheels = 0;
+
+  activityOutsideFixture.addEventListener("wheel", (event) => {
+    if (event.deltaY > 0) {
+      automaticZoomOutWheels += 1;
+      activityOutsideImage.src = googleTileUrl(18, 144803, 89921);
+    } else if (event.deltaY < 0) {
+      automaticZoomInWheels += 1;
+      activityOutsideImage.src = googleTileUrl(5, 16, 8);
+    }
+  });
+  activityOutsideFreemapButton.click();
+
+  test("detail aktivity bez tlačidiel nastaví zoom 19 na 18 kolieskom", () => {
+    equal(automaticZoomOutWheels, 1);
+    equal(
+      activityOutsideImage.getAttribute("src"),
+      "https://outdoor.tiles.freemap.sk/18/144803/89921?app=garmin-connect-ext"
+    );
+  });
+
+  activityOutsideGarminButton.click();
+  activityOutsideImage.src = googleTileUrl(4, 8, 4);
+  activityOutsideFreemapButton.click();
+
+  test("detail aktivity bez tlačidiel nastaví zoom 4 na 5 kolieskom", () => {
+    equal(automaticZoomInWheels, 1);
+    equal(
+      activityOutsideImage.getAttribute("src"),
+      "https://outdoor.tiles.freemap.sk/5/16/8?app=garmin-connect-ext"
+    );
+  });
+
+  activityOutsideGarminButton.click();
+
   const fixture = document.querySelector("#map-fixture");
   const fixtureImages = [...fixture.querySelectorAll("img")];
   const originalSources = fixtureImages.map((image) => image.getAttribute("src"));
