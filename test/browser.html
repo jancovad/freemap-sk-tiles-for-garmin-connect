@@ -87,10 +87,59 @@
         >
       </div>
     </div>
+    <div id="active-outside-zoom-map-fixture" class="leaflet-container" hidden>
+      <a class="leaflet-control-zoom-in" href="#active-outside-zoom-in">+</a>
+      <a class="leaflet-control-zoom-out" href="#active-outside-zoom-out">−</a>
+      <div class="leaflet-tile leaflet-tile-loaded">
+        <img
+          alt=""
+          src="https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i19!2i289606!3i179842!4i256!2m3!1e0&amp;key=test-only"
+        >
+      </div>
+    </div>
+    <div id="activity-outside-zoom-map-fixture" class="leaflet-container" hidden>
+      <div class="leaflet-tile leaflet-tile-loaded">
+        <img
+          alt=""
+          src="https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i19!2i289606!3i179842!4i256!2m3!1e0&amp;key=test-only"
+        >
+      </div>
+    </div>
+    <div id="provider-settings-fixture" role="dialog" aria-modal="true" hidden>
+      <div>
+        <button
+          id="test-provider-button"
+          type="button"
+          aria-haspopup="listbox"
+          aria-expanded="false"
+          aria-controls="test-provider-listbox"
+        >
+          <span><span id="test-provider-label">Google Maps</span></span>
+        </button>
+        <ul id="test-provider-listbox" role="listbox">
+          <li class="provider-option provider-active" data-value="google" role="option" aria-selected="true">
+            <div data-value="google"><span data-value="google">Google Maps</span></div>
+          </li>
+          <li class="provider-option" data-value="here" role="option" aria-selected="false">
+            <div data-value="here"><span data-value="here">Here Maps</span></div>
+          </li>
+          <li class="provider-option" data-value="osm" role="option" aria-selected="false">
+            <div data-value="osm"><span data-value="osm">OpenStreetMap</span></div>
+          </li>
+        </ul>
+        <hr>
+        <div>
+          <button type="button" aria-label="default">Predvolené</button>
+          <button type="button" aria-label="satellite">Satelit</button>
+          <button type="button" aria-label="terrain">Terén</button>
+        </div>
+      </div>
+    </div>
     <script src="storage-mock.js"></script>
     <script src="device-pixel-ratio-mock.js"></script>
     <script src="../src/tile-url.js"></script>
     <script src="observer-instrumentation.js"></script>
+    <script src="provider-control-mock.js"></script>
     <script src="../src/page-main.js"></script>
     <script src="../src/ui.js"></script>
     <script src="browser-tests.js"></script>

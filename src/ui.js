@@ -7,23 +7,37 @@
     return;
   }
 
-  const CONTROL_ATTRIBUTE = "data-garmin-freemap-control";
+  const MAP_ATTRIBUTE = "data-garmin-freemap-map";
+  const NATIVE_PROVIDER_OPTION_ATTRIBUTE = "data-garmin-freemap-provider-option";
+  const NATIVE_PROVIDER_LABEL_ATTRIBUTE = "data-garmin-freemap-provider-label";
+  const NATIVE_PROVIDER_LABEL_HIDDEN_ATTRIBUTE = "data-garmin-freemap-label-hidden";
+  const NATIVE_MAP_TYPE_HIDDEN_ATTRIBUTE = "data-garmin-freemap-map-type-hidden";
+  const NATIVE_PROVIDER_VALUE = "freemap";
+  const NATIVE_GOOGLE_PROVIDER_VALUE = "google";
   const ENABLE_EVENT = "garmin-freemap-extension:enable";
   const DISABLE_EVENT = "garmin-freemap-extension:disable";
   const FAILURE_EVENT = "garmin-freemap-extension:failure";
   const PREFERENCE_STORAGE_KEY = "preferredMapMode";
   const OBSOLETE_DISCLOSURE_STORAGE_KEY = "freemapDisclosureAccepted";
   const EXPECTED_ZOOM_TIMEOUT_MS = 5_000;
+  const AUTOMATIC_ZOOM_POLL_MS = 100;
+  const AUTOMATIC_ZOOM_RETRY_MS = 750;
+  const AUTOMATIC_ZOOM_TIMEOUT_MS = 8_000;
+  const NATIVE_PROVIDER_SWITCH_TIMEOUT_MS = 5_000;
   const noticeTimers = new WeakMap();
   const guardedMaps = new WeakSet();
+  const nativeProviderStates = new WeakMap();
   const originalZoomControlAria = new WeakMap();
   const touchDistances = new WeakMap();
   const expectedZoomStates = new WeakMap();
   let freemapEnabled = false;
+  let nativeGoogleClickInProgress = false;
   let pendingFreemapSwitch = null;
+  let pendingNativeProviderSwitch = null;
   let preferredMapMode = "garmin";
   let preferenceApplied = false;
   let preferenceLoaded = false;
+  let nativeProviderRefreshFrame = null;
   let zoomRefreshFrame = null;
 
   function getSourceAttribute(image) {
@@ -114,8 +128,9 @@
           : "garmin";
         preferenceLoaded = true;
 
-        const control = document.querySelector(`[${CONTROL_ATTRIBUTE}]`);
-        const mapContainer = control?.closest(".leaflet-container");
+        const mapContainer = document.querySelector(
+          `.leaflet-container[${MAP_ATTRIBUTE}]`
+        );
 
         if (mapContainer) {
           applyStoredPreference(mapContainer);
@@ -159,6 +174,457 @@
     }
 
     return currentZoom;
+  }
+
+  function getNativeProviderOptions(listbox) {
+    return Array.from(
+      listbox.querySelectorAll(':scope > [role="option"][data-value]')
+    ).filter((option) => !option.hasAttribute(NATIVE_PROVIDER_OPTION_ATTRIBUTE));
+  }
+
+  function isNativeProviderListbox(listbox) {
+    if (!(listbox instanceof Element) || listbox.getAttribute("role") !== "listbox") {
+      return false;
+    }
+
+    const values = new Set(
+      getNativeProviderOptions(listbox).map((option) => option.dataset.value)
+    );
+    const providerButton = getNativeProviderButton(listbox);
+    return (
+      ["google", "here", "osm"].every((value) => values.has(value)) &&
+      providerButton !== null
+    );
+  }
+
+  function getNativeProviderListboxes() {
+    return Array.from(document.querySelectorAll('[role="listbox"]'))
+      .filter(isNativeProviderListbox);
+  }
+
+  function getNativeProviderButton(listbox) {
+    if (!listbox.id) {
+      return null;
+    }
+
+    return Array.from(
+      document.querySelectorAll('button[aria-haspopup="listbox"][aria-controls]')
+    ).find((button) => button.getAttribute("aria-controls") === listbox.id) || null;
+  }
+
+  function getLeafTextElement(container) {
+    return Array.from(container.querySelectorAll("span")).find((span) => (
+      span.children.length === 0 &&
+      span.textContent.trim() !== "" &&
+      !span.hasAttribute(NATIVE_PROVIDER_LABEL_ATTRIBUTE)
+    )) || null;
+  }
+
+  function getSelectedNativeProviderOption(listbox) {
+    return getNativeProviderOptions(listbox).find(
+      (option) => option.getAttribute("aria-selected") === "true"
+    ) || null;
+  }
+
+  function captureNativeProviderState(listbox) {
+    const previousState = nativeProviderStates.get(listbox) || {
+      activeClasses: [],
+      selectedNativeValue: NATIVE_GOOGLE_PROVIDER_VALUE
+    };
+    const nativeOptions = getNativeProviderOptions(listbox);
+    const selectedOption = getSelectedNativeProviderOption(listbox);
+
+    if (selectedOption) {
+      const inactiveOption = nativeOptions.find((option) => option !== selectedOption);
+      previousState.selectedNativeValue = selectedOption.dataset.value;
+
+      if (inactiveOption) {
+        previousState.activeClasses = Array.from(selectedOption.classList).filter(
+          (className) => !inactiveOption.classList.contains(className)
+        );
+      }
+    }
+
+    nativeProviderStates.set(listbox, previousState);
+    return previousState;
+  }
+
+  function setNativeOptionSelected(option, selected, activeClasses) {
+    const selectedText = String(selected);
+
+    if (option.getAttribute("aria-selected") !== selectedText) {
+      option.setAttribute("aria-selected", selectedText);
+    }
+
+    for (const className of activeClasses) {
+      option.classList.toggle(className, selected);
+    }
+  }
+
+  function createNativeFreemapOption(listbox, state) {
+    const existingOption = listbox.querySelector(
+      `:scope > [${NATIVE_PROVIDER_OPTION_ATTRIBUTE}]`
+    );
+
+    if (existingOption) {
+      return existingOption;
+    }
+
+    const nativeOptions = getNativeProviderOptions(listbox);
+    const template = nativeOptions.find(
+      (option) => option.getAttribute("aria-selected") !== "true"
+    ) || nativeOptions.at(-1);
+
+    if (!template) {
+      return null;
+    }
+
+    const option = template.cloneNode(true);
+    option.removeAttribute("id");
+    option.setAttribute(NATIVE_PROVIDER_OPTION_ATTRIBUTE, "");
+    option.dataset.value = NATIVE_PROVIDER_VALUE;
+    option.setAttribute("aria-selected", "false");
+
+    for (const element of option.querySelectorAll("[data-value]")) {
+      element.dataset.value = NATIVE_PROVIDER_VALUE;
+    }
+
+    const label = getLeafTextElement(option);
+    if (label) {
+      label.textContent = "Freemap.sk";
+    }
+
+    for (const className of state.activeClasses) {
+      option.classList.remove(className);
+    }
+
+    listbox.append(option);
+    return option;
+  }
+
+  function setNativeProviderButtonLabel(listbox, useFreemapLabel) {
+    const button = getNativeProviderButton(listbox);
+
+    if (!button) {
+      return;
+    }
+
+    if (!useFreemapLabel) {
+      for (const label of button.querySelectorAll(
+        `[${NATIVE_PROVIDER_LABEL_ATTRIBUTE}]`
+      )) {
+        label.remove();
+      }
+
+      for (const label of button.querySelectorAll(
+        `[${NATIVE_PROVIDER_LABEL_HIDDEN_ATTRIBUTE}]`
+      )) {
+        label.removeAttribute(NATIVE_PROVIDER_LABEL_HIDDEN_ATTRIBUTE);
+      }
+      return;
+    }
+
+    if (button.querySelector(`[${NATIVE_PROVIDER_LABEL_ATTRIBUTE}]`)) {
+      return;
+    }
+
+    const nativeLabel = getLeafTextElement(button);
+    if (!nativeLabel) {
+      return;
+    }
+
+    const freemapLabel = nativeLabel.cloneNode(false);
+    freemapLabel.removeAttribute("id");
+    freemapLabel.removeAttribute(NATIVE_PROVIDER_LABEL_HIDDEN_ATTRIBUTE);
+    freemapLabel.setAttribute(NATIVE_PROVIDER_LABEL_ATTRIBUTE, "");
+    freemapLabel.textContent = "Freemap.sk";
+    nativeLabel.setAttribute(NATIVE_PROVIDER_LABEL_HIDDEN_ATTRIBUTE, "");
+    nativeLabel.after(freemapLabel);
+  }
+
+  function getNativeMapTypeParts(listbox) {
+    const providerButton = getNativeProviderButton(listbox);
+
+    if (!providerButton) {
+      return null;
+    }
+
+    let settingsBoundary = providerButton.parentElement;
+    let typeButtons = [];
+
+    for (
+      ;
+      settingsBoundary && settingsBoundary !== document.documentElement;
+      settingsBoundary = settingsBoundary.parentElement
+    ) {
+      typeButtons = Array.from(settingsBoundary.querySelectorAll(
+        'button[aria-label="default"], button[aria-label="satellite"], button[aria-label="terrain"]'
+      ));
+      if (typeButtons.length > 0) {
+        break;
+      }
+    }
+
+    if (!settingsBoundary || typeButtons.length === 0) {
+      return null;
+    }
+
+    let section = typeButtons[0];
+
+    while (
+      section.parentElement &&
+      section.parentElement !== settingsBoundary &&
+      !section.parentElement.contains(providerButton)
+    ) {
+      section = section.parentElement;
+    }
+
+    if (section === settingsBoundary || section.contains(providerButton)) {
+      return null;
+    }
+
+    const separator = section.previousElementSibling?.tagName === "HR"
+      ? section.previousElementSibling
+      : null;
+    return { section, separator };
+  }
+
+  function setNativeMapTypeVisibility(listbox, hidden) {
+    const parts = getNativeMapTypeParts(listbox);
+
+    if (parts && hidden) {
+      parts.section.setAttribute(NATIVE_MAP_TYPE_HIDDEN_ATTRIBUTE, "");
+      parts.separator?.setAttribute(NATIVE_MAP_TYPE_HIDDEN_ATTRIBUTE, "");
+      return;
+    }
+
+    for (const element of document.querySelectorAll(
+      `[${NATIVE_MAP_TYPE_HIDDEN_ATTRIBUTE}]`
+    )) {
+      element.removeAttribute(NATIVE_MAP_TYPE_HIDDEN_ATTRIBUTE);
+    }
+  }
+
+  function syncNativeProviderListbox(listbox) {
+    const state = captureNativeProviderState(listbox);
+    const freemapOption = createNativeFreemapOption(listbox, state);
+
+    if (!freemapOption) {
+      return;
+    }
+
+    if (freemapEnabled) {
+      for (const option of getNativeProviderOptions(listbox)) {
+        setNativeOptionSelected(option, false, state.activeClasses);
+      }
+      setNativeOptionSelected(freemapOption, true, state.activeClasses);
+    } else {
+      setNativeOptionSelected(freemapOption, false, state.activeClasses);
+
+      if (!getSelectedNativeProviderOption(listbox)) {
+        const restoredOption = getNativeProviderOptions(listbox).find(
+          (option) => option.dataset.value === state.selectedNativeValue
+        );
+        if (restoredOption) {
+          setNativeOptionSelected(restoredOption, true, state.activeClasses);
+        }
+      }
+    }
+
+    setNativeProviderButtonLabel(listbox, freemapEnabled);
+    setNativeMapTypeVisibility(listbox, freemapEnabled);
+  }
+
+  function syncNativeProviderControls() {
+    for (const listbox of getNativeProviderListboxes()) {
+      syncNativeProviderListbox(listbox);
+    }
+  }
+
+  function scheduleNativeProviderRefresh() {
+    if (nativeProviderRefreshFrame !== null) {
+      return;
+    }
+
+    nativeProviderRefreshFrame = requestAnimationFrame(() => {
+      nativeProviderRefreshFrame = null;
+      syncNativeProviderControls();
+    });
+  }
+
+  function mapHasGoogleTiles(mapContainer) {
+    return Array.from(mapContainer.querySelectorAll("img[src]")).some(
+      (image) => tileUrlApi.parseGarminGoogleTileUrl(getSourceAttribute(image)) !== null
+    );
+  }
+
+  function findPreferredMapContainer() {
+    const initializedMaps = Array.from(
+      document.querySelectorAll(`.leaflet-container[${MAP_ATTRIBUTE}]`)
+    );
+
+    for (const mapContainer of initializedMaps) {
+      const bounds = mapContainer.getBoundingClientRect();
+      if (bounds.width > 0 && bounds.height > 0) {
+        return mapContainer;
+      }
+    }
+
+    return initializedMaps[0] ||
+      document.querySelector(".leaflet-container");
+  }
+
+  function cancelPendingNativeProviderSwitch() {
+    if (!pendingNativeProviderSwitch) {
+      return;
+    }
+
+    clearTimeout(pendingNativeProviderSwitch.timeoutId);
+    pendingNativeProviderSwitch = null;
+  }
+
+  function failPendingNativeProviderSwitch() {
+    cancelPendingNativeProviderSwitch();
+    rememberPreference("garmin");
+    setFreemapEnabled(
+      false,
+      "Google podklad sa nepodarilo pripraviť. Zostáva zapnutá Garmin mapa."
+    );
+  }
+
+  function advancePendingNativeProviderSwitch() {
+    const pending = pendingNativeProviderSwitch;
+
+    if (!pending) {
+      return;
+    }
+
+    if (!pending.mapContainer.isConnected) {
+      const replacementMap = findPreferredMapContainer();
+
+      if (!replacementMap) {
+        failPendingNativeProviderSwitch();
+        return;
+      }
+
+      pending.mapContainer = replacementMap;
+    }
+
+    if (!mapHasGoogleTiles(pending.mapContainer)) {
+      return;
+    }
+
+    const mapContainer = pending.mapContainer;
+    cancelPendingNativeProviderSwitch();
+    rememberPreference("freemap");
+    setFreemapEnabled(true, "", true, mapContainer);
+  }
+
+  function beginNativeProviderSwitch(mapContainer, googleOption, clickGoogle) {
+    cancelPendingNativeProviderSwitch();
+
+    const pending = {
+      mapContainer,
+      timeoutId: null
+    };
+    pending.timeoutId = setTimeout(() => {
+      if (pendingNativeProviderSwitch === pending) {
+        failPendingNativeProviderSwitch();
+      }
+    }, NATIVE_PROVIDER_SWITCH_TIMEOUT_MS);
+    pendingNativeProviderSwitch = pending;
+
+    if (clickGoogle) {
+      nativeGoogleClickInProgress = true;
+      try {
+        googleOption.click();
+      } finally {
+        nativeGoogleClickInProgress = false;
+      }
+    }
+
+    advancePendingNativeProviderSwitch();
+  }
+
+  function closeNativeProviderListbox(listbox) {
+    const button = getNativeProviderButton(listbox);
+    if (button?.getAttribute("aria-expanded") === "true") {
+      button.click();
+    }
+  }
+
+  function selectFreemapFromNativeProvider(listbox) {
+    const mapContainer = findPreferredMapContainer();
+
+    if (!mapContainer) {
+      showNotice("Mapu Garmin Connect sa nepodarilo nájsť.");
+      return;
+    }
+
+    if (freemapEnabled) {
+      closeNativeProviderListbox(listbox);
+      return;
+    }
+
+    const state = captureNativeProviderState(listbox);
+    const selectedValue = getSelectedNativeProviderOption(listbox)?.dataset.value ||
+      state.selectedNativeValue;
+    const googleOption = getNativeProviderOptions(listbox).find(
+      (option) => option.dataset.value === NATIVE_GOOGLE_PROVIDER_VALUE
+    );
+
+    if (!googleOption) {
+      showNotice("Google podklad Garmin Connect sa nepodarilo nájsť.");
+      return;
+    }
+
+    if (selectedValue === NATIVE_GOOGLE_PROVIDER_VALUE && mapHasGoogleTiles(mapContainer)) {
+      rememberPreference("freemap");
+      setFreemapEnabled(true, "", true, mapContainer);
+      closeNativeProviderListbox(listbox);
+      return;
+    }
+
+    beginNativeProviderSwitch(
+      mapContainer,
+      googleOption,
+      selectedValue !== NATIVE_GOOGLE_PROVIDER_VALUE
+    );
+  }
+
+  function handleNativeProviderOptionClick(event) {
+    if (!(event.target instanceof Element)) {
+      return;
+    }
+
+    const option = event.target.closest('[role="option"][data-value]');
+    const listbox = option?.parentElement;
+
+    if (!option || !listbox || !isNativeProviderListbox(listbox)) {
+      return;
+    }
+
+    if (option.hasAttribute(NATIVE_PROVIDER_OPTION_ATTRIBUTE)) {
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      selectFreemapFromNativeProvider(listbox);
+      scheduleNativeProviderRefresh();
+      return;
+    }
+
+    if (nativeGoogleClickInProgress) {
+      scheduleNativeProviderRefresh();
+      return;
+    }
+
+    cancelPendingNativeProviderSwitch();
+
+    if (freemapEnabled) {
+      rememberPreference("garmin");
+      setFreemapEnabled(false);
+    }
+
+    scheduleNativeProviderRefresh();
   }
 
   function getZoomLimitMessage(direction) {
@@ -391,6 +857,7 @@
     }
 
     clearTimeout(pendingFreemapSwitch.timeoutId);
+    clearInterval(pendingFreemapSwitch.pollIntervalId);
     pendingFreemapSwitch = null;
   }
 
@@ -398,6 +865,24 @@
     cancelPendingFreemapSwitch();
     showNotice("Zoom sa nepodarilo nastaviť. Zostáva zapnutá Garmin mapa.");
     updateControls();
+  }
+
+  function dispatchAutomaticWheelZoom(mapContainer, direction) {
+    const bounds = mapContainer.getBoundingClientRect();
+
+    try {
+      mapContainer.dispatchEvent(new WheelEvent("wheel", {
+        bubbles: true,
+        cancelable: true,
+        clientX: bounds.left + bounds.width / 2,
+        clientY: bounds.top + bounds.height / 2,
+        deltaMode: WheelEvent.DOM_DELTA_PIXEL,
+        deltaY: direction > 0 ? -60 : 60
+      }));
+      return true;
+    } catch {
+      return false;
+    }
   }
 
   function advancePendingFreemapSwitch() {
@@ -414,7 +899,7 @@
       return;
     }
 
-    if (zoom >= tileUrlApi.FREEMAP_MIN_ZOOM && zoom <= tileUrlApi.FREEMAP_MAX_ZOOM) {
+    if (zoom === pending.targetZoom) {
       const targetZoom = pending.targetZoom;
       cancelPendingFreemapSwitch();
       setFreemapEnabled(
@@ -426,43 +911,66 @@
       return;
     }
 
-    if (pending.lastClickedZoom === zoom) {
+    const currentTime = Date.now();
+
+    if (
+      pending.lastClickedZoom === zoom &&
+      currentTime - pending.lastClickAt < AUTOMATIC_ZOOM_RETRY_MS
+    ) {
       return;
     }
 
-    const direction = zoom < tileUrlApi.FREEMAP_MIN_ZOOM ? 1 : -1;
+    const direction = zoom < pending.targetZoom ? 1 : -1;
     const selector = direction > 0
       ? ".leaflet-control-zoom-in"
       : ".leaflet-control-zoom-out";
     const zoomControl = pending.mapContainer.querySelector(selector);
 
     if (
-      !zoomControl ||
-      zoomControl.classList.contains("leaflet-disabled") ||
-      zoomControl.getAttribute("aria-disabled") === "true"
+      zoomControl &&
+      (
+        zoomControl.classList.contains("leaflet-disabled") ||
+        zoomControl.getAttribute("aria-disabled") === "true"
+      )
     ) {
       failPendingFreemapSwitch();
       return;
     }
 
     pending.lastClickedZoom = zoom;
-    zoomControl.click();
+    pending.lastClickAt = currentTime;
 
-    // Niektoré Leaflet verzie zmenia dlaždice priamo počas click handlera.
-    // Asynchrónne verzie pokračujú cez MutationObserver nižšie.
+    if (zoomControl) {
+      zoomControl.click();
+    } else if (!dispatchAutomaticWheelZoom(pending.mapContainer, direction)) {
+      failPendingFreemapSwitch();
+      return;
+    }
+
+    // Niektoré Leaflet verzie zmenia dlaždice priamo počas udalosti.
+    // Asynchrónne verzie pokračujú cez MutationObserver alebo poll nižšie.
     advancePendingFreemapSwitch();
   }
 
   function beginFreemapSwitchAtSupportedZoom(mapContainer, currentZoom) {
     cancelPendingFreemapSwitch();
 
+    // Automatické Garmin +/- kliknutia nesmú prechádzať cez ochranu hraníc
+    // Freemap ani zdediť jej dočasne upravené aria atribúty.
+    resetExpectedZoomStates();
+    freemapEnabled = false;
+    document.dispatchEvent(new Event(DISABLE_EVENT));
+    updateControls();
+
     const targetZoom = Math.min(
       tileUrlApi.FREEMAP_MAX_ZOOM,
       Math.max(tileUrlApi.FREEMAP_MIN_ZOOM, currentZoom)
     );
     const pending = {
+      lastClickAt: 0,
       lastClickedZoom: null,
       mapContainer,
+      pollIntervalId: null,
       targetZoom,
       timeoutId: null
     };
@@ -471,7 +979,12 @@
       if (pendingFreemapSwitch === pending) {
         failPendingFreemapSwitch();
       }
-    }, 5_000);
+    }, AUTOMATIC_ZOOM_TIMEOUT_MS);
+    pending.pollIntervalId = setInterval(() => {
+      if (pendingFreemapSwitch === pending) {
+        advancePendingFreemapSwitch();
+      }
+    }, AUTOMATIC_ZOOM_POLL_MS);
     pendingFreemapSwitch = pending;
 
     showNotice(`Upravujem Garmin zoom na ${targetZoom} pre Freemap…`);
@@ -485,6 +998,7 @@
     requestedMap = null
   ) {
     if (!nextEnabled) {
+      cancelPendingNativeProviderSwitch();
       cancelPendingFreemapSwitch();
     }
 
@@ -512,19 +1026,6 @@
     if (noticeMessage) {
       showNotice(noticeMessage);
     }
-  }
-
-  function createButton(mode, label, mapContainer) {
-    const button = document.createElement("button");
-    button.type = "button";
-    button.className = "garmin-freemap-control__button";
-    button.dataset.mode = mode;
-    button.textContent = label;
-    button.addEventListener("click", () => {
-      rememberPreference(mode);
-      setFreemapEnabled(mode === "freemap", "", true, mapContainer);
-    });
-    return button;
   }
 
   function stopMapInteractionEvents(element) {
@@ -581,29 +1082,19 @@
     return attribution;
   }
 
-  function addMapControls(mapContainer) {
-    if (mapContainer.querySelector(`:scope > [${CONTROL_ATTRIBUTE}]`)) {
+  function initializeMapUi(mapContainer) {
+    if (mapContainer.hasAttribute(MAP_ATTRIBUTE)) {
       return;
     }
 
-    const control = document.createElement("div");
-    control.className = "garmin-freemap-control";
-    control.setAttribute(CONTROL_ATTRIBUTE, "");
-    control.setAttribute("role", "group");
-    control.setAttribute("aria-label", "Mapový podklad");
-    control.append(
-      createButton("garmin", "Garmin", mapContainer),
-      createButton("freemap", "Freemap", mapContainer)
-    );
+    mapContainer.setAttribute(MAP_ATTRIBUTE, "");
 
     const notice = document.createElement("div");
     notice.className = "garmin-freemap-notice";
     notice.setAttribute("aria-live", "polite");
     notice.hidden = true;
 
-    stopMapInteractionEvents(control);
     mapContainer.append(
-      control,
       notice,
       createAttribution()
     );
@@ -620,19 +1111,11 @@
     const mapContainer = image.closest(".leaflet-container");
 
     if (mapContainer) {
-      addMapControls(mapContainer);
+      initializeMapUi(mapContainer);
     }
   }
 
   function updateControls() {
-    for (const control of document.querySelectorAll(`[${CONTROL_ATTRIBUTE}]`)) {
-      for (const button of control.querySelectorAll("button[data-mode]")) {
-        const active = (button.dataset.mode === "freemap") === freemapEnabled;
-        button.classList.toggle("is-active", active);
-        button.setAttribute("aria-pressed", String(active));
-      }
-    }
-
     for (const attribution of document.querySelectorAll(".garmin-freemap-attribution")) {
       attribution.hidden = !freemapEnabled;
     }
@@ -640,6 +1123,8 @@
     for (const mapContainer of document.querySelectorAll(".leaflet-container")) {
       updateMapZoomLimits(mapContainer);
     }
+
+    syncNativeProviderControls();
   }
 
   function showNotice(message) {
@@ -689,7 +1174,9 @@
     }
 
     scheduleZoomLimitRefresh();
+    scheduleNativeProviderRefresh();
     advancePendingFreemapSwitch();
+    advancePendingNativeProviderSwitch();
   });
 
   document.addEventListener(FAILURE_EVENT, () => {
@@ -707,6 +1194,8 @@
     subtree: true
   });
 
+  document.addEventListener("click", handleNativeProviderOptionClick, true);
   loadStoredPreference();
   inspectNode(document.documentElement);
+  syncNativeProviderControls();
 })();

@@ -5,7 +5,30 @@ verziovanie v tvare `MAJOR.MINOR.PATCH`.
 
 ## Unreleased
 
-- Verzia manifestu pripravená ako 0.5.3.
+- Pripravený prototyp 0.6.0: `Freemap.sk` sa zobrazuje priamo medzi
+  poskytovateľmi v natívnom dialógu „Nastavenia mapy“ Garmin Connect.
+- Integrácia používa iba overené ARIA roly, väzbu `aria-controls` a natívne
+  hodnoty `google`/`here`/`osm`; nezávisí od dynamických CSS tried Garminu ani
+  od lokalizovaného textu dialógu.
+- Pri Freemap sa skryje nepoužiteľná sekcia typu mapy. Výber Google, HERE alebo
+  OpenStreetMap Freemap bezpečne vypne a pôvodné Garmin kliknutie pokračuje.
+- Pri prechode z HERE/OSM na Freemap sa najprv použije natívna voľba Google,
+  ktorej overený dlaždicový formát následne spracuje existujúci prekladač.
+- Po úspešnom živom teste na detaile aktivity aj v plánovači bol duplicitný
+  horný prepínač odstránený; podklad sa ovláda iba cez Garmin nastavenia mapy.
+- Pridaný samostatný DOM regresný test natívneho dialógu a jeho React
+  opätovného vykreslenia.
+- Plánovač používa rovnaký Garmin listbox poskytovateľov, ale bez dialogových
+  ARIA atribútov; detekcia je preto viazaná na `aria-controls` a presnú trojicu
+  natívnych hodnôt `google`/`here`/`osm`.
+
+## 0.5.5 – 2026-08-17
+
+- Vydaná testovacia verzia manifestu 0.5.5.
+- Detail aktivity bez dostupných Leaflet `+`/`−` prvkov používa na automatické
+  nastavenie hranice overenú syntetickú udalosť kolieska na mape.
+- Automatické nastavenie Garmin zoomu mimo rozsahu teraz používa samostatný
+  kontrolovaný režim, presnú cieľovú úroveň 5/18 a časovo obmedzené opakovanie.
 - Rýchle série kolieska, tlačidiel, klávesov a dotykových gest už nemôžu
   prekročiť Freemap zoom 5–18 počas čakania na nové dlaždice.
 - Názov zmenený na `Outdoor tiles from Freemap.sk for Garmin Connect` podľa
