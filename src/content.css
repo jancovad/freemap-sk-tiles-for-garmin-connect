@@ -89,3 +89,8 @@
 .garmin-freemap-notice[hidden] {
   display: none !important;
 }
+
+[data-garmin-freemap-label-hidden],
+[data-garmin-freemap-map-type-hidden] {
+  display: none !important;
+}

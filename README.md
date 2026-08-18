@@ -1,8 +1,9 @@
 # Outdoor tiles from Freemap.sk for Garmin Connect
 
-Neoficiálne komunitné Chrome rozšírenie pre webový Garmin Connect. Do
-podporovaných Leaflet máp pridáva prepínač **Garmin / Freemap** a mení výhradne
-podkladové dlaždice na Freemap.sk Outdoor.
+Neoficiálne komunitné Chrome rozšírenie pre webový Garmin Connect. Do natívneho
+dialógu **Nastavenia mapy** pridáva poskytovateľa **Freemap.sk** a mení výhradne
+podkladové dlaždice na Freemap.sk Outdoor. Počas testovania prototypu 0.6.0
+zostáva nad mapou dostupný aj pôvodný prepínač **Garmin / Freemap** ako poistka.
 
 Nie je vytvorené, podporované ani schválené spoločnosťou Garmin ani
 OpenStreetMap Foundation. Freemap Slovakia písomne povolila použitie svojho
@@ -20,6 +21,7 @@ Verejný repozitár: <https://github.com/jancovad/freemap-sk-tiles-for-garmin-co
 
 - Chrome Manifest V3.
 - Detail aktivity a plánovač/editor trás.
+- Voľba Freemap.sk priamo v natívnom zozname poskytovateľov mapy Garmin Connect.
 - Zachovanie Garmin trasy, bodov, prekrytí, ovládania mapy a routingu.
 - Viditeľná atribúcia Freemap Slovakia, OpenStreetMap/ODbL a odkaz na aktuálne
   zdroje výškových dát.
@@ -55,7 +57,10 @@ ani URL stránky. Podrobnosti sú v [zásadách ochrany súkromia](PRIVACY.md).
 Bez inštalácie otvor v Chrome súbor `test/browser.html`. Očakávaný výsledok je
 `PASS: 30 testov, 0 chýb`. Súbor `test/preference-browser.html` samostatne
 overuje obnovenie uloženej voľby Freemap a odstránenie zastaranej hodnoty
-z predchádzajúcej testovacej verzie.
+z predchádzajúcej testovacej verzie. Súbor `test/native-provider-browser.html`
+overuje vloženie Freemap.sk do Garmin listboxu, synchronizáciu dialógu, návrat
+na natívneho poskytovateľa a obnovu po React prekreslení; očakáva sa
+`PASS: 6 testov, 0 chýb`.
 
 Ak je dostupný Node.js, prevodovú logiku overí jeho vstavaný test runner bez
 inštalovania balíkov:
@@ -75,8 +80,9 @@ hexadecimálny parser. Historický parser sa v produkcii nepoužíva.
 2. Zapni **Developer mode**.
 3. Klikni **Load unpacked**.
 4. Vyber celý priečinok `D:\dev\GarminFreemap`.
-5. Otvor alebo obnov Garmin Connect. Nad podporovanou mapou sa zobrazí prepínač
-   **Garmin / Freemap**.
+5. Otvor alebo obnov Garmin Connect. V **Nastaveniach mapy** sa medzi
+   poskytovateľmi zobrazí **Freemap.sk**. Nad mapou zostáva počas testovania
+   0.6.0 aj záložný prepínač **Garmin / Freemap**.
 
 Po zmene zdrojov klikni pri rozšírení na ikonu obnovenia a obnov aj stránku
 Garmin Connect.
@@ -100,17 +106,20 @@ unpacked** vyber tento rozbalený priečinok.
 Na detaile aktivity aj v plánovači over:
 
 1. Garmin mapa je predvolená.
-2. **Freemap** okamžite zmení iba podklad a zobrazí všetky tri atribučné odkazy.
-3. Trasa, body, prekrytia a routing zostanú nezmenené.
-4. Zoom a posúvanie plynulo načítajú nové dlaždice so správnou retina príponou.
-5. Na zoome 18 sa zablokuje zoom in a na zoome 5 zoom out bez prepnutia na
+2. Otvor natívne **Nastavenia mapy** cez ikonu vrstiev a vyber **Freemap.sk**.
+3. Freemap okamžite zmení iba podklad, v dialógu skryje sekciu typu mapy a
+   zobrazí všetky tri atribučné odkazy.
+4. Trasa, body, prekrytia a routing zostanú nezmenené.
+5. Zoom a posúvanie plynulo načítajú nové dlaždice so správnou retina príponou.
+6. Na zoome 18 sa zablokuje zoom in a na zoome 5 zoom out bez prepnutia na
    Garmin.
-6. Rýchla séria zoomovania z úrovne 17 alebo 6 skončí na hranici 18 alebo 5
+7. Rýchla séria zoomovania z úrovne 17 alebo 6 skončí na hranici 18 alebo 5
    a podklad zostane Freemap.
-7. Prepnutie z Garmin zoomu nad 18 alebo pod 5 najprv nastaví najbližšiu
+8. Prepnutie z Garmin zoomu nad 18 alebo pod 5 najprv nastaví najbližšiu
    podporovanú hranicu.
-8. **Garmin** okamžite vráti pôvodný podklad a voľba sa zachová po obnovení
-   stránky.
+9. Výber Google, HERE alebo OpenStreetMap v natívnom dialógu okamžite vypne
+   Freemap a zachová zvolený Garmin podklad.
+10. Voľba sa zachová po obnovení stránky; záložný horný prepínač stále funguje.
 
 V Network paneli filtruj `outdoor.tiles.freemap.sk`. URL má obsahovať
 `?app=garmin-connect-ext` a podľa `window.devicePixelRatio` žiadnu príponu,

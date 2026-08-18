@@ -5,6 +5,19 @@ verziovanie v tvare `MAJOR.MINOR.PATCH`.
 
 ## Unreleased
 
+- Pripravený prototyp 0.6.0: `Freemap.sk` sa zobrazuje priamo medzi
+  poskytovateľmi v natívnom dialógu „Nastavenia mapy“ Garmin Connect.
+- Integrácia používa iba overené ARIA roly, väzbu `aria-controls` a natívne
+  hodnoty `google`/`here`/`osm`; nezávisí od dynamických CSS tried Garminu ani
+  od lokalizovaného textu dialógu.
+- Pri Freemap sa skryje nepoužiteľná sekcia typu mapy. Výber Google, HERE alebo
+  OpenStreetMap Freemap bezpečne vypne a pôvodné Garmin kliknutie pokračuje.
+- Pri prechode z HERE/OSM na Freemap sa najprv použije natívna voľba Google,
+  ktorej overený dlaždicový formát následne spracuje existujúci prekladač.
+- Pôvodný horný prepínač zostáva počas testovania 0.6.0 dostupný ako poistka.
+- Pridaný samostatný DOM regresný test natívneho dialógu a jeho React
+  opätovného vykreslenia.
+
 ## 0.5.5 – 2026-08-17
 
 - Vydaná testovacia verzia manifestu 0.5.5.

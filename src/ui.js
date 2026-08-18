@@ -8,6 +8,12 @@
   }
 
   const CONTROL_ATTRIBUTE = "data-garmin-freemap-control";
+  const NATIVE_PROVIDER_OPTION_ATTRIBUTE = "data-garmin-freemap-provider-option";
+  const NATIVE_PROVIDER_LABEL_ATTRIBUTE = "data-garmin-freemap-provider-label";
+  const NATIVE_PROVIDER_LABEL_HIDDEN_ATTRIBUTE = "data-garmin-freemap-label-hidden";
+  const NATIVE_MAP_TYPE_HIDDEN_ATTRIBUTE = "data-garmin-freemap-map-type-hidden";
+  const NATIVE_PROVIDER_VALUE = "freemap";
+  const NATIVE_GOOGLE_PROVIDER_VALUE = "google";
   const ENABLE_EVENT = "garmin-freemap-extension:enable";
   const DISABLE_EVENT = "garmin-freemap-extension:disable";
   const FAILURE_EVENT = "garmin-freemap-extension:failure";
@@ -17,16 +23,21 @@
   const AUTOMATIC_ZOOM_POLL_MS = 100;
   const AUTOMATIC_ZOOM_RETRY_MS = 750;
   const AUTOMATIC_ZOOM_TIMEOUT_MS = 8_000;
+  const NATIVE_PROVIDER_SWITCH_TIMEOUT_MS = 5_000;
   const noticeTimers = new WeakMap();
   const guardedMaps = new WeakSet();
+  const nativeProviderStates = new WeakMap();
   const originalZoomControlAria = new WeakMap();
   const touchDistances = new WeakMap();
   const expectedZoomStates = new WeakMap();
   let freemapEnabled = false;
+  let nativeGoogleClickInProgress = false;
   let pendingFreemapSwitch = null;
+  let pendingNativeProviderSwitch = null;
   let preferredMapMode = "garmin";
   let preferenceApplied = false;
   let preferenceLoaded = false;
+  let nativeProviderRefreshFrame = null;
   let zoomRefreshFrame = null;
 
   function getSourceAttribute(image) {
@@ -162,6 +173,438 @@
     }
 
     return currentZoom;
+  }
+
+  function getNativeProviderOptions(listbox) {
+    return Array.from(
+      listbox.querySelectorAll(':scope > [role="option"][data-value]')
+    ).filter((option) => !option.hasAttribute(NATIVE_PROVIDER_OPTION_ATTRIBUTE));
+  }
+
+  function isNativeProviderListbox(listbox) {
+    if (!(listbox instanceof Element) || listbox.getAttribute("role") !== "listbox") {
+      return false;
+    }
+
+    const values = new Set(
+      getNativeProviderOptions(listbox).map((option) => option.dataset.value)
+    );
+    const providerButton = getNativeProviderButton(listbox);
+    return (
+      ["google", "here", "osm"].every((value) => values.has(value)) &&
+      Boolean(providerButton?.closest('[role="dialog"][aria-modal="true"]'))
+    );
+  }
+
+  function getNativeProviderListboxes() {
+    return Array.from(document.querySelectorAll('[role="listbox"]'))
+      .filter(isNativeProviderListbox);
+  }
+
+  function getNativeProviderButton(listbox) {
+    if (!listbox.id) {
+      return null;
+    }
+
+    return Array.from(
+      document.querySelectorAll('button[aria-haspopup="listbox"][aria-controls]')
+    ).find((button) => button.getAttribute("aria-controls") === listbox.id) || null;
+  }
+
+  function getLeafTextElement(container) {
+    return Array.from(container.querySelectorAll("span")).find((span) => (
+      span.children.length === 0 &&
+      span.textContent.trim() !== "" &&
+      !span.hasAttribute(NATIVE_PROVIDER_LABEL_ATTRIBUTE)
+    )) || null;
+  }
+
+  function getSelectedNativeProviderOption(listbox) {
+    return getNativeProviderOptions(listbox).find(
+      (option) => option.getAttribute("aria-selected") === "true"
+    ) || null;
+  }
+
+  function captureNativeProviderState(listbox) {
+    const previousState = nativeProviderStates.get(listbox) || {
+      activeClasses: [],
+      selectedNativeValue: NATIVE_GOOGLE_PROVIDER_VALUE
+    };
+    const nativeOptions = getNativeProviderOptions(listbox);
+    const selectedOption = getSelectedNativeProviderOption(listbox);
+
+    if (selectedOption) {
+      const inactiveOption = nativeOptions.find((option) => option !== selectedOption);
+      previousState.selectedNativeValue = selectedOption.dataset.value;
+
+      if (inactiveOption) {
+        previousState.activeClasses = Array.from(selectedOption.classList).filter(
+          (className) => !inactiveOption.classList.contains(className)
+        );
+      }
+    }
+
+    nativeProviderStates.set(listbox, previousState);
+    return previousState;
+  }
+
+  function setNativeOptionSelected(option, selected, activeClasses) {
+    const selectedText = String(selected);
+
+    if (option.getAttribute("aria-selected") !== selectedText) {
+      option.setAttribute("aria-selected", selectedText);
+    }
+
+    for (const className of activeClasses) {
+      option.classList.toggle(className, selected);
+    }
+  }
+
+  function createNativeFreemapOption(listbox, state) {
+    const existingOption = listbox.querySelector(
+      `:scope > [${NATIVE_PROVIDER_OPTION_ATTRIBUTE}]`
+    );
+
+    if (existingOption) {
+      return existingOption;
+    }
+
+    const nativeOptions = getNativeProviderOptions(listbox);
+    const template = nativeOptions.find(
+      (option) => option.getAttribute("aria-selected") !== "true"
+    ) || nativeOptions.at(-1);
+
+    if (!template) {
+      return null;
+    }
+
+    const option = template.cloneNode(true);
+    option.removeAttribute("id");
+    option.setAttribute(NATIVE_PROVIDER_OPTION_ATTRIBUTE, "");
+    option.dataset.value = NATIVE_PROVIDER_VALUE;
+    option.setAttribute("aria-selected", "false");
+
+    for (const element of option.querySelectorAll("[data-value]")) {
+      element.dataset.value = NATIVE_PROVIDER_VALUE;
+    }
+
+    const label = getLeafTextElement(option);
+    if (label) {
+      label.textContent = "Freemap.sk";
+    }
+
+    for (const className of state.activeClasses) {
+      option.classList.remove(className);
+    }
+
+    listbox.append(option);
+    return option;
+  }
+
+  function setNativeProviderButtonLabel(listbox, useFreemapLabel) {
+    const button = getNativeProviderButton(listbox);
+
+    if (!button) {
+      return;
+    }
+
+    if (!useFreemapLabel) {
+      for (const label of button.querySelectorAll(
+        `[${NATIVE_PROVIDER_LABEL_ATTRIBUTE}]`
+      )) {
+        label.remove();
+      }
+
+      for (const label of button.querySelectorAll(
+        `[${NATIVE_PROVIDER_LABEL_HIDDEN_ATTRIBUTE}]`
+      )) {
+        label.removeAttribute(NATIVE_PROVIDER_LABEL_HIDDEN_ATTRIBUTE);
+      }
+      return;
+    }
+
+    if (button.querySelector(`[${NATIVE_PROVIDER_LABEL_ATTRIBUTE}]`)) {
+      return;
+    }
+
+    const nativeLabel = getLeafTextElement(button);
+    if (!nativeLabel) {
+      return;
+    }
+
+    const freemapLabel = nativeLabel.cloneNode(false);
+    freemapLabel.removeAttribute("id");
+    freemapLabel.removeAttribute(NATIVE_PROVIDER_LABEL_HIDDEN_ATTRIBUTE);
+    freemapLabel.setAttribute(NATIVE_PROVIDER_LABEL_ATTRIBUTE, "");
+    freemapLabel.textContent = "Freemap.sk";
+    nativeLabel.setAttribute(NATIVE_PROVIDER_LABEL_HIDDEN_ATTRIBUTE, "");
+    nativeLabel.after(freemapLabel);
+  }
+
+  function getNativeMapTypeParts(listbox) {
+    const container = listbox.parentElement;
+    const typeButton = container?.querySelector(
+      'button[aria-label="default"], button[aria-label="satellite"], button[aria-label="terrain"]'
+    );
+
+    if (!container || !typeButton) {
+      return null;
+    }
+
+    for (
+      let section = typeButton.parentElement;
+      section && section !== container;
+      section = section.parentElement
+    ) {
+      if (section.previousElementSibling?.tagName === "HR") {
+        return { section, separator: section.previousElementSibling };
+      }
+    }
+
+    return null;
+  }
+
+  function setNativeMapTypeVisibility(listbox, hidden) {
+    const parts = getNativeMapTypeParts(listbox);
+
+    if (parts && hidden) {
+      parts.section.setAttribute(NATIVE_MAP_TYPE_HIDDEN_ATTRIBUTE, "");
+      parts.separator.setAttribute(NATIVE_MAP_TYPE_HIDDEN_ATTRIBUTE, "");
+      return;
+    }
+
+    const container = listbox.parentElement;
+    for (const element of container?.querySelectorAll(
+      `[${NATIVE_MAP_TYPE_HIDDEN_ATTRIBUTE}]`
+    ) || []) {
+      element.removeAttribute(NATIVE_MAP_TYPE_HIDDEN_ATTRIBUTE);
+    }
+  }
+
+  function syncNativeProviderListbox(listbox) {
+    const state = captureNativeProviderState(listbox);
+    const freemapOption = createNativeFreemapOption(listbox, state);
+
+    if (!freemapOption) {
+      return;
+    }
+
+    if (freemapEnabled) {
+      for (const option of getNativeProviderOptions(listbox)) {
+        setNativeOptionSelected(option, false, state.activeClasses);
+      }
+      setNativeOptionSelected(freemapOption, true, state.activeClasses);
+    } else {
+      setNativeOptionSelected(freemapOption, false, state.activeClasses);
+
+      if (!getSelectedNativeProviderOption(listbox)) {
+        const restoredOption = getNativeProviderOptions(listbox).find(
+          (option) => option.dataset.value === state.selectedNativeValue
+        );
+        if (restoredOption) {
+          setNativeOptionSelected(restoredOption, true, state.activeClasses);
+        }
+      }
+    }
+
+    setNativeProviderButtonLabel(listbox, freemapEnabled);
+    setNativeMapTypeVisibility(listbox, freemapEnabled);
+  }
+
+  function syncNativeProviderControls() {
+    for (const listbox of getNativeProviderListboxes()) {
+      syncNativeProviderListbox(listbox);
+    }
+  }
+
+  function scheduleNativeProviderRefresh() {
+    if (nativeProviderRefreshFrame !== null) {
+      return;
+    }
+
+    nativeProviderRefreshFrame = requestAnimationFrame(() => {
+      nativeProviderRefreshFrame = null;
+      syncNativeProviderControls();
+    });
+  }
+
+  function mapHasGoogleTiles(mapContainer) {
+    return Array.from(mapContainer.querySelectorAll("img[src]")).some(
+      (image) => tileUrlApi.parseGarminGoogleTileUrl(getSourceAttribute(image)) !== null
+    );
+  }
+
+  function findPreferredMapContainer() {
+    const mapsWithControls = Array.from(
+      document.querySelectorAll(`[${CONTROL_ATTRIBUTE}]`)
+    ).map((control) => control.closest(".leaflet-container"));
+
+    for (const mapContainer of mapsWithControls) {
+      if (!mapContainer) {
+        continue;
+      }
+
+      const bounds = mapContainer.getBoundingClientRect();
+      if (bounds.width > 0 && bounds.height > 0) {
+        return mapContainer;
+      }
+    }
+
+    return mapsWithControls.find(Boolean) ||
+      document.querySelector(".leaflet-container");
+  }
+
+  function cancelPendingNativeProviderSwitch() {
+    if (!pendingNativeProviderSwitch) {
+      return;
+    }
+
+    clearTimeout(pendingNativeProviderSwitch.timeoutId);
+    pendingNativeProviderSwitch = null;
+  }
+
+  function failPendingNativeProviderSwitch() {
+    cancelPendingNativeProviderSwitch();
+    rememberPreference("garmin");
+    setFreemapEnabled(
+      false,
+      "Google podklad sa nepodarilo pripraviť. Zostáva zapnutá Garmin mapa."
+    );
+  }
+
+  function advancePendingNativeProviderSwitch() {
+    const pending = pendingNativeProviderSwitch;
+
+    if (!pending) {
+      return;
+    }
+
+    if (!pending.mapContainer.isConnected) {
+      const replacementMap = findPreferredMapContainer();
+
+      if (!replacementMap) {
+        failPendingNativeProviderSwitch();
+        return;
+      }
+
+      pending.mapContainer = replacementMap;
+    }
+
+    if (!mapHasGoogleTiles(pending.mapContainer)) {
+      return;
+    }
+
+    const mapContainer = pending.mapContainer;
+    cancelPendingNativeProviderSwitch();
+    rememberPreference("freemap");
+    setFreemapEnabled(true, "", true, mapContainer);
+  }
+
+  function beginNativeProviderSwitch(mapContainer, googleOption, clickGoogle) {
+    cancelPendingNativeProviderSwitch();
+
+    const pending = {
+      mapContainer,
+      timeoutId: null
+    };
+    pending.timeoutId = setTimeout(() => {
+      if (pendingNativeProviderSwitch === pending) {
+        failPendingNativeProviderSwitch();
+      }
+    }, NATIVE_PROVIDER_SWITCH_TIMEOUT_MS);
+    pendingNativeProviderSwitch = pending;
+
+    if (clickGoogle) {
+      nativeGoogleClickInProgress = true;
+      try {
+        googleOption.click();
+      } finally {
+        nativeGoogleClickInProgress = false;
+      }
+    }
+
+    advancePendingNativeProviderSwitch();
+  }
+
+  function closeNativeProviderListbox(listbox) {
+    const button = getNativeProviderButton(listbox);
+    if (button?.getAttribute("aria-expanded") === "true") {
+      button.click();
+    }
+  }
+
+  function selectFreemapFromNativeProvider(listbox) {
+    const mapContainer = findPreferredMapContainer();
+
+    if (!mapContainer) {
+      showNotice("Mapu Garmin Connect sa nepodarilo nájsť.");
+      return;
+    }
+
+    if (freemapEnabled) {
+      closeNativeProviderListbox(listbox);
+      return;
+    }
+
+    const state = captureNativeProviderState(listbox);
+    const selectedValue = getSelectedNativeProviderOption(listbox)?.dataset.value ||
+      state.selectedNativeValue;
+    const googleOption = getNativeProviderOptions(listbox).find(
+      (option) => option.dataset.value === NATIVE_GOOGLE_PROVIDER_VALUE
+    );
+
+    if (!googleOption) {
+      showNotice("Google podklad Garmin Connect sa nepodarilo nájsť.");
+      return;
+    }
+
+    if (selectedValue === NATIVE_GOOGLE_PROVIDER_VALUE && mapHasGoogleTiles(mapContainer)) {
+      rememberPreference("freemap");
+      setFreemapEnabled(true, "", true, mapContainer);
+      closeNativeProviderListbox(listbox);
+      return;
+    }
+
+    beginNativeProviderSwitch(
+      mapContainer,
+      googleOption,
+      selectedValue !== NATIVE_GOOGLE_PROVIDER_VALUE
+    );
+  }
+
+  function handleNativeProviderOptionClick(event) {
+    if (!(event.target instanceof Element)) {
+      return;
+    }
+
+    const option = event.target.closest('[role="option"][data-value]');
+    const listbox = option?.parentElement;
+
+    if (!option || !listbox || !isNativeProviderListbox(listbox)) {
+      return;
+    }
+
+    if (option.hasAttribute(NATIVE_PROVIDER_OPTION_ATTRIBUTE)) {
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      selectFreemapFromNativeProvider(listbox);
+      scheduleNativeProviderRefresh();
+      return;
+    }
+
+    if (nativeGoogleClickInProgress) {
+      scheduleNativeProviderRefresh();
+      return;
+    }
+
+    cancelPendingNativeProviderSwitch();
+
+    if (freemapEnabled) {
+      rememberPreference("garmin");
+      setFreemapEnabled(false);
+    }
+
+    scheduleNativeProviderRefresh();
   }
 
   function getZoomLimitMessage(direction) {
@@ -535,6 +978,7 @@
     requestedMap = null
   ) {
     if (!nextEnabled) {
+      cancelPendingNativeProviderSwitch();
       cancelPendingFreemapSwitch();
     }
 
@@ -690,6 +1134,8 @@
     for (const mapContainer of document.querySelectorAll(".leaflet-container")) {
       updateMapZoomLimits(mapContainer);
     }
+
+    syncNativeProviderControls();
   }
 
   function showNotice(message) {
@@ -739,7 +1185,9 @@
     }
 
     scheduleZoomLimitRefresh();
+    scheduleNativeProviderRefresh();
     advancePendingFreemapSwitch();
+    advancePendingNativeProviderSwitch();
   });
 
   document.addEventListener(FAILURE_EVENT, () => {
@@ -757,6 +1205,8 @@
     subtree: true
   });
 
+  document.addEventListener("click", handleNativeProviderOptionClick, true);
   loadStoredPreference();
   inspectNode(document.documentElement);
+  syncNativeProviderControls();
 })();
