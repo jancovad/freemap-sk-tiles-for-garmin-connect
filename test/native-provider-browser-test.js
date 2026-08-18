@@ -8,6 +8,8 @@
   const nativeButtonLabel = document.querySelector("#provider-button-label");
   const mapTypeSection = document.querySelector("#map-type-section");
   const mapTypeSeparator = document.querySelector("#map-type-separator");
+  const plannerListbox = document.querySelector("#planner-provider-listbox");
+  const plannerMapTypeSection = document.querySelector("#planner-map-type-section");
   const mapFixture = document.querySelector("#native-map-fixture");
   const tile = mapFixture.querySelector("img");
   let passed = 0;
@@ -59,18 +61,34 @@
     equal(option.dataset.value, "freemap");
     equal(option.textContent.trim(), "Freemap.sk");
     equal(listbox.querySelectorAll('[data-garmin-freemap-provider-option]').length, 1);
+    equal(
+      plannerListbox.querySelectorAll('[data-garmin-freemap-provider-option]').length,
+      1
+    );
   });
 
-  await test("výber Freemap.sk z Google zmení podklad aj stav dialógu", async () => {
-    getFreemapOption().querySelector("span").click();
+  await test("výber Freemap.sk v plánovači zmení podklad aj oba stavy", async () => {
+    plannerListbox
+      .querySelector('[data-garmin-freemap-provider-option] span')
+      .click();
     await flushDomChanges();
 
     truthy(tile.src.startsWith("https://outdoor.tiles.freemap.sk/12/2264/1404"), "dlaždica sa neprepla");
     equal(getFreemapOption().getAttribute("aria-selected"), "true");
+    equal(
+      plannerListbox
+        .querySelector('[data-garmin-freemap-provider-option]')
+        .getAttribute("aria-selected"),
+      "true"
+    );
     equal(providerButton.querySelector('[data-garmin-freemap-provider-label]').textContent, "Freemap.sk");
     equal(nativeButtonLabel.hasAttribute("data-garmin-freemap-label-hidden"), true);
     equal(mapTypeSection.hasAttribute("data-garmin-freemap-map-type-hidden"), true);
     equal(mapTypeSeparator.hasAttribute("data-garmin-freemap-map-type-hidden"), true);
+    equal(
+      plannerMapTypeSection.hasAttribute("data-garmin-freemap-map-type-hidden"),
+      true
+    );
     equal(globalThis.GarminFreemapStorageMock.getPreferredMapMode(), "freemap");
   });
 
@@ -83,6 +101,10 @@
     equal(providerButton.querySelector('[data-garmin-freemap-provider-label]'), null);
     equal(mapTypeSection.hasAttribute("data-garmin-freemap-map-type-hidden"), false);
     equal(mapTypeSeparator.hasAttribute("data-garmin-freemap-map-type-hidden"), false);
+    equal(
+      plannerMapTypeSection.hasAttribute("data-garmin-freemap-map-type-hidden"),
+      false
+    );
     equal(globalThis.GarminFreemapStorageMock.getPreferredMapMode(), "garmin");
   });
 

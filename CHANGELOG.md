@@ -17,6 +17,9 @@ verziovanie v tvare `MAJOR.MINOR.PATCH`.
 - Pôvodný horný prepínač zostáva počas testovania 0.6.0 dostupný ako poistka.
 - Pridaný samostatný DOM regresný test natívneho dialógu a jeho React
   opätovného vykreslenia.
+- Plánovač používa rovnaký Garmin listbox poskytovateľov, ale bez dialogových
+  ARIA atribútov; detekcia je preto viazaná na `aria-controls` a presnú trojicu
+  natívnych hodnôt `google`/`here`/`osm`.
 
 ## 0.5.5 – 2026-08-17
 

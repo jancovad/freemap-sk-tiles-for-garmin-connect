@@ -39,6 +39,15 @@ ovládací prvok v hlavnom dokumente (nie iframe ani shadow DOM):
 - priame možnosti majú `role="option"`, `aria-selected` a stabilné hodnoty
   `data-value="google"`, `data-value="here"`, `data-value="osm"`.
 
+V plánovači bol následne overený rovnaký `button[aria-haspopup="listbox"]`,
+väzba `aria-controls` a rovnaká trojica možností. Jeho okno však nemá
+`role="dialog"` ani `aria-modal="true"`. Produkčná detekcia preto nevyžaduje
+obal dialógu: vyžaduje tlačidlo naviazané na konkrétny listbox a všetky tri
+overené natívne hodnoty poskytovateľov. Samotné typy máp sa v plánovači
+zobrazujú v samostatnom stĺpci; rozšírenie ho identifikuje podľa tlačidiel
+`aria-label="default"`, `satellite` a `terrain` v najbližšom spoločnom
+kontajneri s ovládaním poskytovateľa.
+
 Názvy CSS modulov obsahujú zostavovacie hash prípony a nepoužívajú sa ako
 selektory. Prototyp 0.6.0 klonuje neaktívnu natívnu možnosť iba kvôli vzhľadu,
 označí ju vlastným `data-garmin-freemap-provider-option` a pri každom React

@@ -192,7 +192,7 @@
     const providerButton = getNativeProviderButton(listbox);
     return (
       ["google", "here", "osm"].every((value) => values.has(value)) &&
-      Boolean(providerButton?.closest('[role="dialog"][aria-modal="true"]'))
+      providerButton !== null
     );
   }
 
@@ -342,37 +342,50 @@
   }
 
   function getNativeMapTypeParts(listbox) {
-    const dialog = listbox.closest('[role="dialog"][aria-modal="true"]');
+    const providerButton = getNativeProviderButton(listbox);
 
-    if (!dialog) {
+    if (!providerButton) {
       return null;
     }
 
+    let settingsBoundary = providerButton.parentElement;
+    let typeButtons = [];
+
     for (
-      let providerContainer = listbox.parentElement;
-      providerContainer && providerContainer !== dialog;
-      providerContainer = providerContainer.parentElement
+      ;
+      settingsBoundary && settingsBoundary !== document.documentElement;
+      settingsBoundary = settingsBoundary.parentElement
     ) {
-      const typeButton = providerContainer.querySelector(
+      typeButtons = Array.from(settingsBoundary.querySelectorAll(
         'button[aria-label="default"], button[aria-label="satellite"], button[aria-label="terrain"]'
-      );
-
-      if (!typeButton) {
-        continue;
-      }
-
-      for (
-        let section = typeButton.parentElement;
-        section && section !== providerContainer;
-        section = section.parentElement
-      ) {
-        if (section.previousElementSibling?.tagName === "HR") {
-          return { section, separator: section.previousElementSibling };
-        }
+      ));
+      if (typeButtons.length > 0) {
+        break;
       }
     }
 
-    return null;
+    if (!settingsBoundary || typeButtons.length === 0) {
+      return null;
+    }
+
+    let section = typeButtons[0];
+
+    while (
+      section.parentElement &&
+      section.parentElement !== settingsBoundary &&
+      !section.parentElement.contains(providerButton)
+    ) {
+      section = section.parentElement;
+    }
+
+    if (section === settingsBoundary || section.contains(providerButton)) {
+      return null;
+    }
+
+    const separator = section.previousElementSibling?.tagName === "HR"
+      ? section.previousElementSibling
+      : null;
+    return { section, separator };
   }
 
   function setNativeMapTypeVisibility(listbox, hidden) {
@@ -380,14 +393,13 @@
 
     if (parts && hidden) {
       parts.section.setAttribute(NATIVE_MAP_TYPE_HIDDEN_ATTRIBUTE, "");
-      parts.separator.setAttribute(NATIVE_MAP_TYPE_HIDDEN_ATTRIBUTE, "");
+      parts.separator?.setAttribute(NATIVE_MAP_TYPE_HIDDEN_ATTRIBUTE, "");
       return;
     }
 
-    const dialog = listbox.closest('[role="dialog"][aria-modal="true"]');
-    for (const element of dialog?.querySelectorAll(
+    for (const element of document.querySelectorAll(
       `[${NATIVE_MAP_TYPE_HIDDEN_ATTRIBUTE}]`
-    ) || []) {
+    )) {
       element.removeAttribute(NATIVE_MAP_TYPE_HIDDEN_ATTRIBUTE);
     }
   }
