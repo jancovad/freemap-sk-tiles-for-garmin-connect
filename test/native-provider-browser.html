@@ -22,26 +22,30 @@
 
     <div role="dialog" aria-modal="true" aria-label="Nastavenia mapy">
       <div id="provider-container">
-        <button
-          id="provider-button"
-          type="button"
-          aria-haspopup="listbox"
-          aria-expanded="true"
-          aria-controls="provider-listbox"
-        >
-          <span><span id="provider-button-label">Google Maps</span><svg aria-hidden="true"></svg></span>
-        </button>
-        <ul id="provider-listbox" role="listbox">
-          <li class="provider-option provider-active" data-value="google" role="option" aria-selected="true">
-            <div data-value="google"><svg aria-hidden="true"></svg><span data-value="google">Google Maps</span></div>
-          </li>
-          <li class="provider-option" data-value="here" role="option" aria-selected="false">
-            <div data-value="here"><svg aria-hidden="true"></svg><span data-value="here">Here Maps</span></div>
-          </li>
-          <li class="provider-option" data-value="osm" role="option" aria-selected="false">
-            <div data-value="osm"><svg aria-hidden="true"></svg><span data-value="osm">OpenStreetMap</span></div>
-          </li>
-        </ul>
+        <div id="provider-dropdown-wrapper">
+          <button
+            id="provider-button"
+            type="button"
+            aria-haspopup="listbox"
+            aria-expanded="true"
+            aria-controls="provider-listbox"
+          >
+            <span><span id="provider-button-label">Google Maps</span><svg aria-hidden="true"></svg></span>
+          </button>
+          <div>
+            <ul id="provider-listbox" role="listbox">
+              <li class="provider-option provider-active" data-value="google" role="option" aria-selected="true">
+                <div data-value="google"><svg aria-hidden="true"></svg><span data-value="google">Google Maps</span></div>
+              </li>
+              <li class="provider-option" data-value="here" role="option" aria-selected="false">
+                <div data-value="here"><svg aria-hidden="true"></svg><span data-value="here">Here Maps</span></div>
+              </li>
+              <li class="provider-option" data-value="osm" role="option" aria-selected="false">
+                <div data-value="osm"><svg aria-hidden="true"></svg><span data-value="osm">OpenStreetMap</span></div>
+              </li>
+            </ul>
+          </div>
+        </div>
         <hr id="map-type-separator">
         <div id="map-type-section">
           <div>Typ mapy</div>

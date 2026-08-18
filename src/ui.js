@@ -342,22 +342,33 @@
   }
 
   function getNativeMapTypeParts(listbox) {
-    const container = listbox.parentElement;
-    const typeButton = container?.querySelector(
-      'button[aria-label="default"], button[aria-label="satellite"], button[aria-label="terrain"]'
-    );
+    const dialog = listbox.closest('[role="dialog"][aria-modal="true"]');
 
-    if (!container || !typeButton) {
+    if (!dialog) {
       return null;
     }
 
     for (
-      let section = typeButton.parentElement;
-      section && section !== container;
-      section = section.parentElement
+      let providerContainer = listbox.parentElement;
+      providerContainer && providerContainer !== dialog;
+      providerContainer = providerContainer.parentElement
     ) {
-      if (section.previousElementSibling?.tagName === "HR") {
-        return { section, separator: section.previousElementSibling };
+      const typeButton = providerContainer.querySelector(
+        'button[aria-label="default"], button[aria-label="satellite"], button[aria-label="terrain"]'
+      );
+
+      if (!typeButton) {
+        continue;
+      }
+
+      for (
+        let section = typeButton.parentElement;
+        section && section !== providerContainer;
+        section = section.parentElement
+      ) {
+        if (section.previousElementSibling?.tagName === "HR") {
+          return { section, separator: section.previousElementSibling };
+        }
       }
     }
 
@@ -373,8 +384,8 @@
       return;
     }
 
-    const container = listbox.parentElement;
-    for (const element of container?.querySelectorAll(
+    const dialog = listbox.closest('[role="dialog"][aria-modal="true"]');
+    for (const element of dialog?.querySelectorAll(
       `[${NATIVE_MAP_TYPE_HIDDEN_ATTRIBUTE}]`
     ) || []) {
       element.removeAttribute(NATIVE_MAP_TYPE_HIDDEN_ATTRIBUTE);
