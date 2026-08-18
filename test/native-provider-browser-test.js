@@ -127,10 +127,10 @@
     equal(getFreemapOption().getAttribute("aria-selected"), "true");
   });
 
-  await test("pôvodný Garmin/Freemap prepínač zostáva dostupný ako poistka", async () => {
-    truthy(mapFixture.querySelector('[data-garmin-freemap-control]'), "záložný prepínač chýba");
-    truthy(mapFixture.querySelector('button[data-mode="garmin"]'), "tlačidlo Garmin chýba");
-    truthy(mapFixture.querySelector('button[data-mode="freemap"]'), "tlačidlo Freemap chýba");
+  await test("mapa je inicializovaná bez samostatného horného prepínača", async () => {
+    equal(mapFixture.hasAttribute("data-garmin-freemap-map"), true);
+    equal(mapFixture.querySelector('[data-garmin-freemap-control]'), null);
+    equal(mapFixture.querySelector('button[data-mode]'), null);
   });
 
   summary.textContent = failed === 0

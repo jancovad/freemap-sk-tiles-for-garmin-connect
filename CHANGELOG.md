@@ -14,7 +14,8 @@ verziovanie v tvare `MAJOR.MINOR.PATCH`.
   OpenStreetMap Freemap bezpečne vypne a pôvodné Garmin kliknutie pokračuje.
 - Pri prechode z HERE/OSM na Freemap sa najprv použije natívna voľba Google,
   ktorej overený dlaždicový formát následne spracuje existujúci prekladač.
-- Pôvodný horný prepínač zostáva počas testovania 0.6.0 dostupný ako poistka.
+- Po úspešnom živom teste na detaile aktivity aj v plánovači bol duplicitný
+  horný prepínač odstránený; podklad sa ovláda iba cez Garmin nastavenia mapy.
 - Pridaný samostatný DOM regresný test natívneho dialógu a jeho React
   opätovného vykreslenia.
 - Plánovač používa rovnaký Garmin listbox poskytovateľov, ale bez dialogových

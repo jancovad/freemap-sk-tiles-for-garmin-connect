@@ -1,45 +1,3 @@
-.garmin-freemap-control {
-  align-items: stretch;
-  background: #ffffff;
-  border: 1px solid rgb(0 0 0 / 24%);
-  border-radius: 5px;
-  box-shadow: 0 1px 5px rgb(0 0 0 / 35%);
-  display: flex;
-  font: 600 12px/1.2 Arial, sans-serif;
-  left: 50%;
-  overflow: hidden;
-  position: absolute;
-  top: 10px;
-  transform: translateX(-50%);
-  z-index: 1000;
-}
-
-.garmin-freemap-control__button {
-  appearance: none;
-  background: #ffffff;
-  border: 0;
-  color: #222222;
-  cursor: pointer;
-  font: inherit;
-  min-height: 30px;
-  padding: 7px 10px;
-}
-
-.garmin-freemap-control__button + .garmin-freemap-control__button {
-  border-left: 1px solid #d5d5d5;
-}
-
-.garmin-freemap-control__button:hover,
-.garmin-freemap-control__button:focus-visible {
-  background: #f0f0f0;
-  outline: none;
-}
-
-.garmin-freemap-control__button.is-active {
-  background: #007cc3;
-  color: #ffffff;
-}
-
 .garmin-freemap-zoom-limit {
   cursor: not-allowed !important;
   opacity: 0.45 !important;
@@ -80,7 +38,7 @@
   padding: 8px 10px;
   position: absolute;
   text-align: center;
-  top: 50px;
+  top: 10px;
   transform: translateX(-50%);
   z-index: 1001;
 }

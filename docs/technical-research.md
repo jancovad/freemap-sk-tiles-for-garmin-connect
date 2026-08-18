@@ -61,8 +61,10 @@ existujúcu natívnu voľbu Google a čaká na overenú Google dlaždicu. Až po
 zapne súčasný prekladač URL. Tým sa neháda formát HERE/OSM, nemení routing a pri
 zlyhaní zostane Garmin podklad.
 
-Pôvodný samostatný prepínač ostáva v 0.6.0 zámerne ako testovacia poistka, kým
-sa rovnaká štruktúra a správanie nepotvrdia na detaile aktivity aj v plánovači.
+Po živom potvrdení rovnakej funkcie na detaile aktivity aj v plánovači bol
+pôvodný samostatný horný prepínač odstránený. Atribúcia, upozornenia, ochrana
+zoomu a uložená preferencia zostávajú naviazané priamo na inicializovanú
+Leaflet mapu; používateľ podklad ovláda iba cez Garmin nastavenia mapy.
 
 ## Overené zistenia
 

@@ -7,7 +7,7 @@
     return;
   }
 
-  const CONTROL_ATTRIBUTE = "data-garmin-freemap-control";
+  const MAP_ATTRIBUTE = "data-garmin-freemap-map";
   const NATIVE_PROVIDER_OPTION_ATTRIBUTE = "data-garmin-freemap-provider-option";
   const NATIVE_PROVIDER_LABEL_ATTRIBUTE = "data-garmin-freemap-provider-label";
   const NATIVE_PROVIDER_LABEL_HIDDEN_ATTRIBUTE = "data-garmin-freemap-label-hidden";
@@ -128,8 +128,9 @@
           : "garmin";
         preferenceLoaded = true;
 
-        const control = document.querySelector(`[${CONTROL_ATTRIBUTE}]`);
-        const mapContainer = control?.closest(".leaflet-container");
+        const mapContainer = document.querySelector(
+          `.leaflet-container[${MAP_ATTRIBUTE}]`
+        );
 
         if (mapContainer) {
           applyStoredPreference(mapContainer);
@@ -458,22 +459,18 @@
   }
 
   function findPreferredMapContainer() {
-    const mapsWithControls = Array.from(
-      document.querySelectorAll(`[${CONTROL_ATTRIBUTE}]`)
-    ).map((control) => control.closest(".leaflet-container"));
+    const initializedMaps = Array.from(
+      document.querySelectorAll(`.leaflet-container[${MAP_ATTRIBUTE}]`)
+    );
 
-    for (const mapContainer of mapsWithControls) {
-      if (!mapContainer) {
-        continue;
-      }
-
+    for (const mapContainer of initializedMaps) {
       const bounds = mapContainer.getBoundingClientRect();
       if (bounds.width > 0 && bounds.height > 0) {
         return mapContainer;
       }
     }
 
-    return mapsWithControls.find(Boolean) ||
+    return initializedMaps[0] ||
       document.querySelector(".leaflet-container");
   }
 
@@ -1031,19 +1028,6 @@
     }
   }
 
-  function createButton(mode, label, mapContainer) {
-    const button = document.createElement("button");
-    button.type = "button";
-    button.className = "garmin-freemap-control__button";
-    button.dataset.mode = mode;
-    button.textContent = label;
-    button.addEventListener("click", () => {
-      rememberPreference(mode);
-      setFreemapEnabled(mode === "freemap", "", true, mapContainer);
-    });
-    return button;
-  }
-
   function stopMapInteractionEvents(element) {
     for (const eventName of [
       "pointerdown",
@@ -1098,29 +1082,19 @@
     return attribution;
   }
 
-  function addMapControls(mapContainer) {
-    if (mapContainer.querySelector(`:scope > [${CONTROL_ATTRIBUTE}]`)) {
+  function initializeMapUi(mapContainer) {
+    if (mapContainer.hasAttribute(MAP_ATTRIBUTE)) {
       return;
     }
 
-    const control = document.createElement("div");
-    control.className = "garmin-freemap-control";
-    control.setAttribute(CONTROL_ATTRIBUTE, "");
-    control.setAttribute("role", "group");
-    control.setAttribute("aria-label", "Mapový podklad");
-    control.append(
-      createButton("garmin", "Garmin", mapContainer),
-      createButton("freemap", "Freemap", mapContainer)
-    );
+    mapContainer.setAttribute(MAP_ATTRIBUTE, "");
 
     const notice = document.createElement("div");
     notice.className = "garmin-freemap-notice";
     notice.setAttribute("aria-live", "polite");
     notice.hidden = true;
 
-    stopMapInteractionEvents(control);
     mapContainer.append(
-      control,
       notice,
       createAttribution()
     );
@@ -1137,19 +1111,11 @@
     const mapContainer = image.closest(".leaflet-container");
 
     if (mapContainer) {
-      addMapControls(mapContainer);
+      initializeMapUi(mapContainer);
     }
   }
 
   function updateControls() {
-    for (const control of document.querySelectorAll(`[${CONTROL_ATTRIBUTE}]`)) {
-      for (const button of control.querySelectorAll("button[data-mode]")) {
-        const active = (button.dataset.mode === "freemap") === freemapEnabled;
-        button.classList.toggle("is-active", active);
-        button.setAttribute("aria-pressed", String(active));
-      }
-    }
-
     for (const attribution of document.querySelectorAll(".garmin-freemap-attribution")) {
       attribution.hidden = !freemapEnabled;
     }

@@ -3,13 +3,13 @@
 
   const fixture = document.querySelector("#preference-map-fixture");
   const image = fixture.querySelector("img");
-  const freemapButton = fixture.querySelector('button[data-mode="freemap"]');
   const attribution = fixture.querySelector(".garmin-freemap-attribution");
   const summary = document.querySelector("#summary");
 
   const passed = (
     image.getAttribute("src") === "https://outdoor.tiles.freemap.sk/12/2264/1404@2x?app=garmin-connect-ext" &&
-    freemapButton?.classList.contains("is-active") === true &&
+    fixture.hasAttribute("data-garmin-freemap-map") === true &&
+    fixture.querySelector("[data-garmin-freemap-control]") === null &&
     attribution?.hidden === false &&
     globalThis.GarminFreemapStorageMock.hasObsoleteDisclosureValue() === false &&
     globalThis.GarminFreemapStorageMock.getReadCount() === 1 &&

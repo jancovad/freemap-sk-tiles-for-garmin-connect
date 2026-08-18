@@ -2,8 +2,7 @@
 
 Neoficiálne komunitné Chrome rozšírenie pre webový Garmin Connect. Do natívneho
 dialógu **Nastavenia mapy** pridáva poskytovateľa **Freemap.sk** a mení výhradne
-podkladové dlaždice na Freemap.sk Outdoor. Počas testovania prototypu 0.6.0
-zostáva nad mapou dostupný aj pôvodný prepínač **Garmin / Freemap** ako poistka.
+podkladové dlaždice na Freemap.sk Outdoor.
 
 Nie je vytvorené, podporované ani schválené spoločnosťou Garmin ani
 OpenStreetMap Foundation. Freemap Slovakia písomne povolila použitie svojho
@@ -81,8 +80,7 @@ hexadecimálny parser. Historický parser sa v produkcii nepoužíva.
 3. Klikni **Load unpacked**.
 4. Vyber celý priečinok `D:\dev\GarminFreemap`.
 5. Otvor alebo obnov Garmin Connect. V **Nastaveniach mapy** sa medzi
-   poskytovateľmi zobrazí **Freemap.sk**. Nad mapou zostáva počas testovania
-   0.6.0 aj záložný prepínač **Garmin / Freemap**.
+   poskytovateľmi zobrazí **Freemap.sk**.
 
 Po zmene zdrojov klikni pri rozšírení na ikonu obnovenia a obnov aj stránku
 Garmin Connect.
@@ -119,7 +117,7 @@ Na detaile aktivity aj v plánovači over:
    podporovanú hranicu.
 9. Výber Google, HERE alebo OpenStreetMap v natívnom dialógu okamžite vypne
    Freemap a zachová zvolený Garmin podklad.
-10. Voľba sa zachová po obnovení stránky; záložný horný prepínač stále funguje.
+10. Voľba sa zachová po obnovení stránky a mapa nemá duplicitný horný prepínač.
 
 V Network paneli filtruj `outdoor.tiles.freemap.sk`. URL má obsahovať
 `?app=garmin-connect-ext` a podľa `window.devicePixelRatio` žiadnu príponu,
