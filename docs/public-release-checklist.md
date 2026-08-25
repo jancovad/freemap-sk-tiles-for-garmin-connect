@@ -28,8 +28,8 @@
 ## Pred Chrome Web Store
 
 - [x] Zverejniť aktualizovanú privacy policy na stabilnej HTTPS URL.
-- [ ] Vytvoriť a aktivovať účet vývojára v Chrome Web Store.
-- [ ] Zapnúť dvojstupňové overenie vlastníckeho Google účtu.
+- [x] Vytvoriť a aktivovať účet vývojára v Chrome Web Store.
+- [x] Zapnúť dvojstupňové overenie vlastníckeho Google účtu.
 - [ ] Vytvoriť anonymizované screenshoty 1280 × 800 px.
 - [ ] Vyplniť Privacy deklaráciu podľa skutočného správania rozšírenia.
 - [ ] Skontrolovať aktuálne pravidlá Chrome Web Store.

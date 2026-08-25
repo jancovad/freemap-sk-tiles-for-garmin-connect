@@ -4,7 +4,6 @@ Stav: **pracovný návrh – neodosielať na posúdenie**
 
 ## Zostávajúce podmienky
 
-- aktivovaný účet vývojára v Chrome Web Store;
 - finálne anonymizované screenshoty;
 - Privacy deklarácia v Store Dashboarde zhodná so skutočným správaním;
 - kontrola, že Store ZIP vznikol z rovnakého označeného commitu ako verejný
