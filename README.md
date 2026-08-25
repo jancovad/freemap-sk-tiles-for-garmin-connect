@@ -4,6 +4,16 @@ Neoficiálne komunitné Chrome rozšírenie pre webový Garmin Connect. Do natí
 dialógu **Nastavenia mapy** pridáva poskytovateľa **Freemap.sk** a mení výhradne
 podkladové dlaždice na Freemap.sk Outdoor.
 
+## Aktuálny stav a stiahnutie
+
+Stabilná verzia **v0.6.0** bola 25. augusta 2026 odoslaná na kontrolu do
+Chrome Web Store. Je nastavené plánované neskoršie zverejnenie, takže sa po
+schválení nezverejní automaticky.
+
+[Stiahnuť stabilnú verziu v0.6.0](https://github.com/jancovad/freemap-sk-tiles-for-garmin-connect/releases/tag/v0.6.0)
+
+![Freemap.sk Outdoor v natívnych nastaveniach mapy Garmin Connect](docs/images/freemap-activity-settings.png)
+
 Nie je vytvorené, podporované ani schválené spoločnosťou Garmin ani
 OpenStreetMap Foundation. Freemap Slovakia písomne povolila použitie svojho
 verejného tile servera pre toto bezplatné nekomerčné rozšírenie za podmienok
@@ -73,12 +83,25 @@ Testy pokrývajú aktuálny Google `vt?pb=` formát, zoom 5–18, retina prípon
 identifikátor aplikácie, priame prepnutie bez modalu, fallback a samostatný historický
 hexadecimálny parser. Historický parser sa v produkcii nepoužíva.
 
-## Načítanie cez Load unpacked
+## Inštalácia z GitHub release
+
+1. Stiahni ZIP zo stránky stabilného vydania
+   [v0.6.0](https://github.com/jancovad/freemap-sk-tiles-for-garmin-connect/releases/tag/v0.6.0).
+2. Rozbaľ ho do samostatného priečinka.
+3. V Chrome otvor `chrome://extensions`.
+4. Zapni **Developer mode**.
+5. Klikni **Load unpacked**.
+6. Vyber rozbalený priečinok obsahujúci `manifest.json`.
+7. Otvor alebo obnov Garmin Connect. V **Nastaveniach mapy** sa medzi
+   poskytovateľmi zobrazí **Freemap.sk**.
+
+## Načítanie zdrojov cez Load unpacked
 
 1. V Chrome otvor `chrome://extensions`.
 2. Zapni **Developer mode**.
 3. Klikni **Load unpacked**.
-4. Vyber celý priečinok `D:\dev\GarminFreemap`.
+4. Vyber koreňový priečinok klonu repozitára, teda priečinok obsahujúci
+   `manifest.json`.
 5. Otvor alebo obnov Garmin Connect. V **Nastaveniach mapy** sa medzi
    poskytovateľmi zobrazí **Freemap.sk**.
 
