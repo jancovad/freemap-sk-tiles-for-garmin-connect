@@ -6,8 +6,6 @@ Stav: **pracovný návrh – neodosielať na posúdenie**
 
 - finálne anonymizované screenshoty;
 - Privacy deklarácia v Store Dashboarde zhodná so skutočným správaním;
-- kontrola, že Store ZIP vznikol z rovnakého označeného commitu ako verejný
-  zdrojový kód.
 
 Písomný súhlas Freemap Slovakia bol prijatý 17. augusta 2026 a jeho podmienky
 sú zapracované v kóde aj v
@@ -16,6 +14,9 @@ sú zapracované v kóde aj v
 Testovací ZIP verzie 0.6.0 bol na detaile aktivity aj v plánovači trás overený
 dôveryhodnými testermi bez hlásených chýb.
 
+Chrome Web Store Dashboard prijal rovnaký otestovaný ZIP pod identifikátorom
+`imcpmdcdbkijkcdgijifkkhfpllfcdjh`.
+
 ## Verejné odkazy
 
 - Repozitár: <https://github.com/jancovad/freemap-sk-tiles-for-garmin-connect>
@@ -23,6 +24,7 @@ dôveryhodnými testermi bez hlásených chýb.
 - Kontakt: <mailto:jancovic@gmail.com>
 - Podpora: <https://github.com/jancovad/freemap-sk-tiles-for-garmin-connect/issues>
 
+- Chrome Web Store ID: `imcpmdcdbkijkcdgijifkkhfpllfcdjh`
 ## Identita
 
 Názov odsúhlasený Freemap Slovakia:

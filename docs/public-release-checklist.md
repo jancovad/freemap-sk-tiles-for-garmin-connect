@@ -31,10 +31,11 @@
 - [x] Vytvoriť a aktivovať účet vývojára v Chrome Web Store.
 - [x] Zapnúť dvojstupňové overenie vlastníckeho Google účtu.
 - [ ] Vytvoriť anonymizované screenshoty 1280 × 800 px.
+- [x] Nahrať otestovaný ZIP do Dashboardu: `imcpmdcdbkijkcdgijifkkhfpllfcdjh`.
 - [ ] Vyplniť Privacy deklaráciu podľa skutočného správania rozšírenia.
 - [ ] Skontrolovať aktuálne pravidlá Chrome Web Store.
-- [ ] Vytvoriť Store ZIP z označeného commitu a overiť SHA-256.
-- [ ] Overiť, že verejný zdrojový kód a ZIP patria rovnakému commitu.
+- [x] Vytvoriť Store ZIP z označeného commitu a overiť SHA-256.
+- [x] Overiť, že verejný zdrojový kód a ZIP patria rovnakému commitu.
 - [ ] Pred Submit for Review vykonať poslednú kontrolu názvu, popisov, odkazov
   a podmienok Freemap Slovakia.
 
