@@ -35,6 +35,45 @@
     }
   }
 
+  const providerListbox = document.querySelector("#test-provider-listbox");
+
+  function getProviderOption(value) {
+    return providerListbox.querySelector(
+      `:scope > [role="option"][data-value="${value}"]`
+    );
+  }
+
+  function showOnlyTestMap(mapContainer) {
+    for (const fixture of document.querySelectorAll(".leaflet-container")) {
+      fixture.hidden = fixture !== mapContainer;
+    }
+
+    mapContainer.style.height = "300px";
+    mapContainer.style.width = "500px";
+  }
+
+  function selectGarmin(mapContainer = null) {
+    if (mapContainer) {
+      showOnlyTestMap(mapContainer);
+    }
+
+    getProviderOption("google").click();
+  }
+
+  function selectFreemap(mapContainer) {
+    showOnlyTestMap(mapContainer);
+    getProviderOption("google").click();
+    getProviderOption("freemap").click();
+  }
+
+  function isFreemapSelected() {
+    return getProviderOption("freemap").getAttribute("aria-selected") === "true";
+  }
+
+  function isGarminSelected() {
+    return getProviderOption("google").getAttribute("aria-selected") === "true";
+  }
+
   test("detail aktivity z12/x2264/y1404", () => {
     equal(
       api.translateGarminGoogleTileUrl(googleTileUrl(12, 2264, 1404)),
@@ -109,14 +148,12 @@
 
   const retinaFixture = document.querySelector("#retina-map-fixture");
   const retinaImage = retinaFixture.querySelector("img");
-  const retinaGarminButton = retinaFixture.querySelector('button[data-mode="garmin"]');
-  const retinaFreemapButton = retinaFixture.querySelector('button[data-mode="freemap"]');
 
   Object.defineProperty(globalThis, "devicePixelRatio", {
     configurable: true,
     value: 3
   });
-  retinaFreemapButton.click();
+  selectFreemap(retinaFixture);
 
   test("klik Freemap bez modalu zapne retina podklad podľa displeja", () => {
     equal(retinaFixture.querySelector(".garmin-freemap-disclosure"), null);
@@ -127,7 +164,7 @@
     );
   });
 
-  retinaGarminButton.click();
+  selectGarmin(retinaFixture);
   Object.defineProperty(globalThis, "devicePixelRatio", {
     configurable: true,
     value: 1
@@ -137,8 +174,6 @@
   const outsideZoomImage = outsideZoomFixture.querySelector("img");
   const outsideZoomIn = outsideZoomFixture.querySelector(".leaflet-control-zoom-in");
   const outsideZoomOut = outsideZoomFixture.querySelector(".leaflet-control-zoom-out");
-  const outsideGarminButton = outsideZoomFixture.querySelector('button[data-mode="garmin"]');
-  const outsideFreemapButton = outsideZoomFixture.querySelector('button[data-mode="freemap"]');
   let automaticZoomInClicks = 0;
   let automaticZoomOutClicks = 0;
 
@@ -153,7 +188,7 @@
     outsideZoomImage.src = googleTileUrl(5, 16, 8);
   });
 
-  outsideFreemapButton.click();
+  selectFreemap(outsideZoomFixture);
 
   test("prepnutie z Garmin zoomu 19 najprv nastaví Freemap maximum 18", () => {
     equal(automaticZoomOutClicks, 1);
@@ -161,12 +196,12 @@
       outsideZoomImage.getAttribute("src"),
       "https://outdoor.tiles.freemap.sk/18/144803/89921?app=garmin-connect-ext"
     );
-    equal(outsideFreemapButton.classList.contains("is-active"), true);
+    equal(isFreemapSelected(), true);
   });
 
-  outsideGarminButton.click();
+  selectGarmin(outsideZoomFixture);
   outsideZoomImage.src = googleTileUrl(4, 8, 4);
-  outsideFreemapButton.click();
+  selectFreemap(outsideZoomFixture);
 
   test("prepnutie z Garmin zoomu 4 najprv nastaví Freemap minimum 5", () => {
     equal(automaticZoomInClicks, 1);
@@ -174,21 +209,15 @@
       outsideZoomImage.getAttribute("src"),
       "https://outdoor.tiles.freemap.sk/5/16/8?app=garmin-connect-ext"
     );
-    equal(outsideFreemapButton.classList.contains("is-active"), true);
+    equal(isFreemapSelected(), true);
   });
 
-  outsideGarminButton.click();
+  selectGarmin(outsideZoomFixture);
 
   const activityOutsideFixture = document.querySelector(
     "#activity-outside-zoom-map-fixture"
   );
   const activityOutsideImage = activityOutsideFixture.querySelector("img");
-  const activityOutsideGarminButton = activityOutsideFixture.querySelector(
-    'button[data-mode="garmin"]'
-  );
-  const activityOutsideFreemapButton = activityOutsideFixture.querySelector(
-    'button[data-mode="freemap"]'
-  );
   let automaticZoomInWheels = 0;
   let automaticZoomOutWheels = 0;
 
@@ -201,7 +230,7 @@
       activityOutsideImage.src = googleTileUrl(5, 16, 8);
     }
   });
-  activityOutsideFreemapButton.click();
+  selectFreemap(activityOutsideFixture);
 
   test("detail aktivity bez tlačidiel nastaví zoom 19 na 18 kolieskom", () => {
     equal(automaticZoomOutWheels, 1);
@@ -211,9 +240,9 @@
     );
   });
 
-  activityOutsideGarminButton.click();
+  selectGarmin(activityOutsideFixture);
   activityOutsideImage.src = googleTileUrl(4, 8, 4);
-  activityOutsideFreemapButton.click();
+  selectFreemap(activityOutsideFixture);
 
   test("detail aktivity bez tlačidiel nastaví zoom 4 na 5 kolieskom", () => {
     equal(automaticZoomInWheels, 1);
@@ -223,19 +252,17 @@
     );
   });
 
-  activityOutsideGarminButton.click();
+  selectGarmin(activityOutsideFixture);
 
   const fixture = document.querySelector("#map-fixture");
   const fixtureImages = [...fixture.querySelectorAll("img")];
   const originalSources = fixtureImages.map((image) => image.getAttribute("src"));
-  const garminButton = fixture.querySelector('button[data-mode="garmin"]');
-  const freemapButton = fixture.querySelector('button[data-mode="freemap"]');
   const attribution = fixture.querySelector(".garmin-freemap-attribution");
   const notice = fixture.querySelector(".garmin-freemap-notice");
 
-  test("obsahový skript pridá prepínač s predvolenou Garmin mapou", () => {
-    equal(Boolean(garminButton), true);
-    equal(garminButton.classList.contains("is-active"), true);
+  test("obsahový skript inicializuje mapu bez samostatného prepínača", () => {
+    equal(fixture.hasAttribute("data-garmin-freemap-map"), true);
+    equal(fixture.querySelector("[data-garmin-freemap-control]"), null);
     equal(attribution.hidden, true);
     equal(globalThis.GarminFreemapStorageMock.getReadCount(), 1);
     equal(globalThis.GarminFreemapStorageMock.getPreferredMapMode(), "garmin");
@@ -245,7 +272,7 @@
   fixture.addEventListener("click", () => {
     mapClickCount += 1;
   });
-  freemapButton.click();
+  selectFreemap(fixture);
 
   test("klik na ovládanie neprebublá do mapy", () => {
     equal(mapClickCount, 0);
@@ -257,7 +284,7 @@
       "https://outdoor.tiles.freemap.sk/12/2264/1404?app=garmin-connect-ext"
     );
     equal(fixtureImages[0].getAttribute("referrerpolicy"), "no-referrer");
-    equal(freemapButton.classList.contains("is-active"), true);
+    equal(isFreemapSelected(), true);
   });
 
   test("Freemap zobrazí povinnú atribúciu", () => {
@@ -283,9 +310,6 @@
   const activeOutsideZoomOut = activeOutsideFixture.querySelector(
     ".leaflet-control-zoom-out"
   );
-  const activeOutsideFreemapButton = activeOutsideFixture.querySelector(
-    'button[data-mode="freemap"]'
-  );
   let activeOutsideZoomOutClicks = 0;
 
   activeOutsideZoomOut.addEventListener("click", (event) => {
@@ -293,7 +317,7 @@
     activeOutsideZoomOutClicks += 1;
     activeOutsideImage.src = googleTileUrl(18, 144803, 89921);
   });
-  activeOutsideFreemapButton.click();
+  selectFreemap(activeOutsideFixture);
 
   test("automatický návrat na zoom 18 obíde aktívnu Freemap ochranu", () => {
     equal(activeOutsideZoomOutClicks, 1);
@@ -301,12 +325,12 @@
       activeOutsideImage.getAttribute("src"),
       "https://outdoor.tiles.freemap.sk/18/144803/89921?app=garmin-connect-ext"
     );
-    equal(activeOutsideFreemapButton.classList.contains("is-active"), true);
+    equal(isFreemapSelected(), true);
   });
 
   const nearMaxZoomFixture = document.querySelector("#near-max-zoom-map-fixture");
   const nearMaxZoomIn = nearMaxZoomFixture.querySelector(".leaflet-control-zoom-in");
-  nearMaxZoomFixture.querySelector('button[data-mode="freemap"]').click();
+  selectFreemap(nearMaxZoomFixture);
 
   test("rýchly zoom in z úrovne 17 neprekročí Freemap maximum", () => {
     const firstZoomIn = new WheelEvent("wheel", {
@@ -329,7 +353,7 @@
 
   const nearMinZoomFixture = document.querySelector("#near-min-zoom-map-fixture");
   const nearMinZoomOut = nearMinZoomFixture.querySelector(".leaflet-control-zoom-out");
-  nearMinZoomFixture.querySelector('button[data-mode="freemap"]').click();
+  selectFreemap(nearMinZoomFixture);
 
   test("rýchly zoom out z úrovne 6 neprekročí Freemap minimum", () => {
     const firstZoomOut = new WheelEvent("wheel", {
@@ -353,7 +377,7 @@
   const maxZoomFixture = document.querySelector("#max-zoom-map-fixture");
   const maxZoomIn = maxZoomFixture.querySelector(".leaflet-control-zoom-in");
   const maxZoomOut = maxZoomFixture.querySelector(".leaflet-control-zoom-out");
-  maxZoomFixture.querySelector('button[data-mode="freemap"]').click();
+  selectFreemap(maxZoomFixture);
 
   test("na Freemap zoome 18 označí iba priblíženie ako nedostupné", () => {
     equal(maxZoomIn.getAttribute("aria-disabled"), "true");
@@ -382,7 +406,7 @@
   const minZoomFixture = document.querySelector("#min-zoom-map-fixture");
   const minZoomIn = minZoomFixture.querySelector(".leaflet-control-zoom-in");
   const minZoomOut = minZoomFixture.querySelector(".leaflet-control-zoom-out");
-  minZoomFixture.querySelector('button[data-mode="freemap"]').click();
+  selectFreemap(minZoomFixture);
 
   test("na Freemap zoome 5 označí iba oddialenie ako nedostupné", () => {
     equal(minZoomIn.hasAttribute("aria-disabled"), false);
@@ -420,9 +444,9 @@
 
   const clonedFreemapTile = fixtureImages[0].cloneNode(true);
   fixture.append(clonedFreemapTile);
-  garminButton.click();
+  selectGarmin(fixture);
 
-  test("Garmin prepínač obnoví aj klonované dlaždice a odstráni atribúty", () => {
+  test("natívna voľba Garmin obnoví klonované dlaždice a atribúty", () => {
     fixtureImages.forEach((image, index) => {
       equal(image.getAttribute("src"), originalSources[index]);
       equal(image.hasAttribute("referrerpolicy"), false);
@@ -439,7 +463,7 @@
   });
 
   globalThis.GarminFreemapTestObserver.disconnect();
-  freemapButton.click();
+  selectFreemap(fixture);
 
   const hiddenSourceWrapper = document.createElement("div");
   hiddenSourceWrapper.style.visibility = "hidden";
@@ -476,7 +500,7 @@
       equal(image.getAttribute("src"), originalSources[index]);
     });
     equal(lateTile.getAttribute("src"), lateTileOriginalSource);
-    equal(garminButton.classList.contains("is-active"), true);
+    equal(isGarminSelected(), true);
     equal(attribution.hidden, true);
     equal(notice.hidden, false);
     equal(notice.textContent.includes("Obnovená bola Garmin mapa"), true);

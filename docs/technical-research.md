@@ -26,6 +26,46 @@ Použité oficiálne zdroje:
 - <https://developer.chrome.com/blog/cws-policy-updates-2026>;
 - <https://developer.chrome.com/docs/webstore/troubleshooting/#user-data-policy-prominent-disclosure>.
 
+## Aktualizácia 18. augusta 2026 – natívne nastavenia mapy
+
+Na detaile aktivity bol cez DevTools overený aktuálny DOM dialógu Garmin
+Connect „Nastavenia mapy“. Nejde o natívny HTML `select`, ale o vlastný React
+ovládací prvok v hlavnom dokumente (nie iframe ani shadow DOM):
+
+- obal má `role="dialog"` a `aria-modal="true"`;
+- tlačidlo poskytovateľa má `aria-haspopup="listbox"` a cez `aria-controls`
+  odkazuje na zoznam;
+- zoznam má `role="listbox"`;
+- priame možnosti majú `role="option"`, `aria-selected` a stabilné hodnoty
+  `data-value="google"`, `data-value="here"`, `data-value="osm"`.
+
+V plánovači bol následne overený rovnaký `button[aria-haspopup="listbox"]`,
+väzba `aria-controls` a rovnaká trojica možností. Jeho okno však nemá
+`role="dialog"` ani `aria-modal="true"`. Produkčná detekcia preto nevyžaduje
+obal dialógu: vyžaduje tlačidlo naviazané na konkrétny listbox a všetky tri
+overené natívne hodnoty poskytovateľov. Samotné typy máp sa v plánovači
+zobrazujú v samostatnom stĺpci; rozšírenie ho identifikuje podľa tlačidiel
+`aria-label="default"`, `satellite` a `terrain` v najbližšom spoločnom
+kontajneri s ovládaním poskytovateľa.
+
+Názvy CSS modulov obsahujú zostavovacie hash prípony a nepoužívajú sa ako
+selektory. Prototyp 0.6.0 klonuje neaktívnu natívnu možnosť iba kvôli vzhľadu,
+označí ju vlastným `data-garmin-freemap-provider-option` a pri každom React
+prekreslení ju idempotentne obnoví. Výber natívnej možnosti zostáva spracovaný
+Garminom; rozšírenie ho nezastavuje ani nenahrádza.
+
+Freemap Outdoor má jediný typ, preto sa pri aktívnej voľbe skryje iba blok
+„Typ mapy“ a jeho oddeľovač. Pri návrate na Garmin sa oba prvky obnovia. Ak je
+pred výberom Freemap aktívny HERE alebo OpenStreetMap, rozšírenie vyvolá
+existujúcu natívnu voľbu Google a čaká na overenú Google dlaždicu. Až potom
+zapne súčasný prekladač URL. Tým sa neháda formát HERE/OSM, nemení routing a pri
+zlyhaní zostane Garmin podklad.
+
+Po živom potvrdení rovnakej funkcie na detaile aktivity aj v plánovači bol
+pôvodný samostatný horný prepínač odstránený. Atribúcia, upozornenia, ochrana
+zoomu a uložená preferencia zostávajú naviazané priamo na inicializovanú
+Leaflet mapu; používateľ podklad ovláda iba cez Garmin nastavenia mapy.
+
 ## Overené zistenia
 
 - Detail aktivity zobrazuje mapu cez Leaflet.

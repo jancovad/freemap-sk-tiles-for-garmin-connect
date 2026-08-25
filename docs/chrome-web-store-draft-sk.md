@@ -6,7 +6,6 @@ Stav: **pracovný návrh – neodosielať na posúdenie**
 
 - kontaktný e-mail vývojára;
 - finálne anonymizované screenshoty;
-- úspešný test aktuálneho ZIP balíka na oboch cieľových stránkach;
 - Privacy deklarácia v Store Dashboarde zhodná so skutočným správaním;
 - kontrola, že Store ZIP vznikol z rovnakého označeného commitu ako verejný
   zdrojový kód.
@@ -14,6 +13,9 @@ Stav: **pracovný návrh – neodosielať na posúdenie**
 Písomný súhlas Freemap Slovakia bol prijatý 17. augusta 2026 a jeho podmienky
 sú zapracované v kóde aj v
 [zhrnutí súhlasu](freemap-permission-summary.md).
+
+Testovací ZIP verzie 0.6.0 bol na detaile aktivity aj v plánovači trás overený
+dôveryhodnými testermi bez hlásených chýb.
 
 ## Verejné odkazy
 
@@ -32,7 +34,7 @@ komunitný projekt a nevyvoláva dojem produktu Garmin alebo Freemap Slovakia.
 
 ## Krátky popis
 
-`Pridá neoficiálny prepínač Freemap.sk Outdoor do máp Garmin Connect bez zmeny trás a routingu.`
+`Pridá Freemap.sk Outdoor medzi poskytovateľov máp Garmin Connect bez zmeny trás a routingu.`
 
 ## Jediný účel
 
@@ -56,8 +58,8 @@ samostatné potvrdenie v mape podľa aktuálnych pokynov Chrome Web Store.
 ## Dlhý popis
 
 Outdoor tiles from Freemap.sk for Garmin Connect je neoficiálne open-source
-rozšírenie, ktoré pridáva do podporovaných máp Garmin Connect prepínač
-Garmin/Freemap.
+rozšírenie, ktoré pridáva Freemap.sk medzi poskytovateľov v natívnych
+nastaveniach mapy Garmin Connect.
 
 Hlavné funkcie:
 
@@ -87,8 +89,9 @@ história.
 ### Prístup k Garmin Connect
 
 Obsahové skripty sú obmedzené na `https://connect.garmin.com/*`. Rozpoznajú
-podkladové mapové obrázky, pridajú prepínač a zachovajú existujúce Garmin
-vrstvy. Nečítajú prihlasovacie údaje a nemenia routing.
+podkladové mapové obrázky, doplnia Freemap.sk do natívneho výberu poskytovateľa
+a zachovajú existujúce Garmin vrstvy. Nečítajú prihlasovacie údaje a nemenia
+routing.
 
 ### Vzdialené zdroje
 
@@ -119,9 +122,9 @@ zariadenia. Pred odoslaním treba formulár porovnať s aktuálnymi pravidlami.
 - Store ikona: `assets/icon128.png`;
 - minimálne jeden screenshot 1280 × 800 px, najviac päť;
 - odporúčané screenshoty:
-  1. detail aktivity s Garmin podkladom a prepínačom;
-  2. detail aktivity s Freemap a viditeľnou atribúciou;
-  3. plánovač trás s Freemap, bodmi a trasou;
+  1. natívne nastavenia mapy s poskytovateľom Freemap.sk na detaile aktivity;
+  2. detail aktivity s Freemap, trasou a viditeľnou atribúciou;
+  3. plánovač trás s Freemap, bodmi, trasou a otvorenými nastaveniami mapy;
   4. správanie na hranici zoomu;
   5. automatický návrat na Garmin pri chybe.
 
@@ -132,9 +135,11 @@ domácu polohu a ostatné osobné údaje.
 
 1. Prihlásiť sa do Garmin Connect vlastným testovacím účtom.
 2. Otvoriť detail aktivity alebo plánovač trás.
-3. Kliknúť Freemap.
+3. Otvoriť natívne nastavenia mapy cez ikonu vrstiev a ako poskytovateľa vybrať
+   Freemap.sk.
 4. Overiť, že sa zmení iba podklad a trasa aj routing zostanú zachované.
-5. Overiť viditeľnú atribúciu a návrat cez tlačidlo Garmin.
+5. Overiť viditeľnú atribúciu a návrat výberom pôvodného poskytovateľa v
+   nastaveniach mapy.
 
 Rozšírenie neposkytuje ani nevyžaduje testovacie Garmin prihlasovacie údaje.
 

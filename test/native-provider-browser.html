@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="sk" data-device-pixel-ratio="1">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'none'">
+    <title>Freemap.sk – test natívneho výberu poskytovateľa</title>
+    <link rel="stylesheet" href="../src/content.css">
+  </head>
+  <body>
+    <h1>Test natívneho výberu poskytovateľa</h1>
+    <p id="summary">Testy sa spúšťajú…</p>
+    <ol id="results"></ol>
+
+    <div id="native-map-fixture" class="leaflet-container" style="height: 300px; width: 500px">
+      <div class="leaflet-tile leaflet-tile-loaded">
+        <img
+          alt=""
+          src="https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i12!2i2264!3i1404!4i256!2m3!1e0&amp;key=test-only"
+        >
+      </div>
+    </div>
+
+    <div role="dialog" aria-modal="true" aria-label="Nastavenia mapy">
+      <div id="provider-container">
+        <div id="provider-dropdown-wrapper">
+          <button
+            id="provider-button"
+            type="button"
+            aria-haspopup="listbox"
+            aria-expanded="true"
+            aria-controls="provider-listbox"
+          >
+            <span><span id="provider-button-label">Google Maps</span><svg aria-hidden="true"></svg></span>
+          </button>
+          <div>
+            <ul id="provider-listbox" role="listbox">
+              <li class="provider-option provider-active" data-value="google" role="option" aria-selected="true">
+                <div data-value="google"><svg aria-hidden="true"></svg><span data-value="google">Google Maps</span></div>
+              </li>
+              <li class="provider-option" data-value="here" role="option" aria-selected="false">
+                <div data-value="here"><svg aria-hidden="true"></svg><span data-value="here">Here Maps</span></div>
+              </li>
+              <li class="provider-option" data-value="osm" role="option" aria-selected="false">
+                <div data-value="osm"><svg aria-hidden="true"></svg><span data-value="osm">OpenStreetMap</span></div>
+              </li>
+            </ul>
+          </div>
+        </div>
+        <hr id="map-type-separator">
+        <div id="map-type-section">
+          <div>Typ mapy</div>
+          <button type="button" aria-label="default">Predvolené</button>
+          <button type="button" aria-label="satellite">Satelit</button>
+          <button type="button" aria-label="terrain">Terén</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="planner-map-settings">
+      <div id="planner-settings-columns">
+        <div id="planner-provider-column">
+          <div>Poskytovateľ mapy</div>
+          <button
+            id="planner-provider-button"
+            type="button"
+            aria-haspopup="listbox"
+            aria-expanded="false"
+            aria-controls="planner-provider-listbox"
+          >
+            <span><span>Google Maps</span><svg aria-hidden="true"></svg></span>
+          </button>
+          <ul id="planner-provider-listbox" role="listbox">
+            <li class="provider-option provider-active" data-value="google" role="option" aria-selected="true">
+              <div data-value="google"><span data-value="google">Google Maps</span></div>
+            </li>
+            <li class="provider-option" data-value="here" role="option" aria-selected="false">
+              <div data-value="here"><span data-value="here">Here Maps</span></div>
+            </li>
+            <li class="provider-option" data-value="osm" role="option" aria-selected="false">
+              <div data-value="osm"><span data-value="osm">OpenStreetMap</span></div>
+            </li>
+          </ul>
+          <hr>
+        </div>
+        <div id="planner-map-type-section">
+          <div>Typ Mapy</div>
+          <button type="button" aria-label="default">Predvolené</button>
+          <button type="button" aria-label="satellite">Satelit</button>
+          <button type="button" aria-label="terrain">Terén</button>
+          <hr>
+        </div>
+      </div>
+    </div>
+
+    <script src="storage-mock.js"></script>
+    <script src="device-pixel-ratio-mock.js"></script>
+    <script src="../src/tile-url.js"></script>
+    <script src="observer-instrumentation.js"></script>
+    <script src="native-provider-react-mock.js"></script>
+    <script src="../src/page-main.js"></script>
+    <script src="../src/ui.js"></script>
+    <script src="native-provider-browser-test.js"></script>
+  </body>
+</html>

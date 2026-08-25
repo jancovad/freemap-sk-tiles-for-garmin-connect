@@ -1,6 +1,6 @@
 # Zásady ochrany súkromia
 
-Posledná aktualizácia: 17. augusta 2026
+Posledná aktualizácia: 18. augusta 2026
 
 Tieto zásady sa vzťahujú na neoficiálne Chrome rozšírenie **Outdoor tiles from
 Freemap.sk for Garmin Connect**. Jeho jediným účelom je zobraziť Freemap.sk
@@ -19,9 +19,10 @@ Rozšírenie ukladá do `chrome.storage.local` iba `preferredMapMode` s hodnotou
 `garmin` alebo `freemap`. Verzia 0.5.2 pri prvom načítaní odstráni zastaranú
 hodnotu `freemapDisclosureAccepted`, ktorú používala nevydaná testovacia verzia.
 
-Vývojár túto hodnotu neprijíma a nemá k nej vzdialený prístup. Používateľ ju
-môže zmeniť prepínačom alebo odstrániť vymazaním údajov či odinštalovaním
-rozšírenia. Bezpečnostný návrat pri chybe nemení uloženú preferenciu.
+Vývojár túto hodnotu neprijíma a nemá k nej vzdialený prístup. Používateľ ju môže
+zmeniť výberom poskytovateľa v natívnych nastaveniach mapy Garmin Connect alebo
+odstrániť vymazaním údajov či odinštalovaním rozšírenia. Bezpečnostný návrat pri
+chybe nemení uloženú preferenciu.
 
 ## Spracovanie mapových údajov
 
