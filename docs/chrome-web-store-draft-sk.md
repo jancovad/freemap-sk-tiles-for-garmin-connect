@@ -32,6 +32,7 @@ Názov odsúhlasený Freemap Slovakia:
 `Outdoor tiles from Freemap.sk for Garmin Connect`
 
 Držiteľ copyrightu zdrojového kódu: **Vladimír Jančovič**.
+Publisher name: **Vladimír Jančovič**.
 
 Rozšírenie nepoužíva logo Freemap. V popise je jasne označené ako neoficiálny
 komunitný projekt a nevyvoláva dojem produktu Garmin alebo Freemap Slovakia.

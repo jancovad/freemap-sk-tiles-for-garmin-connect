@@ -29,6 +29,7 @@
 
 - [x] Zverejniť aktualizovanú privacy policy na stabilnej HTTPS URL.
 - [x] Vytvoriť a aktivovať účet vývojára v Chrome Web Store.
+- [x] Nastaviť Publisher name: **Vladimír Jančovič**.
 - [x] Zapnúť dvojstupňové overenie vlastníckeho Google účtu.
 - [ ] Vytvoriť anonymizované screenshoty 1280 × 800 px.
 - [x] Nahrať otestovaný ZIP do Dashboardu: `imcpmdcdbkijkcdgijifkkhfpllfcdjh`.
