@@ -31,14 +31,19 @@
 - [x] Vytvoriť a aktivovať účet vývojára v Chrome Web Store.
 - [x] Nastaviť Publisher name: **Vladimír Jančovič**.
 - [x] Zapnúť dvojstupňové overenie vlastníckeho Google účtu.
-- [ ] Vytvoriť anonymizované screenshoty 1280 × 800 px.
+- [x] Vytvoriť anonymizované screenshoty 1280 × 800 px.
 - [x] Nahrať otestovaný ZIP do Dashboardu: `imcpmdcdbkijkcdgijifkkhfpllfcdjh`.
-- [ ] Vyplniť Privacy deklaráciu podľa skutočného správania rozšírenia.
-- [ ] Skontrolovať aktuálne pravidlá Chrome Web Store.
+- [x] Vyplniť Privacy deklaráciu podľa skutočného správania rozšírenia.
+- [x] Skontrolovať aktuálne pravidlá Chrome Web Store.
 - [x] Vytvoriť Store ZIP z označeného commitu a overiť SHA-256.
 - [x] Overiť, že verejný zdrojový kód a ZIP patria rovnakému commitu.
-- [ ] Pred Submit for Review vykonať poslednú kontrolu názvu, popisov, odkazov
+- [x] Pred Submit for Review vykonať poslednú kontrolu názvu, popisov, odkazov
   a podmienok Freemap Slovakia.
+- [x] Odoslať verziu 0.6.0 na kontrolu 25. augusta 2026 s plánovaným neskorším
+  zverejnením.
 
-Publikovanie je samostatný krok a vyžaduje výslovné rozhodnutie vlastníka
-projektu. Splnenie checklistu samo osebe neudeľuje súhlas na publikovanie.
+## Po úspešnej kontrole
+
+- [ ] Manuálne zverejniť schválenú položku do 30 dní.
+- [ ] Overiť verejný Store záznam a čistú inštaláciu z Chrome Web Store.
+- [ ] Oznámiť Freemap Slovakia verejné vydanie a odkaz na položku.

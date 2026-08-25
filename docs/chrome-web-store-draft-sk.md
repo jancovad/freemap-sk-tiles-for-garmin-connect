@@ -1,11 +1,11 @@
 # Návrh záznamu pre Chrome Web Store
 
-Stav: **pracovný návrh – neodosielať na posúdenie**
+Stav: **verzia 0.6.0 odoslaná na kontrolu 25. augusta 2026**
 
-## Zostávajúce podmienky
+## Zostávajúce kroky
 
-- finálne anonymizované screenshoty;
-- Privacy deklarácia v Store Dashboarde zhodná so skutočným správaním;
+- počkať na výsledok kontroly Chrome Web Store;
+- po úspešnej kontrole manuálne zverejniť položku do 30 dní.
 
 Písomný súhlas Freemap Slovakia bol prijatý 17. augusta 2026 a jeho podmienky
 sú zapracované v kóde aj v
@@ -16,6 +16,11 @@ dôveryhodnými testermi bez hlásených chýb.
 
 Chrome Web Store Dashboard prijal rovnaký otestovaný ZIP pod identifikátorom
 `imcpmdcdbkijkcdgijifkkhfpllfcdjh`.
+
+Store záznam obsahuje anonymizované screenshoty, vyplnenú Privacy deklaráciu,
+verejnú distribúciu bez nákupov v aplikácii a pokyny pre posudzovateľa.
+Odoslanie používa plánované neskoršie zverejnenie, takže schválená položka sa
+nezverejní automaticky.
 
 ## Verejné odkazy
 

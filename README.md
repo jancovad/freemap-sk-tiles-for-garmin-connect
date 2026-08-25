@@ -133,10 +133,12 @@ Technické pozadie je v [docs/technical-research.md](docs/technical-research.md)
 
 Freemap Slovakia súhlasila s použitím servera pre bezplatné nekomerčné
 rozšírenie. Stabilnú verziu 0.6.0 overili dôveryhodní testeri bez hlásených
-chýb. Pred odoslaním do Chrome Web Store ešte treba dokončiť anonymizované
-screenshoty a Store privacy deklaráciu. Store
-záznam musí ešte pred inštaláciou prominentne uviesť, že Freemap dostane
-súradnice viditeľných dlaždíc a štandardné sieťové údaje.
+chýb. Verzia 0.6.0 bola 25. augusta 2026 odoslaná na kontrolu v Chrome Web
+Store. Záznam obsahuje anonymizované screenshoty, Store Privacy deklaráciu a
+požadované prominentné zverejnenie sieťových údajov.
+
+Dashboard používa plánované neskoršie zverejnenie. Po úspešnej kontrole treba
+rozšírenie manuálne zverejniť do 30 dní.
 
 - [zásady ochrany súkromia](PRIVACY.md)
 - [third-party notices](THIRD_PARTY_NOTICES.md)
