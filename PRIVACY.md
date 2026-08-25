@@ -68,6 +68,19 @@ Nevykonáva hromadné, offline ani preventívne sťahovanie mapových dlaždíc.
 
 Manifest nežiada `host_permissions` a rozšírenie nespúšťa vzdialený kód.
 
+## Obmedzené použitie údajov
+
+Používanie údajov týmto rozšírením je obmedzené výhradne na jeho jediný
+zverejnený účel: zobrazenie voliteľného podkladu Freemap.sk Outdoor vo webovom
+Garmin Connect. Rozšírenie a vývojár dodržiavajú pravidlá Chrome Web Store User
+Data Policy vrátane požiadaviek Limited Use.
+
+Údaje sa nepredávajú, nepoužívajú na personalizovanú reklamu, hodnotenie
+úverovej schopnosti ani na účely nesúvisiace s touto funkciou. Tretím stranám sa
+prenášajú iba viditeľné súradnice dlaždíc a štandardné sieťové údaje serveru
+Freemap Slovakia v rozsahu nevyhnutnom na načítanie používateľom zvoleného
+mapového podkladu.
+
 ## Zmeny a kontakt
 
 Zmeny budú zaznamenané vo
