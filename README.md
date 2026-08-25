@@ -132,8 +132,9 @@ Technické pozadie je v [docs/technical-research.md](docs/technical-research.md)
 ## Verejné vydanie
 
 Freemap Slovakia súhlasila s použitím servera pre bezplatné nekomerčné
-rozšírenie. Pred odoslaním do Chrome Web Store ešte treba dokončiť živé testy,
-anonymizované screenshoty, kontaktné údaje a Store privacy deklaráciu. Store
+rozšírenie. Stabilnú verziu 0.6.0 overili dôveryhodní testeri bez hlásených
+chýb. Pred odoslaním do Chrome Web Store ešte treba aktivovať účet vývojára,
+dokončiť anonymizované screenshoty a Store privacy deklaráciu. Store
 záznam musí ešte pred inštaláciou prominentne uviesť, že Freemap dostane
 súradnice viditeľných dlaždíc a štandardné sieťové údaje.
 

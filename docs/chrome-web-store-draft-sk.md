@@ -4,7 +4,7 @@ Stav: **pracovný návrh – neodosielať na posúdenie**
 
 ## Zostávajúce podmienky
 
-- kontaktný e-mail vývojára;
+- aktivovaný účet vývojára v Chrome Web Store;
 - finálne anonymizované screenshoty;
 - Privacy deklarácia v Store Dashboarde zhodná so skutočným správaním;
 - kontrola, že Store ZIP vznikol z rovnakého označeného commitu ako verejný
@@ -21,6 +21,7 @@ dôveryhodnými testermi bez hlásených chýb.
 
 - Repozitár: <https://github.com/jancovad/freemap-sk-tiles-for-garmin-connect>
 - Zásady ochrany súkromia: <https://github.com/jancovad/freemap-sk-tiles-for-garmin-connect/blob/main/PRIVACY.md>
+- Kontakt: <mailto:jancovic@gmail.com>
 - Podpora: <https://github.com/jancovad/freemap-sk-tiles-for-garmin-connect/issues>
 
 ## Identita
@@ -28,6 +29,8 @@ dôveryhodnými testermi bez hlásených chýb.
 Názov odsúhlasený Freemap Slovakia:
 
 `Outdoor tiles from Freemap.sk for Garmin Connect`
+
+Držiteľ copyrightu zdrojového kódu: **Vladimír Jančovič**.
 
 Rozšírenie nepoužíva logo Freemap. V popise je jasne označené ako neoficiálny
 komunitný projekt a nevyvoláva dojem produktu Garmin alebo Freemap Slovakia.

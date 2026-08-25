@@ -1,6 +1,6 @@
 # Zásady ochrany súkromia
 
-Posledná aktualizácia: 18. augusta 2026
+Posledná aktualizácia: 25. augusta 2026
 
 Tieto zásady sa vzťahujú na neoficiálne Chrome rozšírenie **Outdoor tiles from
 Freemap.sk for Garmin Connect**. Jeho jediným účelom je zobraziť Freemap.sk
@@ -74,5 +74,5 @@ Zmeny budú zaznamenané vo
 [verejnom repozitári projektu](https://github.com/jancovad/freemap-sk-tiles-for-garmin-connect).
 Otázky a problémy možno nahlásiť cez
 [GitHub Issues](https://github.com/jancovad/freemap-sk-tiles-for-garmin-connect/issues).
-Kontaktný e-mail vývojára bude uvedený v zázname Chrome Web Store pred
-odoslaním na posúdenie.
+Vývojára možno kontaktovať na
+[jancovic@gmail.com](mailto:jancovic@gmail.com).

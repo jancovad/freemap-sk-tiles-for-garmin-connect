@@ -19,15 +19,17 @@
 
 ## Pred prvým verejným vydaním
 
-- [ ] Potvrdiť meno držiteľa copyrightu v `LICENSE`.
-- [ ] Doplniť kontaktný e-mail pre Chrome Web Store.
+- [x] Potvrdiť meno držiteľa copyrightu v `LICENSE`: Vladimír Jančovič.
+- [x] Doplniť kontaktný e-mail pre Chrome Web Store: `jancovic@gmail.com`.
 - [x] Otestovať verziu 0.6.0 na detaile aktivity a v plánovači.
 - [x] Otestovať zoom, posúvanie, retina URL, atribúciu, zapamätanie a fallback.
 - [x] Otestovať aktuálny ZIP 0.6.0 cez skupinu dôveryhodných testerov bez hlásených chýb.
 
 ## Pred Chrome Web Store
 
-- [ ] Zverejniť aktualizovanú privacy policy na stabilnej HTTPS URL.
+- [x] Zverejniť aktualizovanú privacy policy na stabilnej HTTPS URL.
+- [ ] Vytvoriť a aktivovať účet vývojára v Chrome Web Store.
+- [ ] Zapnúť dvojstupňové overenie vlastníckeho Google účtu.
 - [ ] Vytvoriť anonymizované screenshoty 1280 × 800 px.
 - [ ] Vyplniť Privacy deklaráciu podľa skutočného správania rozšírenia.
 - [ ] Skontrolovať aktuálne pravidlá Chrome Web Store.
