@@ -2,10 +2,10 @@
 
 Stav: **verzia 0.6.0 verejne publikovaná 26. augusta 2026**
 
-## Zostávajúce kroky
+## Dokončenie vydania
 
-- overiť čistú inštaláciu verejnej verzie z Chrome Web Store;
-- oznámiť Freemap Slovakia verejné vydanie a odkaz na položku.
+- čistá inštalácia verzie 0.6.0 z Chrome Web Store bola overená 26. augusta 2026;
+- Freemap Slovakia bola 26. augusta 2026 informovaná o verejnom vydaní.
 
 Písomný súhlas Freemap Slovakia bol prijatý 17. augusta 2026 a jeho podmienky
 sú zapracované v kóde aj v
