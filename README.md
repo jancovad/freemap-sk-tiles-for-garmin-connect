@@ -4,11 +4,12 @@ Neoficiálne komunitné Chrome rozšírenie pre webový Garmin Connect. Do natí
 dialógu **Nastavenia mapy** pridáva poskytovateľa **Freemap.sk** a mení výhradne
 podkladové dlaždice na Freemap.sk Outdoor.
 
-## Aktuálny stav a stiahnutie
+## Aktuálny stav a inštalácia
 
-Stabilná verzia **v0.6.0** bola 25. augusta 2026 odoslaná na kontrolu do
-Chrome Web Store. Je nastavené plánované neskoršie zverejnenie, takže sa po
-schválení nezverejní automaticky.
+Stabilná verzia **v0.6.0** je od 26. augusta 2026 verejne dostupná v Chrome
+Web Store.
+
+[Inštalovať z Chrome Web Store](https://chromewebstore.google.com/detail/outdoor-tiles-from-freemap/imcpmdcdbkijkcdgijifkkhfpllfcdjh)
 
 [Stiahnuť stabilnú verziu v0.6.0](https://github.com/jancovad/freemap-sk-tiles-for-garmin-connect/releases/tag/v0.6.0)
 
@@ -157,16 +158,16 @@ Technické pozadie je v [docs/technical-research.md](docs/technical-research.md)
 Freemap Slovakia súhlasila s použitím servera pre bezplatné nekomerčné
 rozšírenie. Stabilnú verziu 0.6.0 overili dôveryhodní testeri bez hlásených
 chýb. Verzia 0.6.0 bola 25. augusta 2026 odoslaná na kontrolu v Chrome Web
-Store. Záznam obsahuje anonymizované screenshoty, Store Privacy deklaráciu a
-požadované prominentné zverejnenie sieťových údajov.
+Store a 26. augusta 2026 schválená a verejne zverejnená. Záznam obsahuje
+anonymizované screenshoty, Store Privacy deklaráciu a požadované prominentné
+zverejnenie sieťových údajov.
 
-Dashboard používa plánované neskoršie zverejnenie. Po úspešnej kontrole treba
-rozšírenie manuálne zverejniť do 30 dní.
+[Inštalovať z Chrome Web Store](https://chromewebstore.google.com/detail/outdoor-tiles-from-freemap/imcpmdcdbkijkcdgijifkkhfpllfcdjh)
 
 - [zásady ochrany súkromia](PRIVACY.md)
 - [third-party notices](THIRD_PARTY_NOTICES.md)
 - [zhrnutie súhlasu Freemap Slovakia](docs/freemap-permission-summary.md)
 - [pôvodná žiadosť](docs/freemap-permission-request-sk.md)
-- [návrh záznamu Chrome Web Store](docs/chrome-web-store-draft-sk.md)
+- [záznam Chrome Web Store](docs/chrome-web-store-draft-sk.md)
 - [checklist verejného vydania](docs/public-release-checklist.md)
 - [história zmien](CHANGELOG.md)

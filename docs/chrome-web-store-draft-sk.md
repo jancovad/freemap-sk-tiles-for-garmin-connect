@@ -1,11 +1,11 @@
-# Návrh záznamu pre Chrome Web Store
+# Záznam pre Chrome Web Store
 
-Stav: **verzia 0.6.0 odoslaná na kontrolu 25. augusta 2026**
+Stav: **verzia 0.6.0 verejne publikovaná 26. augusta 2026**
 
 ## Zostávajúce kroky
 
-- počkať na výsledok kontroly Chrome Web Store;
-- po úspešnej kontrole manuálne zverejniť položku do 30 dní.
+- overiť čistú inštaláciu verejnej verzie z Chrome Web Store;
+- oznámiť Freemap Slovakia verejné vydanie a odkaz na položku.
 
 Písomný súhlas Freemap Slovakia bol prijatý 17. augusta 2026 a jeho podmienky
 sú zapracované v kóde aj v
@@ -15,21 +15,23 @@ Testovací ZIP verzie 0.6.0 bol na detaile aktivity aj v plánovači trás overe
 dôveryhodnými testermi bez hlásených chýb.
 
 Chrome Web Store Dashboard prijal rovnaký otestovaný ZIP pod identifikátorom
-`imcpmdcdbkijkcdgijifkkhfpllfcdjh`.
+`imcpmdcdbkijkcdgijifkkhfpllfcdjh`. Verzia bola 26. augusta 2026 schválená a
+zverejnená vo
+[verejnom Store zázname](https://chromewebstore.google.com/detail/outdoor-tiles-from-freemap/imcpmdcdbkijkcdgijifkkhfpllfcdjh).
 
 Store záznam obsahuje anonymizované screenshoty, vyplnenú Privacy deklaráciu,
 verejnú distribúciu bez nákupov v aplikácii a pokyny pre posudzovateľa.
-Odoslanie používa plánované neskoršie zverejnenie, takže schválená položka sa
-nezverejní automaticky.
 
 ## Verejné odkazy
 
+- Chrome Web Store: <https://chromewebstore.google.com/detail/outdoor-tiles-from-freemap/imcpmdcdbkijkcdgijifkkhfpllfcdjh>
 - Repozitár: <https://github.com/jancovad/freemap-sk-tiles-for-garmin-connect>
 - Zásady ochrany súkromia: <https://github.com/jancovad/freemap-sk-tiles-for-garmin-connect/blob/main/PRIVACY.md>
 - Kontakt: <mailto:jancovic@gmail.com>
 - Podpora: <https://github.com/jancovad/freemap-sk-tiles-for-garmin-connect/issues>
 
 - Chrome Web Store ID: `imcpmdcdbkijkcdgijifkkhfpllfcdjh`
+
 ## Identita
 
 Názov odsúhlasený Freemap Slovakia:

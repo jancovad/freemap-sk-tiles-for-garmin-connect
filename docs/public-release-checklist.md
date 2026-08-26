@@ -42,8 +42,9 @@
 - [x] Odoslať verziu 0.6.0 na kontrolu 25. augusta 2026 s plánovaným neskorším
   zverejnením.
 
-## Po úspešnej kontrole
+## Po zverejnení
 
-- [ ] Manuálne zverejniť schválenú položku do 30 dní.
-- [ ] Overiť verejný Store záznam a čistú inštaláciu z Chrome Web Store.
+- [x] Manuálne zverejniť schválenú položku 26. augusta 2026.
+- [x] Overiť, že verejný Store záznam je dostupný.
+- [ ] Overiť čistú inštaláciu verzie 0.6.0 z Chrome Web Store.
 - [ ] Oznámiť Freemap Slovakia verejné vydanie a odkaz na položku.
