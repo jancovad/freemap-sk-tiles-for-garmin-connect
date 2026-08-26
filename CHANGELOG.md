@@ -5,8 +5,13 @@ verziovanie v tvare `MAJOR.MINOR.PATCH`.
 
 ## Unreleased
 
-- Pripravený prototyp 0.6.0: `Freemap.sk` sa zobrazuje priamo medzi
-  poskytovateľmi v natívnom dialógu „Nastavenia mapy“ Garmin Connect.
+## 0.6.0 – 2026-08-26
+
+- Verzia 0.6.0 bola schválená a verejne publikovaná v Chrome Web Store.
+- Čistá inštalácia z Chrome Web Store bola úspešne overená a Freemap Slovakia
+  bola informovaná o verejnom vydaní.
+- `Freemap.sk` sa zobrazuje priamo medzi poskytovateľmi v natívnom dialógu
+  „Nastavenia mapy“ Garmin Connect.
 - Integrácia používa iba overené ARIA roly, väzbu `aria-controls` a natívne
   hodnoty `google`/`here`/`osm`; nezávisí od dynamických CSS tried Garminu ani
   od lokalizovaného textu dialógu.
